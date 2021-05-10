@@ -14,7 +14,7 @@ namespace GGDBF
 		/// <summary>
 		/// The requested data model type to be compiled and available in the target Type which should represent the database Type.
 		/// </summary>
-		public Type DataType { get; private set; }
+		public Type DataType { get; }
 
 		/// <summary>
 		/// Creates a new <see cref="RequiredDataModelAttribute"/> with the provided <see cref="Type"/>.
