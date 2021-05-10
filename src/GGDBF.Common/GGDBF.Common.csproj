@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>GGDBF.Metadata</RootNamespace>
+    <RootNamespace>GGDBF</RootNamespace>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
