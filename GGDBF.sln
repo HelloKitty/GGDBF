@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{97C93F83-37D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGDBF.Common", "src\GGDBF.Common\GGDBF.Common.csproj", "{15E0FEB3-4BC3-49A1-81DC-DB0E74940FEA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GGDBF.Compiler", "src\GGDBF.Compiler\GGDBF.Compiler.csproj", "{D543AFB4-50AC-45CF-888F-163B43E41E3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +19,17 @@ Global
 		{15E0FEB3-4BC3-49A1-81DC-DB0E74940FEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15E0FEB3-4BC3-49A1-81DC-DB0E74940FEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15E0FEB3-4BC3-49A1-81DC-DB0E74940FEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D543AFB4-50AC-45CF-888F-163B43E41E3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D543AFB4-50AC-45CF-888F-163B43E41E3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D543AFB4-50AC-45CF-888F-163B43E41E3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D543AFB4-50AC-45CF-888F-163B43E41E3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{15E0FEB3-4BC3-49A1-81DC-DB0E74940FEA} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
+		{D543AFB4-50AC-45CF-888F-163B43E41E3A} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {98438B05-72FA-4385-BEF0-9A6B45DC9251}
