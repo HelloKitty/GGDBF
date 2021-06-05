@@ -8,17 +8,13 @@
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <!-- Generates a package at build -->
-    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeBuildOutput>true</IncludeBuildOutput>
     <!-- Do not include the generator as a lib dependency -->
-    <langversion>preview</langversion>
+    <LangVersion>9.0</LangVersion>
     <IncludeSymbols>true</IncludeSymbols>
 
     <!-- This makes output folder HUGE but it includes ALL assemblies which are needed when you want to actually do local testing -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,12 +22,32 @@
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="Glader.Essentials.SourceGenerator" Version="2.2.70">
+      <PrivateAssets>all</PrivateAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" PrivateAssets="all" />
+    <!--<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />-->
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GGDBF.Common\GGDBF.Common.csproj" GeneratePathProperty="true" />
+  </ItemGroup>
+
+  <Target Name="GetDependencyTargetPaths">
+    <ItemGroup>
+      <!-- Puts private nuget dependencies into the generator -->
+      <None Include="$(PkgGlader_Essentials_SourceGenerator)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+    </ItemGroup>
+  </Target>
 
 </Project>
