@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>GeneratorOutput</CompilerGeneratedFilesOutputPath>
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\GGDBF.Common\GGDBF.Common.csproj" />
+    <ProjectReference Include="..\..\src\GGDBF.Compiler\GGDBF.Compiler.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer">
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="GeneratorOutput\**" />
+    <None Include="GeneratorOutput\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="GeneratorOutput\" />
+    <Folder Include="GeneratorOutput\GGDBF.Compiler\GGDBF.ContextGenerator\" />
+  </ItemGroup>
+
+</Project>
