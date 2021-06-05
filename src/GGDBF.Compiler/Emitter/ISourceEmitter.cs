@@ -6,8 +6,6 @@ namespace GGDBF.Compiler
 {
 	public interface ISourceEmitter
 	{
-		string Emit();
-
 		void Emit(StringBuilder builder);
 	}
 }

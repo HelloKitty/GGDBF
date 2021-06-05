@@ -10,13 +10,6 @@ namespace GGDBF.Compiler
 
 		private const string USING_DIRECTIVE_FORMAT_TEXT = "using {0};";
 
-		public string Emit()
-		{
-			var builder = new StringBuilder();
-			Emit(builder);
-			return builder.ToString();
-		}
-
 		public void Emit(StringBuilder builder)
 		{
 			if (builder == null) throw new ArgumentNullException(nameof(builder));
