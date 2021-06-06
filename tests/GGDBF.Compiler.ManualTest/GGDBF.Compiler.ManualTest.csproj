@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>GeneratorOutput</CompilerGeneratedFilesOutputPath>
     <LangVersion>preview</LangVersion>
@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <RestoreSources>$(RestoreSources);../../src/GGDBF.Compiler/bin/Debug;../../src/GGDBF.Common/bin/Debug</RestoreSources>
+    <RestoreSources>$(RestoreSources);../../src/GGDBF.Compiler/bin/Debug;../../src/GGDBF.Common/bin/Debug;../../src/GGDBF.Common/bin/Release;../../src/GGDBF.Compiler/bin/Release</RestoreSources>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,11 +17,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="GGDBF.Compiler" Version="0.0.2.39" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="GGDBF.Compiler" Version="0.0.2.39" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +35,10 @@
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\..\src\GGDBF.Compiler\GGDBF.Compiler.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="GGDBF.Compiler" Version="0.0.2.40" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
   </ItemGroup>
 
 </Project>

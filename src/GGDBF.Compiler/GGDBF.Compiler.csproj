@@ -14,7 +14,7 @@
     <IncludeSymbols>true</IncludeSymbols>
 
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <VersionPrefix>0.0.2.39</VersionPrefix>
+    <VersionPrefix>0.0.2.40</VersionPrefix>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
@@ -32,33 +32,7 @@
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
       <TargetPathWithTargetPlatformMoniker Include="@(ResolvedCompileFileDefinitions)" IncludeRuntimeDependency="false" />
     </ItemGroup>
-  </Target>
-
-  <!-- This is for RELEASE and NUGET analyzer references -->
-  <ItemGroup Condition="'$(Configuration)'=='Relase'">
-    <PackageReference Include="Glader.Essentials.SourceGenerator" Version="2.2.72" PrivateAssets="all" GeneratePathProperty="true" />
-    <ProjectReference Include="..\GGDBF.Common\GGDBF.Common.csproj" GeneratePathProperty="true" />
-
-    <PackageReference Include="Microsoft.CodeAnalysis.Compilers" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
-
-    <!-- Workspaces hacky dependency requirements -->
-    <PackageReference Include="System.Composition" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
-    <PackageReference Include="System.Composition.Hosting" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
-    <PackageReference Include="System.Composition.Runtime" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
-    <PackageReference Include="System.Composition.TypedParts" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
-    <PackageReference Include="System.Composition.AttributedModel" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" PrivateAssets="all" GeneratePathProperty="true" />
-
-    <!-- Package the generator in the analyzer directory of the nuget package -->
-    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-  </ItemGroup>
-
-  <Target Name="GetDependencyTargetPaths">
-    <ItemGroup Condition="'$(Configuration)'=='Relase'">
+    <ItemGroup Condition="'$(Configuration)'=='Release'">
       <!-- Puts private nuget dependencies into the generator -->
       <None Include="$(PkgMicrosoft_CodeAnalysis_Compilers)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
       <None Include="$(PkgMicrosoft_CodeAnalysis_CSharp)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
@@ -79,5 +53,24 @@
       <None Include="$(PkgGGDBF_Common)$(BaseOutputPath)$(Configuration)\$(TargetFramework)\GGDBF.Common.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="true" />
     </ItemGroup>
   </Target>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="Microsoft.CodeAnalysis.Compilers" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
+
+    <!-- Workspaces hacky dependency requirements -->
+    <PackageReference Include="System.Composition" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="System.Composition.Hosting" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="System.Composition.Runtime" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="System.Composition.TypedParts" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="System.Composition.AttributedModel" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" PrivateAssets="all" GeneratePathProperty="true" />
+
+    <!-- Package the generator in the analyzer directory of the nuget package -->
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
 
 </Project>
