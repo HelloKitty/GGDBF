@@ -1,16 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>GeneratorOutput</CompilerGeneratedFilesOutputPath>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>preview</LangVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RestoreSources>$(RestoreSources);../../src/GGDBF.Compiler/bin/Debug;../../src/GGDBF.Common/bin/Debug</RestoreSources>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\GGDBF.Common\GGDBF.Common.csproj" />
-    <ProjectReference Include="..\..\src\GGDBF.Compiler\GGDBF.Compiler.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer">
-    </ProjectReference>
+    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="3.9.0-2.final">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="GGDBF.Compiler" Version="0.0.2.39" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="GGDBF.Compiler" Version="0.0.2.39" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +32,14 @@
   <ItemGroup>
     <Folder Include="GeneratorOutput\" />
     <Folder Include="GeneratorOutput\GGDBF.Compiler\GGDBF.ContextGenerator\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\GGDBF.Common\GGDBF.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <ProjectReference Include="..\..\src\GGDBF.Compiler\GGDBF.Compiler.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
   </ItemGroup>
 
 </Project>
