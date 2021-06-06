@@ -10,43 +10,60 @@
     <!-- Generates a package at build -->
     <IncludeBuildOutput>true</IncludeBuildOutput>
     <!-- Do not include the generator as a lib dependency -->
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>preview</LangVersion>
     <IncludeSymbols>true</IncludeSymbols>
 
-    <!-- This makes output folder HUGE but it includes ALL assemblies which are needed when you want to actually do local testing -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <VersionPrefix>0.0.2.34</VersionPrefix>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-
-  <ItemGroup>
-    <!-- Package the generator in the analyzer directory of the nuget package -->
-    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-  </ItemGroup>
 
   <PropertyGroup>
     <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Glader.Essentials.SourceGenerator" Version="2.2.70">
-      <PrivateAssets>all</PrivateAssets>
-      <GeneratePathProperty>true</GeneratePathProperty>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" PrivateAssets="all" />
-    <!--<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />-->
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Glader.Essentials.SourceGenerator" Version="2.2.72" PrivateAssets="all" GeneratePathProperty="true" />
     <ProjectReference Include="..\GGDBF.Common\GGDBF.Common.csproj" GeneratePathProperty="true" />
+
+    <PackageReference Include="Microsoft.CodeAnalysis.Compilers" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.9.0-2.final" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
+
+    <!-- Workspaces hacky dependency requirements -->
+    <PackageReference Include="System.Composition" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="System.Composition.Hosting" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="System.Composition.Runtime" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="System.Composition.TypedParts" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="System.Composition.AttributedModel" Version="1.0.31" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.1" PrivateAssets="all" GeneratePathProperty="true" />
+
+    <!-- Package the generator in the analyzer directory of the nuget package -->
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
   <Target Name="GetDependencyTargetPaths">
     <ItemGroup>
       <!-- Puts private nuget dependencies into the generator -->
+      <None Include="$(PkgMicrosoft_CodeAnalysis_Compilers)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+      <None Include="$(PkgMicrosoft_CodeAnalysis_CSharp)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+      <None Include="$(PkgMicrosoft_CodeAnalysis_CSharp_Workspaces)\lib\netstandard2.0\*.dll" PackagePath="analyzers/dotnet/cs" Pack="true" IncludeRuntimeDependency="false" />
+      <None Include="$(PkgMicrosoft_CodeAnalysis_Compilers_Workspaces_Common)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+      <None Include="$(PkgMicrosoft_CodeAnalysis_Workspaces_Common)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+
+
+      <None Include="$(PkgSystem_Composition)\lib\netstandard1.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+      <None Include="$(PkgSystem_Composition_TypedParts)\lib\netstandard1.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+      <None Include="$(PkgSystem_Composition_Hosting)\lib\netstandard1.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+      <None Include="$(PkgSystem_Composition_Runtime)\lib\netstandard1.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+      <None Include="$(PkgSystem_Composition_AttributedModel)\lib\netstandard1.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+      <None Include="$(PkgMicrosoft_Bcl_AsyncInterfaces)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+
       <None Include="$(PkgGlader_Essentials_SourceGenerator)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="false" />
+
+      <None Include="$(PkgGGDBF_Common)$(BaseOutputPath)$(Configuration)\$(TargetFramework)\GGDBF.Common.dll" Pack="true" PackagePath="analyzers/dotnet/cs" IncludeRuntimeDependency="true" />
     </ItemGroup>
   </Target>
 
