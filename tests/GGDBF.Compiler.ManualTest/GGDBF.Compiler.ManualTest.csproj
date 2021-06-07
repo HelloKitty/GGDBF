@@ -6,6 +6,7 @@
     <CompilerGeneratedFilesOutputPath>GeneratorOutput</CompilerGeneratedFilesOutputPath>
     <LangVersion>preview</LangVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -17,6 +18,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="GGDBF.Compiler" Version="0.0.2.40" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
+    <PackageReference Include="GGDBF.Compiler" Version="0.0.2.42" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
   </ItemGroup>
 
 </Project>
