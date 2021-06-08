@@ -74,7 +74,11 @@ namespace GGDBF
 				UsingsEmitter usingsEmitter = new();
 				NamespaceDecoratorEmitter namespaceDecorator = new NamespaceDecoratorEmitter(CreateContextClassEmitter(contextSymbol), contextSymbol.ContainingNamespace.FullNamespaceString());
 
-				foreach (var type in RetrieveModelTypes(contextSymbol))
+				//Default namespaces:
+				usingsEmitter.AddNamespace("System");
+				usingsEmitter.AddNamespace("System.Collections.Generic");
+
+				foreach(var type in RetrieveModelTypes(contextSymbol))
 				{
 					if (type.ContainingNamespace != null)
 						usingsEmitter.AddNamespace(type.ContainingNamespace.FullNamespaceString());

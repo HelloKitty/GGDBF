@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text;
 using GGDBF.Compiler;
 using Glader.Essentials;
@@ -32,9 +34,34 @@ namespace GGDBF
 				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ClassName}\n{{");
 
 			foreach (var entry in Properties)
-				builder.Append($"public {entry.PropertyType.GetFriendlyName()} {entry.Name} {{ get; }}");
+				builder.Append($"public {CreatePropertyType(entry)} {entry.Name} {{ get; }}");
 
 			builder.Append($"\n}}");
+		}
+
+		private static string CreatePropertyType(PropertyDefinition entry)
+		{
+			return $"IReadOnlyDictionary<{DeterminePrimaryKeyType(entry).GetFriendlyName()}, {entry.PropertyType.GetFriendlyName()}>";
+		}
+
+		private static ITypeSymbol DeterminePrimaryKeyType(PropertyDefinition entry)
+		{
+			foreach (var prop in entry.PropertyType.GetMembers())
+			{
+				try
+				{
+					if(prop.Kind != SymbolKind.Property)
+						continue;
+					else if(prop.HasAttributeExact<KeyAttribute>() || prop.HasAttributeExact<DatabaseKeyHintAttribute>())
+						return ((IPropertySymbol)prop).Type;
+				}
+				catch (Exception e)
+				{
+					throw new InvalidOperationException($"Failed to parse PK from Type: {entry.PropertyType.Name} on Property: {prop.Name} Reason: {e.Message} Stack: {e.StackTrace.Split('\n').LastOrDefault()}", e);
+				}
+			}
+
+			throw new InvalidOperationException($"Failed to deduce PK from ModelType: {entry.PropertyType.Name}");
 		}
 
 		public void AddProperty(string name, INamedTypeSymbol type)
