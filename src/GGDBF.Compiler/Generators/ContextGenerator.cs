@@ -122,7 +122,7 @@ namespace GGDBF
 		{
 			try
 			{
-				return (string) modelType.GetAttributeExact<TableAttribute>().ConstructorArguments.First().Value;
+				return new TableNameParser().Parse(modelType);
 			}
 			catch (Exception e)
 			{
