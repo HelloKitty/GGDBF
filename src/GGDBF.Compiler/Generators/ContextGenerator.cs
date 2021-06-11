@@ -77,6 +77,7 @@ namespace GGDBF
 				//Default namespaces:
 				usingsEmitter.AddNamespace("System");
 				usingsEmitter.AddNamespace("System.Collections.Generic");
+				usingsEmitter.AddNamespace("System.Threading.Tasks");
 
 				foreach(var type in RetrieveModelTypes(contextSymbol))
 				{
