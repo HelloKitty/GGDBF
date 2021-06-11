@@ -37,7 +37,7 @@ namespace GGDBF
 		/// <param name="config">Configuration for retrieving the table.</param>
 		/// <param name="token">Cancel token.</param>
 		/// <returns>A serializable <see cref="GGDBFTable{TPrimaryKeyType,TModelType}"/> representation.</returns>
-		Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default)
+		Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default)
 			where TModelType : class;
 	}
 }

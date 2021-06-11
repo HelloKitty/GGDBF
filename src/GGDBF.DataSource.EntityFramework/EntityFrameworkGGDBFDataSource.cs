@@ -33,7 +33,7 @@ namespace GGDBF
 		}
 
 		/// <inheritdoc />
-		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
+		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
 			where TModelType : class
 		{
 			IEnumerable<TModelType> models = await RetrieveAllAsync<TModelType>(token);
