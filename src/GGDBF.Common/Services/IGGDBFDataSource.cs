@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 
 namespace GGDBF
 {
+	public record TableRetrievalConfig<TPrimaryKeyType, TModelType>(
+		Func<TModelType, TPrimaryKeyType> KeyResolutionFunction = null,
+		string TableNameOverride = null);
+
+	public record NameOverrideTableRetrievalConfig<TPrimaryKeyType, TModelType>(string TableNameOverride) 
+		: TableRetrievalConfig<TPrimaryKeyType, TModelType>(null, TableNameOverride);
+
 	/// <summary>
 	/// GGDBF's conversion service.
 	/// Converts a table Type into a serializable <see cref="GGDBFTable{TPrimaryKeyType,TModelType}"/>.
@@ -27,10 +34,10 @@ namespace GGDBF
 		/// </summary>
 		/// <typeparam name="TPrimaryKeyType">The key type of the table.</typeparam>
 		/// <typeparam name="TModelType">The model type of the table.</typeparam>
-		/// <param name="keyResolutionFunction">Optional key resolution function that can retrieve the key from the model.</param>
+		/// <param name="config">Configuration for retrieving the table.</param>
 		/// <param name="token">Cancel token.</param>
 		/// <returns>A serializable <see cref="GGDBFTable{TPrimaryKeyType,TModelType}"/> representation.</returns>
-		Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType>(Func<TModelType, TPrimaryKeyType> keyResolutionFunction = null, CancellationToken token = default)
+		Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default)
 			where TModelType : class;
 	}
 }

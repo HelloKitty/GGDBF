@@ -33,12 +33,12 @@ namespace GGDBF
 		}
 
 		/// <inheritdoc />
-		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType>(Func<TModelType, TPrimaryKeyType> keyResolutionFunction = null, CancellationToken token = default) 
+		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
 			where TModelType : class
 		{
 			IEnumerable<TModelType> models = await RetrieveAllAsync<TModelType>(token);
 
-			if (keyResolutionFunction == null)
+			if (config == null || config.KeyResolutionFunction == null)
 				throw new NotSupportedException($"TODO: Cannot support no key resolution function.");
 
 			var map = new Dictionary<TPrimaryKeyType, TModelType>();
@@ -46,7 +46,7 @@ namespace GGDBF
 			string name = typeof(TModelType).GetCustomAttribute<TableAttribute>(true).Name;
 
 			foreach (var model in models)
-				map[keyResolutionFunction(model)] = model;
+				map[config.KeyResolutionFunction(model)] = model;
 
 			return new GGDBFTable<TPrimaryKeyType, TModelType>()
 			{
