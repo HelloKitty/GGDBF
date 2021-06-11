@@ -43,7 +43,7 @@ namespace GGDBF
 
 			var map = new Dictionary<TPrimaryKeyType, TModelType>();
 			var version = GGDBFTable<TPrimaryKeyType, TModelType>.ConvertToVersion(typeof(GGDBFTable<TPrimaryKeyType, TModelType>).Assembly.GetName().Version);
-			string name = typeof(TModelType).GetCustomAttribute<TableAttribute>(true).Name;
+			string name = string.IsNullOrWhiteSpace(config.TableNameOverride) ? typeof(TModelType).GetCustomAttribute<TableAttribute>(true).Name : config.TableNameOverride;
 
 			foreach (var model in models)
 				map[config.KeyResolutionFunction(model)] = model;
