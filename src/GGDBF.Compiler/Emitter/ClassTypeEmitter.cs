@@ -33,35 +33,37 @@ namespace GGDBF
 			else
 				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ClassName}\n{{");
 
-			foreach (var entry in Properties)
-				builder.Append($"public {CreatePropertyType(entry)} {entry.Name} {{ get; }}");
+			builder.Append($"public static {ClassName} Instance {{ get; private set; }}");
 
+			foreach (var entry in Properties)
+				builder.Append($"public {CreatePropertyType(entry)} {entry.Name} {{ get; init; }}");
+
+			AddInitializeMethod(builder);
+
+			builder.Append($"\n}}");
+		}
+
+		private void AddInitializeMethod(StringBuilder builder)
+		{
+			builder.Append($"public static async Task Initialize({nameof(IGGDBFDataSource)} source){{");
+
+			//Instance init
+			builder.Append($"Instance = new()\n{{");
+
+			foreach (var prop in Properties)
+			{
+				builder.Append($"{prop.Name} = (await source.{nameof(IGGDBFDataSource.RetrieveTableAsync)}<{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {prop.PropertyType}>()).TableData,\n");
+			}
+
+			builder.Append($"\n}};");
+
+			//End method
 			builder.Append($"\n}}");
 		}
 
 		private static string CreatePropertyType(PropertyDefinition entry)
 		{
-			return $"IReadOnlyDictionary<{DeterminePrimaryKeyType(entry).GetFriendlyName()}, {entry.PropertyType.GetFriendlyName()}>";
-		}
-
-		private static ITypeSymbol DeterminePrimaryKeyType(PropertyDefinition entry)
-		{
-			foreach (var prop in entry.PropertyType.GetMembers())
-			{
-				try
-				{
-					if(prop.Kind != SymbolKind.Property)
-						continue;
-					else if(prop.HasAttributeExact<KeyAttribute>() || prop.HasAttributeExact<DatabaseKeyHintAttribute>())
-						return ((IPropertySymbol)prop).Type;
-				}
-				catch (Exception e)
-				{
-					throw new InvalidOperationException($"Failed to parse PK from Type: {entry.PropertyType.Name} on Property: {prop.Name} Reason: {e.Message} Stack: {e.StackTrace.Split('\n').LastOrDefault()}", e);
-				}
-			}
-
-			throw new InvalidOperationException($"Failed to deduce PK from ModelType: {entry.PropertyType.Name}");
+			return $"IReadOnlyDictionary<{new TablePrimaryKeyParser().Parse(entry.PropertyType).GetFriendlyName()}, {entry.PropertyType.GetFriendlyName()}>";
 		}
 
 		public void AddProperty(string name, INamedTypeSymbol type)
