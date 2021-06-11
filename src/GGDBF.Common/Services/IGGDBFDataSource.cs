@@ -39,5 +39,19 @@ namespace GGDBF
 		/// <returns>A serializable <see cref="GGDBFTable{TPrimaryKeyType,TModelType}"/> representation.</returns>
 		Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default)
 			where TModelType : class;
+
+		/// <summary>
+		/// Converts the internal data source's representation of the table to <see cref="GGDBFTable{TPrimaryKeyType,TModelType}"/>.
+		/// Overload that allows for specifying a different serializable child/derived type of the table model.
+		/// </summary>
+		/// <typeparam name="TPrimaryKeyType">The key type of the table.</typeparam>
+		/// <typeparam name="TModelType">The model type of the table.</typeparam>
+		/// <typeparam name="TSerializableModelType">The serializable exact serializable model type.</typeparam>
+		/// <param name="config">Configuration for retrieving the table.</param>
+		/// <param name="token">Cancel token.</param>
+		/// <returns>A serializable <see cref="GGDBFTable{TPrimaryKeyType,TModelType}"/> representation.</returns>
+		Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default)
+			where TModelType : class
+			where TSerializableModelType : TModelType;
 	}
 }

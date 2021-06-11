@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
@@ -54,6 +55,16 @@ namespace GGDBF
 				Version = version,
 				TableName = name
 			};
+		}
+
+		/// <inheritdoc />
+		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
+			where TModelType : class 
+			where TSerializableModelType : TModelType
+		{
+			//EF Core doesn't support the concept of serializable subtypes.
+			//So we can only return the actual model type.
+			return await RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(config, token);
 		}
 	}
 }
