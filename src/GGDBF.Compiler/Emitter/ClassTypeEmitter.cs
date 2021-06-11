@@ -57,7 +57,7 @@ namespace GGDBF
 				//proper config so we don't need to use reflection at runtime
 				var tableName = new TableNameParser().Parse(prop.PropertyType);
 
-				builder.Append($"{prop.Name} = (await source.{nameof(IGGDBFDataSource.RetrieveTableAsync)}<{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeSerializableTypeName(prop)}>({CreateTableConfig(tableName, new TablePrimaryKeyParser().Parse(prop.PropertyType).Name, ComputeSerializableTypeName(prop))})).TableData,\n");
+				builder.Append($"{prop.Name} = (await source.{nameof(IGGDBFDataSource.RetrieveTableAsync)}<{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeSerializableTypeName(prop)}>({CreateTableConfig(tableName, new TablePrimaryKeyParser().Parse(prop.PropertyType).ToString(), ComputeSerializableTypeName(prop))})).TableData,\n");
 			}
 
 			builder.Append($"\n}};");
@@ -79,7 +79,7 @@ namespace GGDBF
 
 		private static string CreatePropertyType(PropertyDefinition entry)
 		{
-			return $"IReadOnlyDictionary<{new TablePrimaryKeyParser().Parse(entry.PropertyType).GetFriendlyName()}, {entry.PropertyType.GetFriendlyName()}>";
+			return $"IReadOnlyDictionary<{new TablePrimaryKeyParser().Parse(entry.PropertyType)}, {entry.PropertyType.GetFriendlyName()}>";
 		}
 
 		public void AddProperty(string name, INamedTypeSymbol type)
