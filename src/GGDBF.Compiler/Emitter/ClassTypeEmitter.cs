@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -29,6 +30,7 @@ namespace GGDBF
 
 		public void Emit(StringBuilder builder)
 		{
+			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]\n");
 			if (ClassAccessibility == Accessibility.NotApplicable)
 				builder.Append($"partial class {ClassName}\n{{");
 			else
@@ -56,8 +58,8 @@ namespace GGDBF
 				//We must know the name of the table at compile time to emit the
 				//proper config so we don't need to use reflection at runtime
 				var tableName = new TableNameParser().Parse(prop.PropertyType);
-
-				builder.Append($"{prop.Name} = (await source.{nameof(IGGDBFDataSource.RetrieveTableAsync)}<{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeSerializableTypeName(prop)}>({CreateTableConfig(tableName, new TablePrimaryKeyParser().Parse(prop.PropertyType).ToString(), ComputeSerializableTypeName(prop))})).TableData,\n");
+				builder.Append("\n");
+				builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeSerializableTypeName(prop)}>({CreateTableConfig(tableName, new TablePrimaryKeyParser().Parse(prop.PropertyType).ToString(), ComputeSerializableTypeName(prop))}),");
 			}
 
 			builder.Append($"\n}};");

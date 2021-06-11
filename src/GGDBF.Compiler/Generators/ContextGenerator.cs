@@ -78,6 +78,7 @@ namespace GGDBF
 				usingsEmitter.AddNamespace("System");
 				usingsEmitter.AddNamespace("System.Collections.Generic");
 				usingsEmitter.AddNamespace("System.Threading.Tasks");
+				usingsEmitter.AddNamespace("System.CodeDom.Compiler");
 
 				foreach(var type in RetrieveModelTypes(contextSymbol))
 				{
