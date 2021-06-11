@@ -14,8 +14,8 @@ namespace GGDBF
         {
             Instance = new()
             {
-                TestDatas = (await source.RetrieveTableAsync<short, TestNamespace.TestModelType>()).TableData,
-                Test2Datas = (await source.RetrieveTableAsync<string, TestNamespace2.TestModelType2>()).TableData,
+                TestDatas = (await source.RetrieveTableAsync<short, TestModelType>(new NameOverrideTableRetrievalConfig<Int16, TestModelType>("TestDatas"))).TableData,
+                Test2Datas = (await source.RetrieveTableAsync<string, TestModelType2>(new NameOverrideTableRetrievalConfig<String, TestModelType2>("Test2Datas"))).TableData,
 
             };
         }

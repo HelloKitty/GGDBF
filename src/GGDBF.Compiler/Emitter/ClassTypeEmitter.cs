@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using GGDBF.Compiler;
@@ -52,13 +53,28 @@ namespace GGDBF
 
 			foreach (var prop in Properties)
 			{
-				builder.Append($"{prop.Name} = (await source.{nameof(IGGDBFDataSource.RetrieveTableAsync)}<{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {prop.PropertyType}>()).TableData,\n");
+				//We must know the name of the table at compile time to emit the
+				//proper config so we don't need to use reflection at runtime
+				var tableName = new TableNameParser().Parse(prop.PropertyType);
+
+				builder.Append($"{prop.Name} = (await source.{nameof(IGGDBFDataSource.RetrieveTableAsync)}<{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeSerializableTypeName(prop)}>({CreateTableConfig(tableName, new TablePrimaryKeyParser().Parse(prop.PropertyType).Name, ComputeSerializableTypeName(prop))})).TableData,\n");
 			}
 
 			builder.Append($"\n}};");
 
 			//End method
 			builder.Append($"\n}}");
+		}
+
+		private static string ComputeSerializableTypeName(PropertyDefinition prop)
+		{
+			return $"{prop.PropertyType.Name}";
+		}
+
+		private string CreateTableConfig(string tableName, string primaryKeyTypeString, string modelTypeString)
+		{
+			if (string.IsNullOrWhiteSpace(tableName)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(tableName));
+			return $"new {nameof(NameOverrideTableRetrievalConfig<object, object>)}<{primaryKeyTypeString}, {modelTypeString}>(\"{tableName}\")";
 		}
 
 		private static string CreatePropertyType(PropertyDefinition entry)
