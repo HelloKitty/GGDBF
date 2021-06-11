@@ -17,9 +17,10 @@ namespace GGDBF
 	{
 		/// <summary>
 		/// GGDBF Version.
+		/// (SemVer)
 		/// </summary>
 		[DataMember(Order = 1)]
-		public int Version { get; init; }
+		public int[] Version { get; init; } = new int[3];
 
 		/// <summary>
 		/// The name of the GGDBF table.
@@ -41,6 +42,12 @@ namespace GGDBF
 		public IReadOnlyDictionary<TPrimaryKeyType, TModelType> ToReadOnly()
 		{
 			return new ReadOnlyDictionary<TPrimaryKeyType, TModelType>(TableData);
+		}
+
+		public static int[] ConvertToVersion(Version version)
+		{
+			if (version == null) throw new ArgumentNullException(nameof(version));
+			return new int[3] {version.Major, version.Minor, version.Build};
 		}
 	}
 }
