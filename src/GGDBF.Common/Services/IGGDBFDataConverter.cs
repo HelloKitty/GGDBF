@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 
-namespace GGDBF
+namespace GGDBF.Generator
 {
 	/// <summary>
 	/// GGDBF's conversion service.
-	/// Converts a table Type into a serializable <see cref="GGDBFTable{TPrimaryKeyType,TModelType}"/>.
+	/// Converts a table Type into a serializable type.
 	/// </summary>
 	public interface IGGDBFDataConverter
 	{
 		/// <summary>
-		/// Converts the internal data source's representation of the table to <see cref="GGDBFTable{TPrimaryKeyType,TModelType}"/>.
+		/// Converts the model type to the specified serializable model type.
 		/// </summary>
-		/// <typeparam name="TPrimaryKeyType">The key type of the table.</typeparam>
-		/// <typeparam name="TModelType">The model type of the table.</typeparam>
-		/// <param name="keyResolutionFunction">Optional key resolution function that can retrieve the key from the model.</param>
-		/// <returns>A serializable <see cref="GGDBFTable{TPrimaryKeyType,TModelType}"/> representation.</returns>
-		GGDBFTable<TPrimaryKeyType, TModelType> Convert<TPrimaryKeyType, TModelType>(Func<TModelType, TPrimaryKeyType> keyResolutionFunction = null);
+		/// <typeparam name="TModelType">The model type.</typeparam>
+		/// <typeparam name="TSerializableModelType">The serializable version of the model.</typeparam>
+		/// <param name="model">The model.</param>
+		/// <returns>The serializable model.</returns>
+		TSerializableModelType Convert<TModelType, TSerializableModelType>(TModelType model)
+			where TModelType : class
+			where TSerializableModelType : TModelType;
 	}
 }
