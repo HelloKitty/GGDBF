@@ -2,6 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>GGDBF</RootNamespace>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>0.0.1</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <RootNamespace>GGDBF</RootNamespace>
+    <Authors>Andrew Blakely, Glader</Authors>
+    <Product>GGDBF</Product>
+    <Description></Description>
+    <Copyright>Andrew Blakely</Copyright>
+    <PackageProjectUrl>http://github.com/helloKitty/GGDBF</PackageProjectUrl>
+    <RepositoryUrl>http://github.com/helloKitty/GGDBF</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>GGDBF Glader Database</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
