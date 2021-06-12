@@ -5,7 +5,7 @@ using System.Text;
 namespace GGDBF
 {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-	public sealed class ForeignKeyHintAttribute : Attribute
+	public sealed class ForeignKeyPropertyMissingHintAttribute : Attribute
 	{
 		/// <summary>
 		/// The property name of the foreign-key value.
@@ -22,7 +22,7 @@ namespace GGDBF
 		/// </summary>
 		public string PropertyName { get; }
 
-		public ForeignKeyHintAttribute(string keyProperty, Type navigationPropertyType, string propertyName)
+		public ForeignKeyPropertyMissingHintAttribute(string keyProperty, Type navigationPropertyType, string propertyName)
 		{
 			KeyProperty = keyProperty;
 			NavigationPropertyType = navigationPropertyType;
