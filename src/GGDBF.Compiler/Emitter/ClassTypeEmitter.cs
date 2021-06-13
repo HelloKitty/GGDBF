@@ -59,13 +59,21 @@ namespace GGDBF
 				//proper config so we don't need to use reflection at runtime
 				var tableName = new TableNameParser().Parse(prop.PropertyType);
 				builder.Append("\n");
-				builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeSerializableTypeName(prop)}>({CreateTableConfig(tableName, new TablePrimaryKeyParser().Parse(prop.PropertyType).ToString(), ComputeSerializableTypeName(prop))}),");
+				builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{CreateRetrieveGenericParameters(prop)}>({CreateTableConfig(tableName, new TablePrimaryKeyParser().Parse(prop.PropertyType).ToString(), ComputeSerializableTypeName(prop))}),");
 			}
 
 			builder.Append($"\n}};");
 
 			//End method
 			builder.Append($"\n}}");
+		}
+
+		private string CreateRetrieveGenericParameters(PropertyDefinition prop)
+		{
+			if (prop.PropertyType.HasForeignKeyDefined())
+				return $"{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeSerializableTypeName(prop)}, {new ForeignKeyContainingPropertyNameParser().Parse(ClassName, prop.PropertyType)}";
+
+			return $"{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeSerializableTypeName(prop)}";
 		}
 
 		private static string ComputeSerializableTypeName(PropertyDefinition prop)
