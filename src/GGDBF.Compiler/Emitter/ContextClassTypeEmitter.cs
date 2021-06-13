@@ -15,10 +15,17 @@ namespace GGDBF
 
 	public sealed class ContextClassTypeEmitter : BaseClassTypeEmitter, ISourceEmitter
 	{
+		private HashSet<PropertyDefinition> Properties { get; } = new();
+
 		public ContextClassTypeEmitter(string className, Accessibility classAccessibility = Accessibility.NotApplicable)
 			: base(className, classAccessibility)
 		{
 
+		}
+
+		public void AddProperty(string name, INamedTypeSymbol type)
+		{
+			Properties.Add(new PropertyDefinition(name, type));
 		}
 
 		public override void Emit(StringBuilder builder)

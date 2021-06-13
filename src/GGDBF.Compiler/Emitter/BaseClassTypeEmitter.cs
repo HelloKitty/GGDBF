@@ -12,8 +12,6 @@ namespace GGDBF
 
 		protected Accessibility ClassAccessibility { get; }
 
-		protected HashSet<PropertyDefinition> Properties { get; } = new();
-
 		protected BaseClassTypeEmitter(string className, Accessibility classAccessibility = Accessibility.NotApplicable)
 		{
 			if(string.IsNullOrWhiteSpace(className)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(className));
@@ -23,10 +21,5 @@ namespace GGDBF
 
 		/// <inheritdoc />
 		public abstract void Emit(StringBuilder builder);
-
-		public virtual void AddProperty(string name, INamedTypeSymbol type)
-		{
-			Properties.Add(new PropertyDefinition(name, type));
-		}
 	}
 }
