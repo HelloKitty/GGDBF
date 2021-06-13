@@ -30,16 +30,26 @@ namespace GGDBF
 
 		public void Emit(StringBuilder builder)
 		{
+			//First we build the interface for the context type
+			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]\n");
+			builder.Append($"{ClassAccessibility.ToString().ToLower()} interface I{ClassName}\n{{");
+
+			foreach(var entry in Properties)
+				builder.Append($"public {CreatePropertyType(entry)} {entry.Name} {{ get; init; }}\n\n");
+
+			builder.Append($"\n}}\n\n");
+
+			//Class time!
 			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]\n");
 			if (ClassAccessibility == Accessibility.NotApplicable)
-				builder.Append($"partial class {ClassName}\n{{");
+				builder.Append($"partial class {ClassName} : I{ClassName}\n{{");
 			else
-				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ClassName}\n{{");
+				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ClassName} : I{ClassName}\n{{");
 
-			builder.Append($"public static {ClassName} Instance {{ get; private set; }}");
+			builder.Append($"public static {ClassName} Instance {{ get; private set; }}\n\n");
 
 			foreach (var entry in Properties)
-				builder.Append($"public {CreatePropertyType(entry)} {entry.Name} {{ get; init; }}");
+				builder.Append($"public {CreatePropertyType(entry)} {entry.Name} {{ get; init; }}\n\n");
 
 			AddInitializeMethod(builder);
 

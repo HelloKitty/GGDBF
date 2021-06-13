@@ -7,11 +7,23 @@ using TestNamespace2;
 namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.0.1.0")]
-    public partial class TestContext
+    public interface ITestContext
+    {
+        public IReadOnlyDictionary<short, TestModelType> TestDatas { get; init; }
+
+        public IReadOnlyDictionary<string, TestModelType2> Test2Datas { get; init; }
+
+
+    }
+
+    [GeneratedCodeAttribute("GGDBF", "0.0.1.0")]
+    public partial class TestContext : ITestContext
     {
         public static TestContext Instance { get; private set; }
         public IReadOnlyDictionary<short, TestModelType> TestDatas { get; init; }
+
         public IReadOnlyDictionary<string, TestModelType2> Test2Datas { get; init; }
+
         public static async Task Initialize(IGGDBFDataSource source)
         {
             Instance = new()
