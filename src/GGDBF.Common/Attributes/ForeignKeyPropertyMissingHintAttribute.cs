@@ -9,14 +9,9 @@ namespace GGDBF
 	/// Attribute marked on a model type that indicates a foreign key relationship exists
 	/// to another model type but that the navigation property is missing but should be emitted.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
 	public sealed class ForeignKeyPropertyMissingHintAttribute : Attribute
 	{
-		/// <summary>
-		/// The property name of the foreign-key value.
-		/// </summary>
-		public string KeyProperty { get; }
-
 		/// <summary>
 		/// The model-type of the navigation property.
 		/// </summary>
@@ -27,9 +22,8 @@ namespace GGDBF
 		/// </summary>
 		public string PropertyName { get; }
 
-		public ForeignKeyPropertyMissingHintAttribute(string keyProperty, Type navigationPropertyType, string propertyName)
+		public ForeignKeyPropertyMissingHintAttribute(Type navigationPropertyType, string propertyName)
 		{
-			KeyProperty = keyProperty;
 			NavigationPropertyType = navigationPropertyType;
 			PropertyName = propertyName;
 		}
