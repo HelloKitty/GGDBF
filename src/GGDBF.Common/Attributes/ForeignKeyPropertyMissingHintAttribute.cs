@@ -4,6 +4,11 @@ using System.Text;
 
 namespace GGDBF
 {
+	//This should rarely if ever be used.
+	/// <summary>
+	/// Attribute marked on a model type that indicates a foreign key relationship exists
+	/// to another model type but that the navigation property is missing but should be emitted.
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
 	public sealed class ForeignKeyPropertyMissingHintAttribute : Attribute
 	{
