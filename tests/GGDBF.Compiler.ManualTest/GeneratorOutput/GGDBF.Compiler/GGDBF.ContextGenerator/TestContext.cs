@@ -9,9 +9,11 @@ namespace GGDBF
     [GeneratedCodeAttribute("GGDBF", "0.0.1.0")]
     public interface ITestContext
     {
-        public IReadOnlyDictionary<short, TestModelType> TestDatas { get; init; }
+        public IReadOnlyDictionary<short, TestModelType> TestModelType { get; init; }
 
-        public IReadOnlyDictionary<string, TestModelType2> Test2Datas { get; init; }
+        public IReadOnlyDictionary<string, TestModelType2> TestModelType2 { get; init; }
+
+        public IReadOnlyDictionary<string, TestModelType3> TestModelType3 { get; init; }
 
 
     }
@@ -20,9 +22,12 @@ namespace GGDBF
     public partial class TestContext : ITestContext
     {
         public static TestContext Instance { get; private set; }
-        public IReadOnlyDictionary<short, TestModelType> TestDatas { get; init; }
 
-        public IReadOnlyDictionary<string, TestModelType2> Test2Datas { get; init; }
+        public IReadOnlyDictionary<short, TestModelType> TestModelType { get; init; }
+
+        public IReadOnlyDictionary<string, TestModelType2> TestModelType2 { get; init; }
+
+        public IReadOnlyDictionary<string, TestModelType3> TestModelType3 { get; init; }
 
         public static async Task Initialize(IGGDBFDataSource source)
         {
@@ -30,6 +35,7 @@ namespace GGDBF
             {
                 TestDatas = await source.RetrieveTableAsync<short, TestModelType>(new NameOverrideTableRetrievalConfig<short, TestModelType>("TestDatas")),
                 Test2Datas = await source.RetrieveTableAsync<string, TestModelType2>(new NameOverrideTableRetrievalConfig<string, TestModelType2>("Test2Datas")),
+                Test3DatasWithFK = await source.RetrieveTableAsync<string, TestModelType3, TestContext_TestModelType3>(new NameOverrideTableRetrievalConfig<string, TestModelType3>("Test3DatasWithFK")),
             };
         }
     }

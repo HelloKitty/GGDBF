@@ -35,7 +35,7 @@ namespace GGDBF
 			builder.Append($"{ClassAccessibility.ToString().ToLower()} interface I{ClassName}\n{{");
 
 			foreach(var entry in Properties)
-				builder.Append($"public {CreatePropertyType(entry)} {entry.Name} {{ get; init; }}\n\n");
+				builder.Append($"public {CreatePropertyType(entry)} {ComputeTypeName(entry)} {{ get; init; }}\n\n");
 
 			builder.Append($"\n}}\n\n");
 
@@ -49,7 +49,7 @@ namespace GGDBF
 			builder.Append($"public static {ClassName} Instance {{ get; private set; }}\n\n");
 
 			foreach (var entry in Properties)
-				builder.Append($"public {CreatePropertyType(entry)} {entry.Name} {{ get; init; }}\n\n");
+				builder.Append($"public {CreatePropertyType(entry)} {ComputeTypeName(entry)} {{ get; init; }}\n\n");
 
 			AddInitializeMethod(builder);
 
@@ -69,7 +69,7 @@ namespace GGDBF
 				//proper config so we don't need to use reflection at runtime
 				var tableName = new TableNameParser().Parse(prop.PropertyType);
 				builder.Append("\n");
-				builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{CreateRetrieveGenericParameters(prop)}>({CreateTableConfig(tableName, new TablePrimaryKeyParser().Parse(prop.PropertyType).ToString(), ComputeSerializableTypeName(prop))}),");
+				builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{CreateRetrieveGenericParameters(prop)}>({CreateTableConfig(tableName, new TablePrimaryKeyParser().Parse(prop.PropertyType).ToString(), ComputeTypeName(prop))}),");
 			}
 
 			builder.Append($"\n}};");
@@ -81,12 +81,12 @@ namespace GGDBF
 		private string CreateRetrieveGenericParameters(PropertyDefinition prop)
 		{
 			if (prop.PropertyType.HasForeignKeyDefined())
-				return $"{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeSerializableTypeName(prop)}, {new ForeignKeyContainingPropertyNameParser().Parse(ClassName, prop.PropertyType)}";
+				return $"{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeTypeName(prop)}, {new ForeignKeyContainingPropertyNameParser().Parse(ClassName, prop.PropertyType)}";
 
-			return $"{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeSerializableTypeName(prop)}";
+			return $"{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeTypeName(prop)}";
 		}
 
-		private static string ComputeSerializableTypeName(PropertyDefinition prop)
+		private static string ComputeTypeName(PropertyDefinition prop)
 		{
 			return $"{prop.PropertyType.Name}";
 		}

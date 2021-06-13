@@ -10,6 +10,7 @@ namespace GGDBF
 {
 	[RequiredDataModel(typeof(TestModelType))]
 	[RequiredDataModel(typeof(TestModelType2))]
+	[RequiredDataModel(typeof(TestModelType3))]
 	public partial class TestContext
 	{
 
@@ -33,5 +34,17 @@ namespace TestNamespace2
 	{
 		[Key]
 		public string Id { get; private set; }
+	}
+
+	[Table("Test3DatasWithFK")]
+	public class TestModelType3
+	{
+		[Key]
+		public string Id { get; private set; }
+
+		public int ModelId { get; private set; }
+
+		[ForeignKey(nameof(ModelId))]
+		public TestModelType2 Model { get; private set; }
 	}
 }
