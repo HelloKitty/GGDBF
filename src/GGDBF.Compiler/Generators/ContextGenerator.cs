@@ -107,9 +107,9 @@ namespace GGDBF
 			}
 		}
 
-		private static ClassTypeEmitter CreateContextClassEmitter(INamedTypeSymbol contextSymbol)
+		private static BaseClassTypeEmitter CreateContextClassEmitter(INamedTypeSymbol contextSymbol)
 		{
-			var classEmitter = new ClassTypeEmitter(contextSymbol.Name, contextSymbol.DeclaredAccessibility);
+			var classEmitter = new ContextClassTypeEmitter(contextSymbol.Name, contextSymbol.DeclaredAccessibility);
 
 			foreach (INamedTypeSymbol modelType in RetrieveModelTypes(contextSymbol))
 			{
