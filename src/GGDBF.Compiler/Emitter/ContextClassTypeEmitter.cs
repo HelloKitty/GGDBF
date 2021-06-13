@@ -13,22 +13,15 @@ namespace GGDBF
 {
 	public record PropertyDefinition(string Name, INamedTypeSymbol PropertyType);
 
-	public sealed class ClassTypeEmitter : ISourceEmitter
+	public sealed class ContextClassTypeEmitter : BaseClassTypeEmitter, ISourceEmitter
 	{
-		private string ClassName { get; }
-
-		private Accessibility ClassAccessibility { get; }
-
-		private HashSet<PropertyDefinition> Properties { get; } = new();
-
-		public ClassTypeEmitter(string className, Accessibility classAccessibility = Accessibility.NotApplicable)
+		public ContextClassTypeEmitter(string className, Accessibility classAccessibility = Accessibility.NotApplicable)
+			: base(className, classAccessibility)
 		{
-			if (string.IsNullOrWhiteSpace(className)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(className));
-			ClassName = className;
-			ClassAccessibility = classAccessibility;
+
 		}
 
-		public void Emit(StringBuilder builder)
+		public override void Emit(StringBuilder builder)
 		{
 			//First we build the interface for the context type
 			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]\n");
