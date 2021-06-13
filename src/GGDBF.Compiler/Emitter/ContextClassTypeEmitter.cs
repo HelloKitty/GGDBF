@@ -35,9 +35,9 @@ namespace GGDBF
 			builder.Append($"{ClassAccessibility.ToString().ToLower()} interface I{ClassName}\n{{");
 
 			foreach(var entry in Properties)
-				builder.Append($"public {CreatePropertyType(entry)} {ComputeTypeName(entry)} {{ get; init; }}\n\n");
+				builder.Append($"public {CreatePropertyType(entry)} {new TableNameParser().Parse(entry.PropertyType)} {{ get; init; }}\n\n");
 
-			builder.Append($"\n}}\n\n");
+			builder.Append($"}}\n\n");
 
 			//Class time!
 			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]\n");
@@ -49,7 +49,7 @@ namespace GGDBF
 			builder.Append($"public static {ClassName} Instance {{ get; private set; }}\n\n");
 
 			foreach (var entry in Properties)
-				builder.Append($"public {CreatePropertyType(entry)} {ComputeTypeName(entry)} {{ get; init; }}\n\n");
+				builder.Append($"public {CreatePropertyType(entry)} {new TableNameParser().Parse(entry.PropertyType)} {{ get; init; }}\n\n");
 
 			AddInitializeMethod(builder);
 
