@@ -94,10 +94,5 @@ namespace GGDBF
 		{
 			return $"IReadOnlyDictionary<{new TablePrimaryKeyParser().Parse(entry.PropertyType)}, {entry.PropertyType.GetFriendlyName()}>";
 		}
-
-		public void AddProperty(string name, INamedTypeSymbol type)
-		{
-			Properties.Add(new PropertyDefinition(name, type));
-		}
 	}
 }

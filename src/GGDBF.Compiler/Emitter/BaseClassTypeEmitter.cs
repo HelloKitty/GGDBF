@@ -21,6 +21,12 @@ namespace GGDBF
 			ClassAccessibility = classAccessibility;
 		}
 
+		/// <inheritdoc />
 		public abstract void Emit(StringBuilder builder);
+
+		public virtual void AddProperty(string name, INamedTypeSymbol type)
+		{
+			Properties.Add(new PropertyDefinition(name, type));
+		}
 	}
 }
