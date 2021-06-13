@@ -79,6 +79,7 @@ namespace GGDBF
 				usingsEmitter.AddNamespace("System.Collections.Generic");
 				usingsEmitter.AddNamespace("System.Threading.Tasks");
 				usingsEmitter.AddNamespace("System.CodeDom.Compiler");
+				usingsEmitter.AddNamespace("System.Runtime.Serialization");
 
 				foreach(var type in RetrieveModelTypes(contextSymbol))
 				{
@@ -90,6 +91,41 @@ namespace GGDBF
 				namespaceDecorator.Emit(builder);
 
 				context.AddSource(contextSymbol.Name, ConvertFileToNode(context, builder).ToString());
+
+				EmitSerializableModelTypes(contextSymbol, context);
+			}
+		}
+
+		private static void EmitSerializableModelTypes(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context)
+		{
+			//Now we handle any potential navproperties
+			foreach (var type in RetrieveModelTypes(contextSymbol))
+			{
+				if (!type.HasForeignKeyDefined())
+					continue;
+
+				string serializableTypeName = new ForeignKeyContainingPropertyNameParser().Parse(contextSymbol.Name, type);
+
+				StringBuilder builder = new StringBuilder();
+				UsingsEmitter usingsEmitter = new();
+				NamespaceDecoratorEmitter namespaceDecorator = new NamespaceDecoratorEmitter(new SerializableTypeClassEmitter(serializableTypeName, contextSymbol.Name, type, Accessibility.Public), contextSymbol.ContainingNamespace.FullNamespaceString());
+
+				//If the type is another namespace we should import it
+				//so we don't have to use fullnames.
+				if(type.ContainingNamespace != null)
+					usingsEmitter.AddNamespace(type.ContainingNamespace.FullNamespaceString());
+
+				//Default namespaces:
+				usingsEmitter.AddNamespace("System");
+				usingsEmitter.AddNamespace("System.Collections.Generic");
+				usingsEmitter.AddNamespace("System.Threading.Tasks");
+				usingsEmitter.AddNamespace("System.CodeDom.Compiler");
+				usingsEmitter.AddNamespace("System.Runtime.Serialization");
+
+				usingsEmitter.Emit(builder);
+				namespaceDecorator.Emit(builder);
+
+				context.AddSource($"{serializableTypeName}", ConvertFileToNode(context, builder).ToString());
 			}
 		}
 

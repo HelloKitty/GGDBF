@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.CodeDom.Compiler;
+using System.Runtime.Serialization;
 using TestNamespace;
 using TestNamespace2;
 namespace GGDBF
@@ -9,12 +10,11 @@ namespace GGDBF
     [GeneratedCodeAttribute("GGDBF", "0.0.1.0")]
     public interface ITestContext
     {
-        public IReadOnlyDictionary<short, TestModelType> TestModelType { get; init; }
+        public IReadOnlyDictionary<short, TestModelType> TestDatas { get; init; }
 
-        public IReadOnlyDictionary<string, TestModelType2> TestModelType2 { get; init; }
+        public IReadOnlyDictionary<string, TestModelType2> Test2Datas { get; init; }
 
-        public IReadOnlyDictionary<string, TestModelType3> TestModelType3 { get; init; }
-
+        public IReadOnlyDictionary<string, TestModelType3> Test3DatasWithFK { get; init; }
 
     }
 
@@ -23,11 +23,11 @@ namespace GGDBF
     {
         public static TestContext Instance { get; private set; }
 
-        public IReadOnlyDictionary<short, TestModelType> TestModelType { get; init; }
+        public IReadOnlyDictionary<short, TestModelType> TestDatas { get; init; }
 
-        public IReadOnlyDictionary<string, TestModelType2> TestModelType2 { get; init; }
+        public IReadOnlyDictionary<string, TestModelType2> Test2Datas { get; init; }
 
-        public IReadOnlyDictionary<string, TestModelType3> TestModelType3 { get; init; }
+        public IReadOnlyDictionary<string, TestModelType3> Test3DatasWithFK { get; init; }
 
         public static async Task Initialize(IGGDBFDataSource source)
         {
