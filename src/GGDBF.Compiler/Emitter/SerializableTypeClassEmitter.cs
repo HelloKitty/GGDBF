@@ -28,11 +28,11 @@ namespace GGDBF
 		public override void Emit(StringBuilder builder)
 		{
 			//Class time!
-			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]\n");
+			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
 			if(ClassAccessibility == Accessibility.NotApplicable)
 				builder.Append($"partial class {ClassName} : {SerializableType}{{");
 			else
-				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ClassName} : {SerializableType}\n{{");
+				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ClassName} : {SerializableType}{Environment.NewLine}{{");
 
 			//TODO: Support ALL foreign key scenarios. Right now only traditional attribute-based PropId and Prop pair scenarios are supported
 			//Find all foreign key references and generate
@@ -46,14 +46,14 @@ namespace GGDBF
 				IPropertySymbol navProperty = RetrieveNavigationPropertySymbol(prop);
 				IPropertySymbol keyProperty = RetrieveNavigationKeyPropertySymbol(prop);
 
-				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]\n");
-				builder.Append($"public override {navProperty.Type.Name} {navProperty.Name} \n{{ get => {ContextClassName}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];\n");
+				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
+				builder.Append($"public override {navProperty.Type.Name} {navProperty.Name} {Environment.NewLine}{{ get => {ContextClassName}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
 
 				//Not all properties setters should be overriden
 				if (navProperty.SetMethod != null && navProperty.SetMethod.DeclaredAccessibility != Accessibility.Private)
-					builder.Append($"{navProperty.SetMethod.DeclaredAccessibility.ToString().ToLower()} set => throw new InvalidOperationException(\"Cannot set readonly DB nav property.\");\n");
+					builder.Append($"{navProperty.SetMethod.DeclaredAccessibility.ToString().ToLower()} set => throw new InvalidOperationException(\"Cannot set readonly DB nav property.\");{Environment.NewLine}");
 
-				builder.Append($"}}\n");
+				builder.Append($"}}{Environment.NewLine}");
 			}
 
 			builder.Append($"}}");

@@ -17,7 +17,7 @@ namespace GGDBF.Compiler
 			foreach (var entry in RequestedNamespaces)
 			{
 				builder.AppendFormat(USING_DIRECTIVE_FORMAT_TEXT, entry);
-				builder.Append("\n");
+				builder.Append(Environment.NewLine);
 			}
 		}
 

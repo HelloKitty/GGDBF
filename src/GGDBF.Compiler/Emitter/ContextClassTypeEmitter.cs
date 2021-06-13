@@ -31,29 +31,29 @@ namespace GGDBF
 		public override void Emit(StringBuilder builder)
 		{
 			//First we build the interface for the context type
-			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]\n");
-			builder.Append($"{ClassAccessibility.ToString().ToLower()} interface I{ClassName}\n{{");
+			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
+			builder.Append($"{ClassAccessibility.ToString().ToLower()} interface I{ClassName}{Environment.NewLine}{{");
 
 			foreach(var entry in Properties)
-				builder.Append($"public {CreatePropertyType(entry)} {new TableNameParser().Parse(entry.PropertyType)} {{ get; init; }}\n\n");
+				builder.Append($"public {CreatePropertyType(entry)} {new TableNameParser().Parse(entry.PropertyType)} {{ get; init; }}{Environment.NewLine}{Environment.NewLine}");
 
-			builder.Append($"}}\n\n");
+			builder.Append($"}}{Environment.NewLine}{Environment.NewLine}");
 
 			//Class time!
-			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]\n");
+			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
 			if (ClassAccessibility == Accessibility.NotApplicable)
-				builder.Append($"partial class {ClassName} : I{ClassName}\n{{");
+				builder.Append($"partial class {ClassName} : I{ClassName}{Environment.NewLine}{{");
 			else
-				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ClassName} : I{ClassName}\n{{");
+				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ClassName} : I{ClassName}{Environment.NewLine}{{");
 
-			builder.Append($"public static {ClassName} Instance {{ get; private set; }}\n\n");
+			builder.Append($"public static {ClassName} Instance {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}");
 
 			foreach (var entry in Properties)
-				builder.Append($"public {CreatePropertyType(entry)} {new TableNameParser().Parse(entry.PropertyType)} {{ get; init; }}\n\n");
+				builder.Append($"public {CreatePropertyType(entry)} {new TableNameParser().Parse(entry.PropertyType)} {{ get; init; }}{Environment.NewLine}{Environment.NewLine}");
 
 			AddInitializeMethod(builder);
 
-			builder.Append($"\n}}");
+			builder.Append($"{Environment.NewLine}}}");
 		}
 
 		private void AddInitializeMethod(StringBuilder builder)
@@ -61,21 +61,21 @@ namespace GGDBF
 			builder.Append($"public static async Task Initialize({nameof(IGGDBFDataSource)} source){{");
 
 			//Instance init
-			builder.Append($"Instance = new()\n{{");
+			builder.Append($"Instance = new(){Environment.NewLine}{{");
 
 			foreach (var prop in Properties)
 			{
 				//We must know the name of the table at compile time to emit the
 				//proper config so we don't need to use reflection at runtime
 				var tableName = new TableNameParser().Parse(prop.PropertyType);
-				builder.Append("\n");
+				builder.Append(Environment.NewLine);
 				builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{CreateRetrieveGenericParameters(prop)}>({CreateTableConfig(tableName, new TablePrimaryKeyParser().Parse(prop.PropertyType).ToString(), ComputeTypeName(prop))}),");
 			}
 
-			builder.Append($"\n}};");
+			builder.Append($"{Environment.NewLine}}};");
 
 			//End method
-			builder.Append($"\n}}");
+			builder.Append($"{Environment.NewLine}}}");
 		}
 
 		private string CreateRetrieveGenericParameters(PropertyDefinition prop)

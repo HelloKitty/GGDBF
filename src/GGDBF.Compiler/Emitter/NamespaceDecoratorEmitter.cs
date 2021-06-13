@@ -18,9 +18,9 @@ namespace GGDBF.Compiler
 
 		public void Emit(StringBuilder builder)
 		{
-			builder.Append($"namespace {NamespaceName}\n{{");
+			builder.Append($"namespace {NamespaceName}{Environment.NewLine}{{");
 			Emitter.Emit(builder);
-			builder.Append($"\n}}");
+			builder.Append($"{Environment.NewLine}}}");
 		}
 	}
 }
