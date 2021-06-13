@@ -7,6 +7,7 @@ namespace GGDBF
 	/// <summary>
 	/// Attribute marked on a model type that indicates a foreign key relationship exists
 	/// between the two properties.
+	/// (Ex. Useful for when foreign key relationships are defined in code rather than annotations)
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public sealed class ForeignKeyHintAttribute : Attribute
