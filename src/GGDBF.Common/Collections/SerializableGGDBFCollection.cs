@@ -81,5 +81,17 @@ namespace GGDBF
 		{
 			throw new NotSupportedException($"GGDBF does not support mutable collections.");
 		}
+
+		/// <summary>
+		/// Ensures the <see cref="ReferencedTable"/> property is initialized with the <see cref="table"/> parameter provided
+		/// and returns the reference to the collection itself.
+		/// </summary>
+		/// <param name="table">The table to initialize the collection with.</param>
+		/// <returns>This</returns>
+		public SerializableGGDBFCollection<TKeyType, TModelType> Load(IReadOnlyDictionary<TKeyType, TModelType> table)
+		{
+			ReferencedTable = table;
+			return this;
+		}
 	}
 }
