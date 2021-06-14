@@ -52,9 +52,7 @@ namespace GGDBF
 			//otherwise we'll serialize the type that doesn't support navigation properties
 			Writeables.Add(new GGDBFTable<TPrimaryKeyType, TSerializableModelType>()
 			{
-				TableData = table.TableData
-					.Select(kvp => new KeyValuePair<TPrimaryKeyType, TSerializableModelType>(kvp.Key, Converter.Convert<TModelType, TSerializableModelType>(kvp.Value)))
-					.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+				TableData = table.TableData.ToDictionary(kvp => kvp.Key, kvp => Converter.Convert<TModelType, TSerializableModelType>(kvp.Value)),
 				Version = table.Version,
 				TableName = table.TableName
 			});
