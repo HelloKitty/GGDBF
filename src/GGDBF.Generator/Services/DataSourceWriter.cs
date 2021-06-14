@@ -40,7 +40,7 @@ namespace GGDBF
 		/// <inheritdoc />
 		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
 			where TModelType : class 
-			where TSerializableModelType : TModelType, IGGDBFSerializable
+			where TSerializableModelType : class, TModelType, IGGDBFSerializable
 		{
 			//We run the converter here after the data is retrieved
 			//This is so that the serializable type is actually the one being returned for serialization

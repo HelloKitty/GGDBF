@@ -52,6 +52,6 @@ namespace GGDBF
 		/// <returns>A serializable <see cref="GGDBFTable{TPrimaryKeyType,TModelType}"/> representation.</returns>
 		Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default)
 			where TModelType : class
-			where TSerializableModelType : TModelType, IGGDBFSerializable;
+			where TSerializableModelType : class, TModelType, IGGDBFSerializable;
 	}
 }

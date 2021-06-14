@@ -16,7 +16,7 @@ namespace GGDBF
 
 		public static async Task<IReadOnlyDictionary<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(this IGGDBFDataSource source, TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default)
 			where TModelType : class 
-			where TSerializableModelType : TModelType, IGGDBFSerializable
+			where TSerializableModelType : class, TModelType, IGGDBFSerializable
 		{
 			return (await source.RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(config, token)).ToReadOnly();
 		}
