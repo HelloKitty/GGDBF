@@ -52,17 +52,10 @@ namespace GGDBF
 			}
 
 			int propCount = 1;
-			foreach (var prop in SerializableType
-				.GetMembers()
-				.Where(m => m.Kind == SymbolKind.Property)
-				.Cast<IPropertySymbol>()
-				.Where(p => p.IsICollectionType()))
+			foreach (var prop in EnumerateCollectionProperties())
 			{
-				var collectionElementType = ((INamedTypeSymbol)prop.Type)
-					.TypeArguments
-					.First();
-
-				string backingPropertyName = $"_{ prop.Name}";
+				ITypeSymbol collectionElementType = ComputeCollectionElementType(prop);
+				string backingPropertyName = ComputeCollectionPropertyBackingFieldName(prop);
 
 				//We must emit a serializable backing field for the collection property
 				builder.Append($"[{nameof(DataMemberAttribute)}({nameof(DataMemberAttribute.Order)} = {propCount})]{Environment.NewLine}");
@@ -86,10 +79,41 @@ namespace GGDBF
 			builder.Append($"}}");
 		}
 
+		private static ITypeSymbol ComputeCollectionElementType(IPropertySymbol prop)
+		{
+			return ((INamedTypeSymbol)prop.Type)
+				.TypeArguments
+				.First();
+		}
+
+		private static string ComputeCollectionPropertyBackingFieldName(IPropertySymbol prop)
+		{
+			return $"_{ prop.Name}";
+		}
+
+		private IEnumerable<IPropertySymbol> EnumerateCollectionProperties()
+		{
+			return SerializableType
+				.GetMembers()
+				.Where(m => m.Kind == SymbolKind.Property)
+				.Cast<IPropertySymbol>()
+				.Where(p => p.IsICollectionType());
+		}
+
 		private void EmitSerializableInitializeMethod(StringBuilder builder)
 		{
 			builder.Append($"{Environment.NewLine}");
 			builder.Append($"public void {nameof(IGGDBFSerializable.Initialize)}(){Environment.NewLine}{{");
+
+			foreach (var prop in EnumerateCollectionProperties())
+			{
+				string fieldName = ComputeCollectionPropertyBackingFieldName(prop);
+				ITypeSymbol collectionElementType = ComputeCollectionElementType(prop);
+				string primaryKeyPropertyName = new TablePrimaryKeyParser().ParseProperty(collectionElementType).Name;
+
+				builder.Append($"{fieldName} = {nameof(GGDBFHelpers)}.{nameof(GGDBFHelpers.CreateSerializableCollection)}(m => m.{primaryKeyPropertyName}, {prop.Name});");
+			}
+
 			builder.Append($"{Environment.NewLine}}}");
 		}
 

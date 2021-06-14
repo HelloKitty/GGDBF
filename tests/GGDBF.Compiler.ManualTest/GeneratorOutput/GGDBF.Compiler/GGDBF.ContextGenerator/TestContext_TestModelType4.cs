@@ -21,6 +21,7 @@ namespace GGDBF
 
         public void Initialize()
         {
+            _ModelCollection = GGDBFHelpers.CreateSerializableCollection(m => m.Id, ModelCollection);
         }
     }
 }
