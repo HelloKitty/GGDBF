@@ -86,14 +86,6 @@ namespace GGDBF
 			return $"{new TablePrimaryKeyParser().Parse(prop.PropertyType)}, {ComputeTypeName(prop)}";
 		}
 
-		private static string ComputeTypeName(PropertyDefinition prop)
-		{
-			if (prop.PropertyType.ContainingNamespace != null)
-				return $"{prop.PropertyType.ToFullName().Replace($"{prop.PropertyType.ContainingNamespace.Name}.", "")}";
-
-			return $"{prop.PropertyType.ToFullName()}";
-		}
-
 		private string CreateTableConfig(string tableName, string primaryKeyTypeString, string modelTypeString)
 		{
 			if (string.IsNullOrWhiteSpace(tableName)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(tableName));

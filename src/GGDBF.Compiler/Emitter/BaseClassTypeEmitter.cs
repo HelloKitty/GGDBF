@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using GGDBF.Compiler;
+using Glader.Essentials;
 using Microsoft.CodeAnalysis;
 
 namespace GGDBF
@@ -21,5 +22,13 @@ namespace GGDBF
 
 		/// <inheritdoc />
 		public abstract void Emit(StringBuilder builder);
+
+		protected static string ComputeTypeName(PropertyDefinition prop)
+		{
+			if(prop.PropertyType.ContainingNamespace != null)
+				return $"{prop.PropertyType.ToFullName().Replace($"{prop.PropertyType.ContainingNamespace.Name}.", "")}";
+
+			return $"{prop.PropertyType.ToFullName()}";
+		}
 	}
 }
