@@ -17,5 +17,14 @@ namespace GGDBF
 		/// <param name="table">The table to serialize.</param>
 		/// <returns>Byte representation of the table.</returns>
 		byte[] Serialize<TPrimaryKeyType, TModelType>(GGDBFTable<TPrimaryKeyType, TModelType> table);
+
+		/// <summary>
+		/// TODO: Doc
+		/// </summary>
+		/// <typeparam name="TPrimaryKeyType"></typeparam>
+		/// <typeparam name="TModelType"></typeparam>
+		/// <param name="bytes"></param>
+		/// <returns></returns>
+		GGDBFTable<TPrimaryKeyType, TModelType> Deserialize<TPrimaryKeyType, TModelType>(byte[] bytes);
 	}
 }

@@ -21,5 +21,11 @@ namespace GGDBF
 				return ms.ToArray();
 			}
 		}
+
+		/// <inheritdoc />
+		public GGDBFTable<TPrimaryKeyType, TModelType> Deserialize<TPrimaryKeyType, TModelType>(byte[] bytes)
+		{
+			return Serializer.Deserialize<GGDBFTable<TPrimaryKeyType, TModelType>>(new ReadOnlyMemory<byte>(bytes));
+		}
 	}
 }
