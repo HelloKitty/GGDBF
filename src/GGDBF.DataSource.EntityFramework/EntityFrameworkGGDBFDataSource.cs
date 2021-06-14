@@ -2,9 +2,11 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Fasterflect;
 using Microsoft.EntityFrameworkCore;
 
 namespace GGDBF
@@ -39,8 +41,21 @@ namespace GGDBF
 		{
 			IEnumerable<TModelType> models = await RetrieveAllAsync<TModelType>(token);
 
-			if (config == null || config.KeyResolutionFunction == null)
-				throw new NotSupportedException($"TODO: Cannot support no key resolution function.");
+			if (config == null)
+				throw new NotSupportedException($"TODO: Cannot support no config.");
+			else if (config.KeyResolutionFunction == null)
+			{
+				//TODO: This only supports simple primary keys
+				var keyName = Context.Model
+					.FindEntityType(typeof(TModelType))
+					.FindPrimaryKey()
+					.Properties
+					.Select(x => x.Name)
+					.Single();
+
+				config = new TableRetrievalConfig<TPrimaryKeyType, TModelType>(m => (TPrimaryKeyType) m.GetPropertyValue(keyName), config.TableNameOverride);
+			}
+				
 
 			var map = new Dictionary<TPrimaryKeyType, TModelType>();
 			var version = GGDBFTable<TPrimaryKeyType, TModelType>.ConvertToVersion(typeof(GGDBFTable<TPrimaryKeyType, TModelType>).Assembly.GetName().Version);
