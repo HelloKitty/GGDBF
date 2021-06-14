@@ -90,6 +90,7 @@ namespace GGDBF
 		/// <returns>This</returns>
 		public SerializableGGDBFCollection<TKeyType, TModelType> Load(IReadOnlyDictionary<TKeyType, TModelType> table)
 		{
+			//It is not an optimization to check if already assigned.
 			ReferencedTable = table;
 			return this;
 		}

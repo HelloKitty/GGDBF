@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
@@ -12,6 +13,7 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType))]
 	[RequiredDataModel(typeof(TestModelType2))]
 	[RequiredDataModel(typeof(TestModelType3))]
+	[RequiredDataModel(typeof(TestModelType4))]
 	public partial class TestContext
 	{
 
@@ -47,5 +49,14 @@ namespace TestNamespace2
 
 		[ForeignKey(nameof(ModelId))]
 		public virtual TestModelType2 Model { get; private set; }
+	}
+
+	[Table("Test4Datas")]
+	public class TestModelType4
+	{
+		[Key]
+		public string Id { get; private set; }
+
+		public virtual ICollection<TestModelType2> ModelCollection { get; private set; }
 	}
 }

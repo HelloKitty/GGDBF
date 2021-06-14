@@ -12,9 +12,31 @@ namespace GGDBF
 	{
 		public static bool HasForeignKeyDefined(this ITypeSymbol type)
 		{
-			return type.GetMembers().Any(m => m.HasAttributeLike<ForeignKeyPropertyMissingHintAttribute>())
-			       || type.GetMembers().Any(m => m.HasAttributeLike<ForeignKeyAttribute>())
-			       || type.GetMembers().Any(m => m.HasAttributeLike<ForeignKeyHintAttribute>());
+			return HasForeignKeyAttributes(type) || HasForeignCollection(type);
+		}
+
+		private static bool HasForeignCollection(ITypeSymbol type)
+		{
+			return type
+				.GetMembers()
+				.Where(m => m.Kind == SymbolKind.Property && m.IsVirtual)
+				.Cast<IPropertySymbol>()
+				.Any(IsICollectionType);
+		}
+
+		public static bool IsICollectionType(this IPropertySymbol p)
+		{
+			return p.Type is INamedTypeSymbol symbol && symbol.IsGenericType && symbol.ConstructUnboundGenericType().Name == nameof(ICollection<object>);
+		}
+
+		private static bool HasForeignKeyAttributes(ITypeSymbol type)
+		{
+			return type
+				.GetMembers()
+				.Where(m => m.Kind == SymbolKind.Property && m.IsVirtual)
+				.Any(m => m.HasAttributeLike<ForeignKeyAttribute>() 
+				          || m.HasAttributeLike<ForeignKeyPropertyMissingHintAttribute>() 
+				          || m.HasAttributeLike<ForeignKeyHintAttribute>());
 		}
 	}
 }

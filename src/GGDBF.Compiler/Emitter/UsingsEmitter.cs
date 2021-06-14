@@ -19,6 +19,8 @@ namespace GGDBF.Compiler
 				builder.AppendFormat(USING_DIRECTIVE_FORMAT_TEXT, entry);
 				builder.Append(Environment.NewLine);
 			}
+
+			builder.Append(Environment.NewLine);
 		}
 
 		/// <summary>

@@ -37,7 +37,6 @@ namespace GGDBF
 			//TODO: Support ALL foreign key scenarios. Right now only traditional attribute-based PropId and Prop pair scenarios are supported
 			//Find all foreign key references and generate
 			//the required overrides for their navigation properties.
-			int propCount = 1;
 			foreach (var prop in SerializableType
 				.GetMembers()
 				.Where(m => m.HasAttributeLike<ForeignKeyAttribute>())
@@ -54,6 +53,36 @@ namespace GGDBF
 					builder.Append($"{navProperty.SetMethod.DeclaredAccessibility.ToString().ToLower()} set => throw new InvalidOperationException(\"Cannot set readonly DB nav property.\");{Environment.NewLine}");
 
 				builder.Append($"}}{Environment.NewLine}");
+			}
+
+			int propCount = 1;
+			foreach (var prop in SerializableType
+				.GetMembers()
+				.Where(m => m.Kind == SymbolKind.Property)
+				.Cast<IPropertySymbol>()
+				.Where(p => p.IsICollectionType()))
+			{
+				var collectionElementType = ((INamedTypeSymbol)prop.Type)
+					.TypeArguments
+					.First();
+
+				string backingPropertyName = $"_{ prop.Name}";
+
+				//We must emit a serializable backing field for the collection property
+				builder.Append($"[{nameof(DataMemberAttribute)}({nameof(DataMemberAttribute.Order)} = {propCount})]{Environment.NewLine}");
+				builder.Append($"public {nameof(SerializableGGDBFCollection<int, object>)}<{new TablePrimaryKeyParser().Parse(collectionElementType)}, {collectionElementType.Name}> {backingPropertyName};{Environment.NewLine}{Environment.NewLine}");
+
+				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
+				builder.Append($"public override {prop.Type.Name}<{collectionElementType.Name}> {prop.Name} {Environment.NewLine}{{ get => {backingPropertyName}.{nameof(SerializableGGDBFCollection<int, object>.Load)}({ContextClassName}.Instance.{new TableNameParser().Parse(collectionElementType)});{Environment.NewLine}");
+
+				//Not all properties setters should be overriden
+				if(prop.SetMethod != null && prop.SetMethod.DeclaredAccessibility != Accessibility.Private)
+					builder.Append($"{prop.SetMethod.DeclaredAccessibility.ToString().ToLower()} set => throw new InvalidOperationException(\"Cannot set readonly DB nav property.\");{Environment.NewLine}");
+
+				builder.Append($"}}{Environment.NewLine}");
+
+
+				propCount++;
 			}
 
 			builder.Append($"}}");
