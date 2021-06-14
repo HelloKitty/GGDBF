@@ -14,6 +14,7 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType2))]
 	[RequiredDataModel(typeof(TestModelType3))]
 	[RequiredDataModel(typeof(TestModelType4))]
+	[RequiredDataModel(typeof(TestModelType5<int, TestModelType4, TestModelType, short>))]
 	public partial class TestContext
 	{
 
@@ -58,5 +59,19 @@ namespace TestNamespace2
 		public string Id { get; private set; }
 
 		public virtual ICollection<TestModelType2> ModelCollection { get; private set; }
+	}
+
+	[Table("Test5Datas")]
+	public class TestModelType5<TKey, TModelType1, TModelType2, TModelType2KeyType>
+	{
+		[Key]
+		public TKey Id { get; private set; }
+
+		public virtual ICollection<TModelType1> ModelCollection { get; private set; }
+
+		public TModelType2KeyType ModelId { get; private set; }
+
+		[ForeignKey(nameof(ModelId))]
+		public virtual TModelType2 Model { get; private set; }
 	}
 }

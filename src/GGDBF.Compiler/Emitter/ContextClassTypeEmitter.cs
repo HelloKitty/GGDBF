@@ -88,7 +88,10 @@ namespace GGDBF
 
 		private static string ComputeTypeName(PropertyDefinition prop)
 		{
-			return $"{prop.PropertyType.Name}";
+			if (prop.PropertyType.ContainingNamespace != null)
+				return $"{prop.PropertyType.ToFullName().Replace($"{prop.PropertyType.ContainingNamespace.Name}.", "")}";
+
+			return $"{prop.PropertyType.ToFullName()}";
 		}
 
 		private string CreateTableConfig(string tableName, string primaryKeyTypeString, string modelTypeString)
@@ -99,7 +102,11 @@ namespace GGDBF
 
 		private static string CreatePropertyType(PropertyDefinition entry)
 		{
-			return $"IReadOnlyDictionary<{new TablePrimaryKeyParser().Parse(entry.PropertyType)}, {entry.PropertyType.GetFriendlyName()}>";
+			//Kinda hacky, but quick way to add support for generic types.
+			if (entry.PropertyType.IsGenericType)
+				return $"IReadOnlyDictionary<{new TablePrimaryKeyParser().Parse(entry.PropertyType)}, {ComputeTypeName(entry)}>";
+
+			return $"IReadOnlyDictionary<{new TablePrimaryKeyParser().Parse(entry.PropertyType)}, {ComputeTypeName(entry)}>";
 		}
 	}
 }
