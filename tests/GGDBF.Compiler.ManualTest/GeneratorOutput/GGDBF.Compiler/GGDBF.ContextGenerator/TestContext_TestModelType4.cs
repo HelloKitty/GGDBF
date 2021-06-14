@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.0.1.0")]
+    [DataContractAttribute]
     public partial class TestContext_TestModelType4 : TestModelType4, IGGDBFSerializable
     {
         [DataMemberAttribute(Order = 1)]

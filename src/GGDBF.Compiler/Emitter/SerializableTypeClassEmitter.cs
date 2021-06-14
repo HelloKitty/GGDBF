@@ -28,6 +28,7 @@ namespace GGDBF
 		{
 			//Class time!
 			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
+			builder.Append($"[{nameof(DataContractAttribute)}]{Environment.NewLine}");
 			if(ClassAccessibility == Accessibility.NotApplicable)
 				builder.Append($"partial class {ClassName} : {ComputeTypeName(SerializableType)}, {nameof(IGGDBFSerializable)}{Environment.NewLine}{{");
 			else
