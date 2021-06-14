@@ -36,6 +36,16 @@ namespace GGDBF
 		[IgnoreDataMember]
 		public bool IsReadOnly => true;
 
+		public SerializableGGDBFCollection()
+		{
+			
+		}
+
+		public SerializableGGDBFCollection(TKeyType[] references)
+		{
+			References = references ?? throw new ArgumentNullException(nameof(references));
+		}
+
 		/// <inheritdoc />
 		public IEnumerator<TModelType> GetEnumerator()
 		{
