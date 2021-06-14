@@ -31,6 +31,16 @@ namespace TestNamespace
 		[DataMember(Order = 1)]
 		[DatabaseKeyHint]
 		public short Id { get; private set; }
+
+		public TestModelType(short id)
+		{
+			Id = id;
+		}
+
+		public TestModelType()
+		{
+			
+		}
 	}
 }
 
@@ -43,6 +53,16 @@ namespace TestNamespace2
 		[Key]
 		[DataMember(Order = 1)]
 		public string Id { get; private set; }
+
+		public TestModelType2(string id)
+		{
+			Id = id;
+		}
+
+		public TestModelType2()
+		{
+			
+		}
 	}
 
 	[DataContract]
@@ -59,6 +79,17 @@ namespace TestNamespace2
 		[IgnoreDataMember]
 		[ForeignKey(nameof(ModelId))]
 		public virtual TestModelType2 Model { get; private set; }
+
+		public TestModelType3(string id, string modelId)
+		{
+			Id = id;
+			ModelId = modelId ?? throw new ArgumentNullException(nameof(modelId));
+		}
+
+		public TestModelType3()
+		{
+			
+		}
 	}
 
 	[DataContract]

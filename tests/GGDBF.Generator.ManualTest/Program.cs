@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory.Storage.Internal;
 using TestNamespace;
 using TestNamespace2;
+using System.Linq;
+using ProtoBuf;
+using Fasterflect;
 
 namespace GGDBF.Generator.ManualTest
 {
@@ -11,6 +16,8 @@ namespace GGDBF.Generator.ManualTest
 	{
 		static async Task Main(string[] args)
 		{
+			//TestProtobufSerialization();
+
 			var options = new DbContextOptionsBuilder<TestDBContext>()
 				.UseInMemoryDatabase("Test")
 				.Options;
@@ -18,12 +25,38 @@ namespace GGDBF.Generator.ManualTest
 			var writer = new DefaultFileGGDBFDataWriter(new DefaultGGDBFProtobufNetSerializer());
 
 			await using TestDBContext context = new(options);
+			await context.Database.EnsureCreatedAsync();
+
 			ContextGenerator<TestContext> generator = new ContextGenerator<TestContext>(new EntityFrameworkGGDBFDataSource(context), writer);
 
 			await generator.Generate();
 
 			//Reload the data
 			await TestContext.Initialize(new FileGGDBFDataSource(new DefaultGGDBFProtobufNetSerializer()));
+
+			if (TestContext.Instance.TestDatas.Values.Count() != 3)
+				throw new InvalidOperationException($"{nameof(TestModelType)} does not have expected entry count.");
+
+			if (TestContext.Instance.Test3DatasWithFK.Values.First().ModelId == null)
+				throw new InvalidOperationException($"{nameof(TestModelType3)} nav property key null.");
+
+			if (TestContext.Instance.Test3DatasWithFK.Values.First().Model == null)
+				throw new InvalidOperationException($"{nameof(TestModelType3)} nav property is null.");
+		}
+
+		private static void TestProtobufSerialization()
+		{
+			TestContext_TestModelType3 model = new TestContext_TestModelType3();
+			model.SetPropertyValue(nameof(TestModelType3.Id), "1");
+			model.SetPropertyValue(nameof(TestModelType3.ModelId), "69");
+
+			using MemoryStream ms = new MemoryStream();
+			Serializer.Serialize(ms, model);
+			ms.Position = 0;
+
+			var deserializedModel = Serializer.Deserialize<TestContext_TestModelType3>(ms);
+			if (deserializedModel.ModelId != model.ModelId)
+				throw new InvalidOperationException($"Failed to deserialize.");
 		}
 	}
 
@@ -44,6 +77,32 @@ namespace GGDBF.Generator.ManualTest
 			: base(options)
 		{
 			
+		}
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
+
+			modelBuilder.Entity<TestModelType>().HasData(new List<TestModelType>()
+			{
+				new TestModelType(1),
+				new TestModelType(69),
+				new TestModelType(9001)
+			});
+
+			modelBuilder.Entity<TestModelType2>().HasData(new List<TestModelType2>()
+			{
+				new TestModelType2("1"),
+				new TestModelType2("69"),
+				new TestModelType2("9001")
+			});
+
+			modelBuilder.Entity<TestModelType3>().HasData(new List<TestModelType3>()
+			{
+				new TestModelType3("1", "1"),
+				new TestModelType3("2", "69"),
+				new TestModelType3("3", "9001")
+			});
 		}
 	}
 }

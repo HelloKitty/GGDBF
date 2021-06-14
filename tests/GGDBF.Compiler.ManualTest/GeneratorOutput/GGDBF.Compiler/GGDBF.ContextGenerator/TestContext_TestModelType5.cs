@@ -25,6 +25,7 @@ namespace GGDBF
         {
             get => _ModelCollection != null ? _ModelCollection.Load(TestContext.Instance.Test4Datas) : base.ModelCollection;
         }
+        public TestContext_TestModelType5() { }
 
         public void Initialize()
         {

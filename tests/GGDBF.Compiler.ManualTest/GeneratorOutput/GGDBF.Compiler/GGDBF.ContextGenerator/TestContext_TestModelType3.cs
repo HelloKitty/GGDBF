@@ -16,6 +16,7 @@ namespace GGDBF
         {
             get => TestContext.Instance.Test2Datas[base.ModelId];
         }
+        public TestContext_TestModelType3() { }
 
         public void Initialize()
         {
