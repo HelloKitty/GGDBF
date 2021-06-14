@@ -83,8 +83,7 @@ namespace GGDBF
 
 				foreach(var type in RetrieveModelTypes(contextSymbol))
 				{
-					if (type.ContainingNamespace != null)
-						usingsEmitter.AddNamespace(type.ContainingNamespace.FullNamespaceString());
+					AddNamespacesForType(type, usingsEmitter);
 				}
 
 				usingsEmitter.Emit(builder);
@@ -94,6 +93,17 @@ namespace GGDBF
 
 				EmitSerializableModelTypes(contextSymbol, context);
 			}
+		}
+
+		private static void AddNamespacesForType(INamedTypeSymbol type, UsingsEmitter usingsEmitter)
+		{
+			if (type.ContainingNamespace != null)
+				usingsEmitter.AddNamespace(type.ContainingNamespace.FullNamespaceString());
+
+			if (type.IsGenericType)
+				foreach(var genericTypeArg in type.TypeArguments)
+					if (genericTypeArg.ContainingNamespace != null)
+						usingsEmitter.AddNamespace(genericTypeArg.ContainingNamespace.FullNamespaceString());
 		}
 
 		private static void EmitSerializableModelTypes(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context)
@@ -112,8 +122,7 @@ namespace GGDBF
 
 				//If the type is another namespace we should import it
 				//so we don't have to use fullnames.
-				if(type.ContainingNamespace != null)
-					usingsEmitter.AddNamespace(type.ContainingNamespace.FullNamespaceString());
+				AddNamespacesForType(type, usingsEmitter);
 
 				//Default namespaces:
 				usingsEmitter.AddNamespace("System");
