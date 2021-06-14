@@ -15,7 +15,7 @@ namespace GGDBF
 
 		public TSerializableModelType Convert<TModelType, TSerializableModelType>(TModelType model) 
 			where TModelType : class 
-			where TSerializableModelType : TModelType
+			where TSerializableModelType : TModelType, IGGDBFSerializable
 		{
 			var typeKey = new TypeMapKey(typeof(TModelType), typeof(TSerializableModelType));
 			if (MappingDictionary.ContainsKey(typeKey))

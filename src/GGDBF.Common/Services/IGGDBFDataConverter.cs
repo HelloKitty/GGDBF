@@ -17,6 +17,6 @@ namespace GGDBF.Generator
 		/// <returns>The serializable model.</returns>
 		TSerializableModelType Convert<TModelType, TSerializableModelType>(TModelType model)
 			where TModelType : class
-			where TSerializableModelType : TModelType;
+			where TSerializableModelType : TModelType, IGGDBFSerializable;
 	}
 }
