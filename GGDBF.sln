@@ -13,9 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{21CED141
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGDBF.Compiler.ManualTest", "tests\GGDBF.Compiler.ManualTest\GGDBF.Compiler.ManualTest.csproj", "{C037F091-D726-4760-808F-812C605F1247}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GGDBF.DataSource.EntityFramework", "src\GGDBF.DataSource.EntityFramework\GGDBF.DataSource.EntityFramework.csproj", "{9F5B91D5-E063-4A37-9251-B08F90C9873A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGDBF.DataSource.EntityFramework", "src\GGDBF.DataSource.EntityFramework\GGDBF.DataSource.EntityFramework.csproj", "{9F5B91D5-E063-4A37-9251-B08F90C9873A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GGDBF.Generator", "src\GGDBF.Generator\GGDBF.Generator.csproj", "{26CDC618-8A0D-4871-828D-47958B0CBF1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGDBF.Generator", "src\GGDBF.Generator\GGDBF.Generator.csproj", "{26CDC618-8A0D-4871-828D-47958B0CBF1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GGDBF.Generator.ManualTest", "tests\GGDBF.Generator.ManualTest\GGDBF.Generator.ManualTest.csproj", "{5C0498D8-9A25-4673-989A-C57D351014AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +45,10 @@ Global
 		{26CDC618-8A0D-4871-828D-47958B0CBF1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26CDC618-8A0D-4871-828D-47958B0CBF1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26CDC618-8A0D-4871-828D-47958B0CBF1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C0498D8-9A25-4673-989A-C57D351014AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C0498D8-9A25-4673-989A-C57D351014AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C0498D8-9A25-4673-989A-C57D351014AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C0498D8-9A25-4673-989A-C57D351014AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{C037F091-D726-4760-808F-812C605F1247} = {21CED141-64DE-41B4-A066-C080156DC19A}
 		{9F5B91D5-E063-4A37-9251-B08F90C9873A} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
 		{26CDC618-8A0D-4871-828D-47958B0CBF1E} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
+		{5C0498D8-9A25-4673-989A-C57D351014AE} = {21CED141-64DE-41B4-A066-C080156DC19A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {98438B05-72FA-4385-BEF0-9A6B45DC9251}
