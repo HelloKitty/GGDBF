@@ -74,6 +74,8 @@ namespace GGDBF
 				propCount++;
 			}
 
+			builder.Append($"public {ClassName}() {{ }}{Environment.NewLine}");
+
 			EmitSerializableInitializeMethod(builder);
 
 			builder.Append($"}}");
