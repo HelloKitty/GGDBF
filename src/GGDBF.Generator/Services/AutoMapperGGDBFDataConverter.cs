@@ -19,7 +19,11 @@ namespace GGDBF
 		{
 			var typeKey = new TypeMapKey(typeof(TModelType), typeof(TSerializableModelType));
 			if (MappingDictionary.ContainsKey(typeKey))
-				return MappingDictionary[typeKey].Map<TModelType, TSerializableModelType>(model);
+			{
+				var convertedModel = MappingDictionary[typeKey].Map<TModelType, TSerializableModelType>(model);
+				convertedModel.Initialize();
+				return convertedModel;
+			}
 			else
 			{
 				CreateMapping<TModelType, TSerializableModelType>(typeKey);
