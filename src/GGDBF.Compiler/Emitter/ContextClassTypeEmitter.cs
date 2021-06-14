@@ -31,7 +31,7 @@ namespace GGDBF
 		{
 			//First we build the interface for the context type
 			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
-			builder.Append($"{ClassAccessibility.ToString().ToLower()} interface I{ClassName}{Environment.NewLine}{{");
+			builder.Append($"{ClassAccessibility.ToString().ToLower()} interface I{ClassName} : {nameof(IGGDBFContext)}{Environment.NewLine}{{");
 
 			foreach(var entry in Properties)
 				builder.Append($"public {CreatePropertyType(entry)} {new TableNameParser().Parse(entry.PropertyType)} {{ get; init; }}{Environment.NewLine}{Environment.NewLine}");

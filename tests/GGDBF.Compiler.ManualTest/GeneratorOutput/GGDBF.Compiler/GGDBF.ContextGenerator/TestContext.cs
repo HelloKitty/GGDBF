@@ -9,7 +9,7 @@ using TestNamespace2;
 namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.0.1.0")]
-    public interface ITestContext
+    public interface ITestContext : IGGDBFContext
     {
         public IReadOnlyDictionary<short, TestModelType> TestDatas { get; init; }
 
