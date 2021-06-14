@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using GGDBF.Compiler;
 using Glader.Essentials;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

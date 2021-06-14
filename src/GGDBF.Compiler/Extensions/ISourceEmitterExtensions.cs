@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GGDBF.Compiler
+namespace GGDBF
 {
 	public static class ISourceEmitterExtensions
 	{

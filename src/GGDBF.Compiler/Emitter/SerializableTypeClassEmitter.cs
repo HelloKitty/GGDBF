@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using GGDBF.Compiler;
 using Glader.Essentials;
 using Microsoft.CodeAnalysis;
 
