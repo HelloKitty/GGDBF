@@ -15,7 +15,6 @@ namespace GGDBF
         public override TestModelType Model
         {
             get => TestContext.Instance.TestDatas[base.ModelId];
-            protected set => throw new InvalidOperationException("Cannot set readonly DB nav property.");
         }
         [DataMemberAttribute(Order = 1)]
         public SerializableGGDBFCollection<string, TestModelType4> _ModelCollection;

@@ -48,10 +48,6 @@ namespace GGDBF
 				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
 				builder.Append($"public override {navProperty.Type.Name} {navProperty.Name} {Environment.NewLine}{{ get => {ContextClassName}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
 
-				//Not all properties setters should be overriden
-				if (navProperty.SetMethod != null && navProperty.SetMethod.DeclaredAccessibility != Accessibility.Private)
-					builder.Append($"{navProperty.SetMethod.DeclaredAccessibility.ToString().ToLower()} set => throw new InvalidOperationException(\"Cannot set readonly DB nav property.\");{Environment.NewLine}");
-
 				builder.Append($"}}{Environment.NewLine}");
 			}
 
@@ -78,10 +74,6 @@ namespace GGDBF
 				//get => _ModelCollection != null ? _ModelCollection.Load(TestContext.Instance.Test4Datas) : base.ModelCollection;
 				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
 				builder.Append($"public override {prop.Type.Name}<{collectionElementType.Name}> {prop.Name} {Environment.NewLine}{{ get => {backingPropertyName} != null ? {backingPropertyName}.{nameof(SerializableGGDBFCollection<int, object>.Load)}({ContextClassName}.Instance.{new TableNameParser().Parse(collectionElementType)}) : base.{prop.Name};{Environment.NewLine}");
-
-				//Not all properties setters should be overriden
-				if(prop.SetMethod != null && prop.SetMethod.DeclaredAccessibility != Accessibility.Private)
-					builder.Append($"{prop.SetMethod.DeclaredAccessibility.ToString().ToLower()} set => throw new InvalidOperationException(\"Cannot set readonly DB nav property.\");{Environment.NewLine}");
 
 				builder.Append($"}}{Environment.NewLine}");
 
