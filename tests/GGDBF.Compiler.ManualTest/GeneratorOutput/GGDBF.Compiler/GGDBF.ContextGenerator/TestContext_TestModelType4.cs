@@ -16,7 +16,7 @@ namespace GGDBF
         [IgnoreDataMemberAttribute]
         public override ICollection<TestModelType2> ModelCollection
         {
-            get => _ModelCollection.Load(TestContext.Instance.Test2Datas);
+            get => _ModelCollection != null ? _ModelCollection.Load(TestContext.Instance.Test2Datas) : base.ModelCollection;
         }
     }
 }

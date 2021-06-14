@@ -72,8 +72,12 @@ namespace GGDBF
 				builder.Append($"[{nameof(DataMemberAttribute)}({nameof(DataMemberAttribute.Order)} = {propCount})]{Environment.NewLine}");
 				builder.Append($"public {nameof(SerializableGGDBFCollection<int, object>)}<{new TablePrimaryKeyParser().Parse(collectionElementType)}, {collectionElementType.Name}> {backingPropertyName};{Environment.NewLine}{Environment.NewLine}");
 
+				//The concept of returning the base property getter if the derived field is null for cases where we want to access the collection
+				//during the process of serializing the real model type to the new model type. We need to access the collection and process it
+				//for keys to build the serializable collection.
+				//get => _ModelCollection != null ? _ModelCollection.Load(TestContext.Instance.Test4Datas) : base.ModelCollection;
 				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-				builder.Append($"public override {prop.Type.Name}<{collectionElementType.Name}> {prop.Name} {Environment.NewLine}{{ get => {backingPropertyName}.{nameof(SerializableGGDBFCollection<int, object>.Load)}({ContextClassName}.Instance.{new TableNameParser().Parse(collectionElementType)});{Environment.NewLine}");
+				builder.Append($"public override {prop.Type.Name}<{collectionElementType.Name}> {prop.Name} {Environment.NewLine}{{ get => {backingPropertyName} != null ? {backingPropertyName}.{nameof(SerializableGGDBFCollection<int, object>.Load)}({ContextClassName}.Instance.{new TableNameParser().Parse(collectionElementType)}) : base.{prop.Name};{Environment.NewLine}");
 
 				//Not all properties setters should be overriden
 				if(prop.SetMethod != null && prop.SetMethod.DeclaredAccessibility != Accessibility.Private)

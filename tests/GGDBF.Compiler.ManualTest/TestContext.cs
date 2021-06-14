@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -69,9 +70,9 @@ namespace TestNamespace2
 
 		public virtual ICollection<TModelType1> ModelCollection { get; private set; }
 
-		public TModelType2KeyType ModelId { get; private set; }
+		public TModelType2KeyType ModelId { get; protected set; }
 
 		[ForeignKey(nameof(ModelId))]
-		public virtual TModelType2 Model { get; private set; }
+		public virtual TModelType2 Model { get; protected set; }
 	}
 }
