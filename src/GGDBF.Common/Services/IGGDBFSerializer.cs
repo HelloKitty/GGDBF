@@ -24,7 +24,9 @@ namespace GGDBF
 		/// <typeparam name="TPrimaryKeyType"></typeparam>
 		/// <typeparam name="TModelType"></typeparam>
 		/// <param name="bytes"></param>
+		/// <param name="offset"></param>
+		/// <param name="length"></param>
 		/// <returns></returns>
-		GGDBFTable<TPrimaryKeyType, TModelType> Deserialize<TPrimaryKeyType, TModelType>(byte[] bytes);
+		GGDBFTable<TPrimaryKeyType, TModelType> Deserialize<TPrimaryKeyType, TModelType>(byte[] bytes, int offset, int length);
 	}
 }

@@ -23,9 +23,9 @@ namespace GGDBF
 		}
 
 		/// <inheritdoc />
-		public GGDBFTable<TPrimaryKeyType, TModelType> Deserialize<TPrimaryKeyType, TModelType>(byte[] bytes)
+		public GGDBFTable<TPrimaryKeyType, TModelType> Deserialize<TPrimaryKeyType, TModelType>(byte[] bytes, int offset, int length)
 		{
-			return Serializer.Deserialize<GGDBFTable<TPrimaryKeyType, TModelType>>(new ReadOnlyMemory<byte>(bytes));
+			return Serializer.Deserialize<GGDBFTable<TPrimaryKeyType, TModelType>>(new ReadOnlyMemory<byte>(bytes, offset, length));
 		}
 	}
 }
