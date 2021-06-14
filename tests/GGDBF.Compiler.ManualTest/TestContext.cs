@@ -24,9 +24,11 @@ namespace GGDBF
 
 namespace TestNamespace
 {
+	[DataContract]
 	[Table("TestDatas")]
 	public class TestModelType
 	{
+		[DataMember(Order = 1)]
 		[DatabaseKeyHint]
 		public short Id { get; private set; }
 	}
