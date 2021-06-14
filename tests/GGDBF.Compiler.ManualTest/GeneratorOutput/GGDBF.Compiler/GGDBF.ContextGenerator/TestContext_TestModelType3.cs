@@ -8,12 +8,16 @@ using System.Runtime.Serialization;
 namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.0.1.0")]
-    public partial class TestContext_TestModelType3 : TestModelType3
+    public partial class TestContext_TestModelType3 : TestModelType3, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
         public override TestModelType2 Model
         {
             get => TestContext.Instance.Test2Datas[base.ModelId];
+        }
+
+        public void Initialize()
+        {
         }
     }
 }

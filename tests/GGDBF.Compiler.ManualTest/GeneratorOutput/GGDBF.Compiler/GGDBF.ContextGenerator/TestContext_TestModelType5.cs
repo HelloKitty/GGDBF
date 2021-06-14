@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.0.1.0")]
-    public partial class TestContext_TestModelType5 : TestModelType5<Int32, TestModelType4, TestModelType, Int16>
+    public partial class TestContext_TestModelType5 : TestModelType5<Int32, TestModelType4, TestModelType, Int16>, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
         public override TestModelType Model
@@ -23,6 +23,10 @@ namespace GGDBF
         public override ICollection<TestModelType4> ModelCollection
         {
             get => _ModelCollection != null ? _ModelCollection.Load(TestContext.Instance.Test4Datas) : base.ModelCollection;
+        }
+
+        public void Initialize()
+        {
         }
     }
 }
