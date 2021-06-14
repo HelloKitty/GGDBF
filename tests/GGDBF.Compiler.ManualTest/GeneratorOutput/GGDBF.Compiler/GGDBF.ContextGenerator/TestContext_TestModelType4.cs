@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.0.1.0")]
-    public partial class TestContext_TestModelType4 : TestNamespace2.TestModelType4
+    public partial class TestContext_TestModelType4 : TestModelType4
     {
         [DataMemberAttribute(Order = 1)]
         public SerializableGGDBFCollection<string, TestModelType2> _ModelCollection;

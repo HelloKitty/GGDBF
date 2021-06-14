@@ -30,9 +30,9 @@ namespace GGDBF
 			//Class time!
 			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
 			if(ClassAccessibility == Accessibility.NotApplicable)
-				builder.Append($"partial class {ClassName} : {SerializableType}{{");
+				builder.Append($"partial class {ClassName} : {ComputeTypeName(SerializableType)}{{");
 			else
-				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ClassName} : {SerializableType}{Environment.NewLine}{{");
+				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ClassName} : {ComputeTypeName(SerializableType)}{Environment.NewLine}{{");
 
 			//TODO: Support ALL foreign key scenarios. Right now only traditional attribute-based PropId and Prop pair scenarios are supported
 			//Find all foreign key references and generate

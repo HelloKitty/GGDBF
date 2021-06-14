@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.0.1.0")]
-    public partial class TestContext_TestModelType3 : TestNamespace2.TestModelType3
+    public partial class TestContext_TestModelType3 : TestModelType3
     {
         [IgnoreDataMemberAttribute]
         public override TestModelType2 Model

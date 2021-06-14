@@ -25,10 +25,15 @@ namespace GGDBF
 
 		protected static string ComputeTypeName(PropertyDefinition prop)
 		{
-			if(prop.PropertyType.ContainingNamespace != null)
-				return $"{prop.PropertyType.ToFullName().Replace($"{prop.PropertyType.ContainingNamespace.Name}.", "")}";
+			return ComputeTypeName(prop.PropertyType);
+		}
 
-			return $"{prop.PropertyType.ToFullName()}";
+		protected static string ComputeTypeName(ITypeSymbol type)
+		{
+			if(type.ContainingNamespace != null)
+				return $"{type.ToFullName().Replace($"{type.ContainingNamespace.Name}.", "")}";
+
+			return $"{type.ToFullName()}";
 		}
 	}
 }
