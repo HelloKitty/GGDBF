@@ -60,7 +60,7 @@ namespace GGDBF
 		/// <inheritdoc />
 		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
 			where TModelType : class 
-			where TSerializableModelType : TModelType
+			where TSerializableModelType : TModelType, IGGDBFSerializable
 		{
 			//EF Core doesn't support the concept of serializable subtypes.
 			//So we can only return the actual model type.
