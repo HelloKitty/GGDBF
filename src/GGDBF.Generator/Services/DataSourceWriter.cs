@@ -34,7 +34,9 @@ namespace GGDBF
 		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
 			where TModelType : class
 		{
-			return await DataSource.RetrieveFullTableAsync(config, token);
+			var table = await DataSource.RetrieveFullTableAsync(config, token);
+			Writeables.Add(table);
+			return table;
 		}
 
 		/// <inheritdoc />
