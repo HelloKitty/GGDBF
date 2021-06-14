@@ -35,7 +35,7 @@ namespace GGDBF
 		/// (Suggested to never modify this contents)
 		/// </summary>
 		[DataMember(Order = 3)]
-		public Dictionary<TPrimaryKeyType, TModelType> TableData { get; init; }
+		public Dictionary<TPrimaryKeyType, TModelType> TableData { get; init; } = new(); //protobuf might serialize this as null for empty tables.
 
 		/// <summary>
 		/// Converts the <see cref="TableData"/> to a <see cref="IReadOnlyDictionary{TKey,TValue}"/>.
