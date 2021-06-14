@@ -10,4 +10,11 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.16" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\GGDBF.DataSource.EntityFramework\GGDBF.DataSource.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\src\GGDBF.Generator\GGDBF.Generator.csproj" />
+    <ProjectReference Include="..\..\src\GGDBF.Serializer.ProtobufNet\GGDBF.Serializer.ProtobufNet.csproj" />
+    <ProjectReference Include="..\GGDBF.Compiler.ManualTest\GGDBF.Compiler.ManualTest.csproj" />
+  </ItemGroup>
+
 </Project>
