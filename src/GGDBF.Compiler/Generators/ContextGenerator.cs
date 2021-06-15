@@ -67,7 +67,8 @@ namespace GGDBF
 				.Where(s => s.HasAttributeExact<RequiredDataModelAttribute>())
 				.ToArray();
 
-			foreach (var contextSymbol in dataContextSymbols)
+			//.Where(s => !s.IsGenericType)
+			foreach(var contextSymbol in dataContextSymbols)
 			{
 				StringBuilder builder = new StringBuilder();
 				UsingsEmitter usingsEmitter = new();
@@ -105,26 +106,64 @@ namespace GGDBF
 			//Now we handle any potential navproperties
 			foreach (var type in RetrieveModelTypes(contextSymbol))
 			{
-				if (!type.HasForeignKeyDefined())
-					continue;
+				//TODO: This is a hack because for some reason parsing the unbound generic type doesn't work
+				if (type.IsUnboundGenericType)
+				{
+					INamedTypeSymbol typeToPass = ConvertContextOpenGenericTypeToClosedGenericType(contextSymbol, type);
 
-				string serializableTypeName = new ForeignKeyContainingPropertyNameParser().Parse(contextSymbol.Name, type);
-
-				StringBuilder builder = new StringBuilder();
-				UsingsEmitter usingsEmitter = new();
-				NamespaceDecoratorEmitter namespaceDecorator = new NamespaceDecoratorEmitter(new SerializableTypeClassEmitter(serializableTypeName, contextSymbol.Name, type, Accessibility.Public), contextSymbol.ContainingNamespace.FullNamespaceString());
-
-				//If the type is another namespace we should import it
-				//so we don't have to use fullnames.
-				AddNamespacesForType(type, usingsEmitter);
-
-				usingsEmitter.AddNamespaces(GGDBFConstants.DEFAULT_NAMESPACES);
-
-				usingsEmitter.Emit(builder);
-				namespaceDecorator.Emit(builder);
-
-				context.AddSource($"{serializableTypeName}", ConvertFileToNode(context, builder).ToString());
+					EmitSerializableTypeSource(contextSymbol, context, typeToPass);
+				}
+				else
+					EmitSerializableTypeSource(contextSymbol, context, type);
 			}
+		}
+
+		private static INamedTypeSymbol ConvertContextOpenGenericTypeToClosedGenericType(INamedTypeSymbol contextSymbol, INamedTypeSymbol type)
+		{
+			return contextSymbol
+				.GetMembers()
+				.Where(m => m.Kind == SymbolKind.Property)
+				.Cast<IPropertySymbol>()
+				.Select(p =>
+				{
+					if(p.Type is INamedTypeSymbol ps)
+						return ps;
+					return null;
+				})
+				.Where(t => t != null)
+				.Where(t => t.IsGenericType && t.TypeArguments.Length == 2)
+				.Select(t =>
+				{
+					if(t.TypeArguments.Last() is INamedTypeSymbol modelSymbol)
+						return modelSymbol;
+					else
+						return null;
+				})
+				.Where(t => t != null)
+				.First(t => t.IsGenericType && t.ConstructUnboundGenericType().Equals(type, SymbolEqualityComparer.Default));
+		}
+
+		private static void EmitSerializableTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type)
+		{
+			if (!type.HasForeignKeyDefined())
+				return;
+
+			string serializableTypeName = new ForeignKeyContainingPropertyNameParser().ParseNonGeneric(contextSymbol, type);
+
+			StringBuilder builder = new StringBuilder();
+			UsingsEmitter usingsEmitter = new();
+			NamespaceDecoratorEmitter namespaceDecorator = new NamespaceDecoratorEmitter(new SerializableTypeClassEmitter(serializableTypeName, type, contextSymbol, Accessibility.Public), contextSymbol.ContainingNamespace.FullNamespaceString());
+
+			//If the type is another namespace we should import it
+			//so we don't have to use fullnames.
+			AddNamespacesForType(type, usingsEmitter);
+
+			usingsEmitter.AddNamespaces(GGDBFConstants.DEFAULT_NAMESPACES);
+
+			usingsEmitter.Emit(builder);
+			namespaceDecorator.Emit(builder);
+
+			context.AddSource($"{serializableTypeName}", ConvertFileToNode(context, builder).ToString());
 		}
 
 		private static IEnumerable<INamedTypeSymbol> RetrieveModelTypes(INamedTypeSymbol contextSymbol)
@@ -133,7 +172,8 @@ namespace GGDBF
 			{
 				return contextSymbol
 					.GetAttributesExact<RequiredDataModelAttribute>()
-					.Select(a => (INamedTypeSymbol)a.ConstructorArguments.First().Value);
+					.Select(a => (INamedTypeSymbol) a.ConstructorArguments.First().Value)
+					.Where(t => t != null);
 			}
 			catch (Exception e)
 			{
@@ -143,11 +183,18 @@ namespace GGDBF
 
 		private static BaseClassTypeEmitter CreateContextClassEmitter(INamedTypeSymbol contextSymbol)
 		{
-			var classEmitter = new ContextClassTypeEmitter(contextSymbol.Name, contextSymbol.DeclaredAccessibility);
+			var classEmitter = new ContextClassTypeEmitter(contextSymbol.Name, contextSymbol, contextSymbol.DeclaredAccessibility);
 
 			foreach (INamedTypeSymbol modelType in RetrieveModelTypes(contextSymbol))
 			{
-				classEmitter.AddProperty(RetrieveTableModelName(modelType), modelType);
+				if (modelType.IsUnboundGenericType)
+				{
+					INamedTypeSymbol typeToPass = ConvertContextOpenGenericTypeToClosedGenericType(contextSymbol, modelType);
+
+					classEmitter.AddProperty(RetrieveTableModelName(modelType), typeToPass, true);
+				}
+				else
+					classEmitter.AddProperty(RetrieveTableModelName(modelType), modelType);
 			}
 
 			return classEmitter;

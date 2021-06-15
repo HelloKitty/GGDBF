@@ -37,7 +37,7 @@ namespace GGDBF
 				}
 			}
 
-			throw new InvalidOperationException($"Failed to deduce PK from ModelType: {type.Name}");
+			throw new InvalidOperationException($"Failed to deduce PK from ModelType: {type.Name}:{type}");
 		}
 	}
 }

@@ -20,6 +20,16 @@ namespace GGDBF
 	{
 
 	}
+
+	[RequiredDataModel(typeof(TestModelType))]
+	[RequiredDataModel(typeof(TestModelType2))]
+	[RequiredDataModel(typeof(TestModelType3))]
+	[RequiredDataModel(typeof(TestModelType4))]
+	[RequiredDataModel(typeof(TestModelType5<,,,>))]
+	public partial class TestContextGeneric<TKey>
+	{
+		public IReadOnlyDictionary<TKey, TestModelType5<TKey, TestModelType4, TestModelType, short>> Test5Datas { get; init; }
+	}
 }
 
 namespace TestNamespace

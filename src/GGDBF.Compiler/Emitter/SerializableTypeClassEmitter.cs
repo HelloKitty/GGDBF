@@ -12,16 +12,15 @@ namespace GGDBF
 {
 	public sealed class SerializableTypeClassEmitter : BaseClassTypeEmitter
 	{
-		private string ContextClassName { get; }
-
 		private INamedTypeSymbol SerializableType { get; }
 
-		public SerializableTypeClassEmitter(string className, string contextClassName, INamedTypeSymbol serializableType, Accessibility classAccessibility = Accessibility.NotApplicable)
+		private INamedTypeSymbol OriginalContextSymbol { get; }
+
+		public SerializableTypeClassEmitter(string className, INamedTypeSymbol serializableType, INamedTypeSymbol originalContextSymbol, Accessibility classAccessibility = Accessibility.NotApplicable)
 			: base(className, classAccessibility)
 		{
-			if (string.IsNullOrWhiteSpace(contextClassName)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(contextClassName));
-			ContextClassName = contextClassName;
 			SerializableType = serializableType ?? throw new ArgumentNullException(nameof(serializableType));
+			OriginalContextSymbol = originalContextSymbol ?? throw new ArgumentNullException(nameof(originalContextSymbol));
 		}
 
 		public override void Emit(StringBuilder builder)
@@ -30,9 +29,9 @@ namespace GGDBF
 			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
 			builder.Append($"[{nameof(DataContractAttribute)}]{Environment.NewLine}");
 			if(ClassAccessibility == Accessibility.NotApplicable)
-				builder.Append($"partial class {ClassName} : {ComputeTypeName(SerializableType)}, {nameof(IGGDBFSerializable)}{Environment.NewLine}{{");
+				builder.Append($"partial class {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}{Environment.NewLine}{{");
 			else
-				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ClassName} : {ComputeTypeName(SerializableType)}, {nameof(IGGDBFSerializable)}{Environment.NewLine}{{");
+				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}{Environment.NewLine}{{");
 
 			//TODO: Support ALL foreign key scenarios. Right now only traditional attribute-based PropId and Prop pair scenarios are supported
 			//Find all foreign key references and generate
@@ -46,7 +45,7 @@ namespace GGDBF
 				IPropertySymbol keyProperty = RetrieveNavigationKeyPropertySymbol(prop);
 
 				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-				builder.Append($"public override {navProperty.Type.Name} {navProperty.Name} {Environment.NewLine}{{ get => {ContextClassName}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
+				builder.Append($"public override {navProperty.Type.Name} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
 
 				builder.Append($"}}{Environment.NewLine}");
 			}
@@ -66,7 +65,7 @@ namespace GGDBF
 				//for keys to build the serializable collection.
 				//get => _ModelCollection != null ? _ModelCollection.Load(TestContext.Instance.Test4Datas) : base.ModelCollection;
 				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-				builder.Append($"public override {prop.Type.Name}<{collectionElementType.Name}> {prop.Name} {Environment.NewLine}{{ get => {backingPropertyName} != null ? {backingPropertyName}.{nameof(SerializableGGDBFCollection<int, object>.Load)}({ContextClassName}.Instance.{new TableNameParser().Parse(collectionElementType)}) : base.{prop.Name};{Environment.NewLine}");
+				builder.Append($"public override {prop.Type.Name}<{collectionElementType.Name}> {prop.Name} {Environment.NewLine}{{ get => {backingPropertyName} != null ? {backingPropertyName}.{nameof(SerializableGGDBFCollection<int, object>.Load)}({OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(collectionElementType)}) : base.{prop.Name};{Environment.NewLine}");
 
 				builder.Append($"}}{Environment.NewLine}");
 
@@ -146,6 +145,17 @@ namespace GGDBF
 				.Where(m => m.Kind == SymbolKind.Property)
 				.Cast<IPropertySymbol>()
 				.First(m => m.Kind == SymbolKind.Property && m.Name == (string) prop.GetAttributeLike<ForeignKeyAttribute>().ConstructorArguments.First().Value);
+		}
+
+		private string ComputeContextTypeName()
+		{
+			if(!OriginalContextSymbol.IsGenericType)
+				return ClassName;
+			else
+			{
+				return new GenericTypeBuilder(OriginalContextSymbol.TypeArguments.ToArray())
+					.Build(ClassName);
+			}
 		}
 	}
 }

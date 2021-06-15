@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 
@@ -7,16 +8,28 @@ namespace GGDBF
 {
 	public sealed class ForeignKeyContainingPropertyNameParser
 	{
-		public string Parse(string contextTypeName, ITypeSymbol propertyType)
+		public string Parse(INamedTypeSymbol contextType, ITypeSymbol propertyType)
 		{
 			if (propertyType == null) throw new ArgumentNullException(nameof(propertyType));
-			return $"{contextTypeName}_{ComputeSerializableTypeName(propertyType)}";
+			return $"{contextType.Name}_{ComputeSerializableTypeName(contextType, propertyType)}";
 		}
 
-		private static string ComputeSerializableTypeName(ITypeSymbol prop)
+		public string ParseNonGeneric(INamedTypeSymbol contextType, ITypeSymbol propertyType)
 		{
+			return $"{contextType.Name}_{propertyType.Name}";
+		}
+
+		private static string ComputeSerializableTypeName(INamedTypeSymbol contextType, ITypeSymbol prop)
+		{
+			if (contextType == null) throw new ArgumentNullException(nameof(contextType));
 			if (prop == null) throw new ArgumentNullException(nameof(prop));
-			return $"{prop.Name}";
+
+			if (!contextType.IsGenericType)
+				return $"{prop.Name}";
+
+			//If generic context then serializable type
+			//must carry its parameters
+			return new GenericTypeBuilder(contextType.TypeArguments.ToArray()).Build(prop.Name);
 		}
 	}
 }
