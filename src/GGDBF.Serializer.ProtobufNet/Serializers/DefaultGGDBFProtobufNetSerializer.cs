@@ -51,7 +51,7 @@ namespace GGDBF
 		{
 			RegisterTypeIfNotRegistered<TPrimaryKeyType, TModelType>();
 
-			return Serializer.Deserialize<GGDBFTable<TPrimaryKeyType, TModelType>>(new MemoryStream(bytes, offset, length));
+			return Serializer.Deserialize<GGDBFTable<TPrimaryKeyType, TModelType>>(new ReadOnlySpan<byte>(bytes, offset, length));
 		}
 	}
 }
