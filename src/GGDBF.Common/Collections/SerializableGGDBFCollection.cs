@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
+using ProtoBuf;
 
 namespace GGDBF
 {
+	//Warning: Some serializers will see ICollection and try to serialize it as ICollection<TModelType>
+	//(Ex. Protobufnet will do this. I have added a surrogate for some serializers. For Protobuf I had to create a fake ProtoContract)
 	/// <summary>
 	/// Serializable collection type that implements <see cref="ICollection{T}"/> to provide access to navigation property
 	/// access for collection types.
@@ -13,6 +16,7 @@ namespace GGDBF
 	/// <typeparam name="TKeyType"></typeparam>
 	/// <typeparam name="TModelType"></typeparam>
 	[DataContract]
+	[ProtoContract(IgnoreListHandling = true)]
 	public sealed class SerializableGGDBFCollection<TKeyType, TModelType> : ICollection<TModelType>
 	{
 		/// <summary>
