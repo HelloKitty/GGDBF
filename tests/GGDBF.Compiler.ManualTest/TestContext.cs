@@ -102,6 +102,17 @@ namespace TestNamespace2
 
 		[IgnoreDataMember]
 		public virtual ICollection<TestModelType2> ModelCollection { get; private set; }
+
+		public TestModelType4(string id, ICollection<TestModelType2> modelCollection)
+		{
+			Id = id ?? throw new ArgumentNullException(nameof(id));
+			ModelCollection = modelCollection ?? throw new ArgumentNullException(nameof(modelCollection));
+		}
+
+		public TestModelType4()
+		{
+			
+		}
 	}
 
 	[DataContract]

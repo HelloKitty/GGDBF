@@ -27,6 +27,8 @@ namespace GGDBF.Generator.ManualTest
 			await using TestDBContext context = new(options);
 			await context.Database.EnsureCreatedAsync();
 
+			await InitializeDatabase(context);
+
 			ContextGenerator<TestContext> generator = new ContextGenerator<TestContext>(new EntityFrameworkGGDBFDataSource(context), writer);
 
 			await generator.Generate();
@@ -42,6 +44,18 @@ namespace GGDBF.Generator.ManualTest
 
 			if (TestContext.Instance.Test3DatasWithFK.Values.First().Model == null)
 				throw new InvalidOperationException($"{nameof(TestModelType3)} nav property is null.");
+
+			if (TestContext.Instance.Test4Datas.Values.First().ModelCollection.Count() != 3)
+				throw new InvalidOperationException($"{nameof(TestModelType4)} collection nav property is invalid.");
+		}
+
+		private static async Task InitializeDatabase(TestDBContext context)
+		{
+			var models = await context.Test2Datas.ToArrayAsync();
+			var model4 = new TestModelType4("2", new List<TestModelType2>(models));
+
+			await context.Test4Datas.AddAsync(model4);
+			await context.SaveChangesAsync();
 		}
 
 		private static void TestProtobufSerialization()
@@ -103,6 +117,17 @@ namespace GGDBF.Generator.ManualTest
 				new TestModelType3("2", "69"),
 				new TestModelType3("3", "9001")
 			});
+
+			//Seeding is broken for collection props.
+			/*modelBuilder.Entity<TestModelType4>().HasData(new List<TestModelType4>()
+			{
+				new TestModelType4("2", new List<TestModelType2>()
+				{
+					new TestModelType2("1"),
+					new TestModelType2("69"),
+					new TestModelType2("9001")
+				})
+			});*/
 		}
 	}
 }
