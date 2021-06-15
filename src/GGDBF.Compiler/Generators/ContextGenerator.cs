@@ -73,12 +73,7 @@ namespace GGDBF
 				UsingsEmitter usingsEmitter = new();
 				NamespaceDecoratorEmitter namespaceDecorator = new NamespaceDecoratorEmitter(CreateContextClassEmitter(contextSymbol), contextSymbol.ContainingNamespace.FullNamespaceString());
 
-				//Default namespaces:
-				usingsEmitter.AddNamespace("System");
-				usingsEmitter.AddNamespace("System.Collections.Generic");
-				usingsEmitter.AddNamespace("System.Threading.Tasks");
-				usingsEmitter.AddNamespace("System.CodeDom.Compiler");
-				usingsEmitter.AddNamespace("System.Runtime.Serialization");
+				usingsEmitter.AddNamespaces(GGDBFConstants.DEFAULT_NAMESPACES);
 
 				foreach(var type in RetrieveModelTypes(contextSymbol))
 				{
@@ -123,12 +118,7 @@ namespace GGDBF
 				//so we don't have to use fullnames.
 				AddNamespacesForType(type, usingsEmitter);
 
-				//Default namespaces:
-				usingsEmitter.AddNamespace("System");
-				usingsEmitter.AddNamespace("System.Collections.Generic");
-				usingsEmitter.AddNamespace("System.Threading.Tasks");
-				usingsEmitter.AddNamespace("System.CodeDom.Compiler");
-				usingsEmitter.AddNamespace("System.Runtime.Serialization");
+				usingsEmitter.AddNamespaces(GGDBFConstants.DEFAULT_NAMESPACES);
 
 				usingsEmitter.Emit(builder);
 				namespaceDecorator.Emit(builder);

@@ -32,5 +32,13 @@ namespace GGDBF
 			if (string.IsNullOrWhiteSpace(@namespace)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(@namespace));
 			RequestedNamespaces.Add(@namespace);
 		}
+
+		public void AddNamespaces(IEnumerable<string> namespaces)
+		{
+			if (namespaces == null) throw new ArgumentNullException(nameof(namespaces));
+
+			foreach(var n in GGDBFConstants.DEFAULT_NAMESPACES)
+				AddNamespace(n);
+		}
 	}
 }
