@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using GGDBF.Generator;
 using AutoMapper;
@@ -20,7 +21,7 @@ namespace GGDBF
 			var typeKey = new TypeMapKey(typeof(TModelType), typeof(TSerializableModelType));
 			if (MappingDictionary.ContainsKey(typeKey))
 			{
-				var convertedModel = MappingDictionary[typeKey].Map<TModelType, TSerializableModelType>(model);
+				TSerializableModelType convertedModel = MappingDictionary[typeKey].Map<TModelType, TSerializableModelType>(model);
 				convertedModel.Initialize();
 				return convertedModel;
 			}
@@ -34,7 +35,16 @@ namespace GGDBF
 		private void CreateMapping<TModelType, TSerializableModelType>(TypeMapKey key) 
 			where TModelType : class where TSerializableModelType : TModelType
 		{
-			MappingDictionary[key] = new MapperConfiguration(cfg => cfg.CreateMap<TModelType, TSerializableModelType>())
+			MappingDictionary[key] = new MapperConfiguration(cfg =>
+				{
+					//See: https://docs.automapper.org/en/stable/Lists-and-arrays.html
+					//This is CRITICAL for supporting mapping to collection types!!
+					//Generally empty collections are preferrable BUT we use the mapping here
+					//only to go from the DataSource model to the Serializable equivalent.
+					cfg.AllowNullCollections = true;
+
+					cfg.CreateMap<TModelType, TSerializableModelType>();
+				})
 				.CreateMapper();
 		}
 	}

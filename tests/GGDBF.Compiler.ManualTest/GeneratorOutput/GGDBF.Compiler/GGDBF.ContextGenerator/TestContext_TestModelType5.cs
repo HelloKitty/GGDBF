@@ -18,18 +18,18 @@ namespace GGDBF
             get => TestContext.Instance.TestDatas[base.ModelId];
         }
         [DataMemberAttribute(Order = 1)]
-        public SerializableGGDBFCollection<string, TestModelType4> _ModelCollection;
+        public SerializableGGDBFCollection<string, TestModelType4> _SerializedModelCollection;
 
         [IgnoreDataMemberAttribute]
         public override ICollection<TestModelType4> ModelCollection
         {
-            get => _ModelCollection != null ? _ModelCollection.Load(TestContext.Instance.Test4Datas) : base.ModelCollection;
+            get => _SerializedModelCollection != null ? _SerializedModelCollection.Load(TestContext.Instance.Test4Datas) : base.ModelCollection;
         }
         public TestContext_TestModelType5() { }
 
         public void Initialize()
         {
-            _ModelCollection = GGDBFHelpers.CreateSerializableCollection(m => m.Id, ModelCollection);
+            _SerializedModelCollection = GGDBFHelpers.CreateSerializableCollection(m => m.Id, ModelCollection);
         }
     }
 }

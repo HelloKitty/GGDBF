@@ -90,7 +90,7 @@ namespace GGDBF
 
 		private static string ComputeCollectionPropertyBackingFieldName(IPropertySymbol prop)
 		{
-			return $"_{ prop.Name}";
+			return $"_Serialized{prop.Name}";
 		}
 
 		private IEnumerable<IPropertySymbol> EnumerateCollectionProperties()
