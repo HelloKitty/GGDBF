@@ -19,7 +19,7 @@ namespace GGDBF
 		/// The serialized key values for the collection.
 		/// </summary>
 		[DataMember(Order = 1)]
-		public TKeyType[] References { get; private set; }
+		public TKeyType[] References { get; private set; } = Array.Empty<TKeyType>();
 
 		/// <summary>
 		/// The table this collection references.
@@ -60,13 +60,13 @@ namespace GGDBF
 		}
 
 		/// <inheritdoc />
-		public void Add(TModelType item)
+		void ICollection<TModelType>.Add(TModelType item)
 		{
 			throw new NotSupportedException($"GGDBF does not support mutable collections.");
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		void ICollection<TModelType>.Clear()
 		{
 			throw new NotSupportedException($"GGDBF does not support mutable collections.");
 		}
@@ -81,13 +81,13 @@ namespace GGDBF
 		}
 
 		/// <inheritdoc />
-		public void CopyTo(TModelType[] array, int arrayIndex)
+		void ICollection<TModelType>.CopyTo(TModelType[] array, int arrayIndex)
 		{
 			throw new NotSupportedException($"GGDBF does not support mutable collections.");
 		}
 
 		/// <inheritdoc />
-		public bool Remove(TModelType item)
+		bool ICollection<TModelType>.Remove(TModelType item)
 		{
 			throw new NotSupportedException($"GGDBF does not support mutable collections.");
 		}
