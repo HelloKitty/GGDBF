@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <!-- See: https://github.com/dotnet/roslyn-sdk/blob/master/samples/CSharp/SourceGenerators/SourceGeneratorSamples/SourceGeneratorSamples.csproj -->
@@ -10,7 +11,6 @@
     <!-- Generates a package at build -->
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <!-- Do not include the generator as a lib dependency -->
-    <LangVersion>preview</LangVersion>
     <IncludeSymbols>true</IncludeSymbols>
 
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
