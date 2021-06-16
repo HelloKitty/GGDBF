@@ -17,6 +17,7 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType4))]
 	[RequiredDataModel(typeof(TestModelType5<int, TestModelType4, TestModelType, short>))]
 	[RequiredDataModel(typeof(TestModelTypeUnderscore))]
+	[RequiredDataModel(typeof(TestModelReservedNameTable))]
 	public partial class TestContext
 	{
 
@@ -159,6 +160,25 @@ namespace TestNamespace2
 		}
 
 		public TestModelTypeUnderscore()
+		{
+
+		}
+	}
+
+	[DataContract]
+	[Table("class")]
+	public class TestModelReservedNameTable
+	{
+		[DataMember(Order = 1)]
+		[DatabaseKeyHint]
+		public short Id { get; private set; }
+
+		public TestModelReservedNameTable(short id)
+		{
+			Id = id;
+		}
+
+		public TestModelReservedNameTable()
 		{
 
 		}

@@ -89,6 +89,8 @@ namespace GGDBF.Generator.ManualTest
 
 		public DbSet<TestModelTypeUnderscore> TestDatasWithUnderScore { get; set; }
 
+		public DbSet<TestModelReservedNameTable> ReservedTable { get; set; }
+
 		public TestDBContext(DbContextOptions options)
 			: base(options)
 		{
