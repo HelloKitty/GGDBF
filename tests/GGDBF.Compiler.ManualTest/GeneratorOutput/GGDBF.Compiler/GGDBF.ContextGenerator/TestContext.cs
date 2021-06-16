@@ -8,7 +8,7 @@ using TestNamespace2;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.4.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.5.0")]
     public interface ITestContext : IGGDBFContext
     {
         public IReadOnlyDictionary<short, TestModelType> TestDatas { get; init; }
@@ -27,7 +27,7 @@ namespace GGDBF
 
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.0.4.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.5.0")]
     public partial class TestContext : ITestContext
     {
         public static TestContext Instance { get; private set; }
