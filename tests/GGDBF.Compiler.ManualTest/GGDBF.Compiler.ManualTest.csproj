@@ -18,7 +18,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="GGDBF.Compiler" Version="0.0.2.42" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
+    <PackageReference Include="GGDBF.Compiler" Version="0.0.4" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
   </ItemGroup>
 
 </Project>
