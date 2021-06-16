@@ -18,10 +18,21 @@ namespace GGDBF
 	{
 		static ContextGenerator()
 		{
-			AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+			AppDomain.CurrentDomain.AssemblyResolve += ResolveAnnotationsAssembly;
+		}
+
+		//Runtime binding redirection maybe?? This may have helped fix a case where the annotations library wasn't loaded.
+		private static Assembly ResolveAnnotationsAssembly(object sender, ResolveEventArgs args)
+		{
+			AssemblyName requestedAssembly = new AssemblyName(args.Name);
+			if(requestedAssembly.Name == "System.ComponentModel.Annotations")
 			{
-				Console.WriteLine($"Exception: {(Exception)args.ExceptionObject}");
-			};
+				//Prevents failed load stackoverflows
+				AppDomain.CurrentDomain.AssemblyResolve -= ResolveAnnotationsAssembly;
+				return Assembly.Load(requestedAssembly.Name);
+			}
+
+			return null;
 		}
 
 		public void Initialize(GeneratorInitializationContext context)
