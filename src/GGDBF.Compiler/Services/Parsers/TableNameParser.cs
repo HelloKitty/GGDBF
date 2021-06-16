@@ -21,6 +21,9 @@ namespace GGDBF
 			if (String.IsNullOrWhiteSpace(tableName))
 				return tableName;
 
+			//All tables should start with capitalized letters
+			if(Char.IsLower(tableName[0]))
+				tableName = tableName.First().ToString().ToUpper() + tableName.Substring(1);
 			//Remove underscores from table names since they look terrible
 			//in actual code.
 			tableName = tableName.Replace("_", "");
