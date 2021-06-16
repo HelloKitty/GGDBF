@@ -12,11 +12,32 @@ namespace GGDBF
 	{
 		public string Parse(ITypeSymbol type)
 		{
-			return (string)type
+			string tableName = (string)type
 				.GetAttributeExact<TableAttribute>(true)
 				.ConstructorArguments
 				.First()
 				.Value;
+
+			if (String.IsNullOrWhiteSpace(tableName))
+				return tableName;
+
+			//Remove underscores from table names since they look terrible
+			//in actual code.
+			tableName = tableName.Replace("_", "");
+
+			//There are cases where it might be a reserved word
+			if (tableName == "Class" || tableName == "class")
+				tableName = $"@{tableName}";
+
+			return tableName;
+		}
+
+		public string ParseNameToStringLiteral(string tableName)
+		{
+			//Some strings may have @ due to reserved words
+			tableName = tableName.Replace("@", "");
+
+			return $"\"{tableName}\"";
 		}
 	}
 }

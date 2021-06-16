@@ -16,6 +16,7 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType3))]
 	[RequiredDataModel(typeof(TestModelType4))]
 	[RequiredDataModel(typeof(TestModelType5<int, TestModelType4, TestModelType, short>))]
+	[RequiredDataModel(typeof(TestModelTypeUnderscore))]
 	public partial class TestContext
 	{
 
@@ -142,5 +143,24 @@ namespace TestNamespace2
 		[IgnoreDataMember]
 		[ForeignKey(nameof(ModelId))]
 		public virtual TModelType2 Model { get; protected set; }
+	}
+
+	[DataContract]
+	[Table("TestDatas_WithUnderScore")]
+	public class TestModelTypeUnderscore
+	{
+		[DataMember(Order = 1)]
+		[DatabaseKeyHint]
+		public short Id { get; private set; }
+
+		public TestModelTypeUnderscore(short id)
+		{
+			Id = id;
+		}
+
+		public TestModelTypeUnderscore()
+		{
+
+		}
 	}
 }

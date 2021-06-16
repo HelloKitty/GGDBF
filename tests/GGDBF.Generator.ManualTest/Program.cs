@@ -87,6 +87,8 @@ namespace GGDBF.Generator.ManualTest
 		public DbSet<TestModelType4> Test4Datas { get; set; }
 		public DbSet<TestModelType5<int, TestModelType4, TestModelType, short>> Test5Datas { get; set; }
 
+		public DbSet<TestModelTypeUnderscore> TestDatasWithUnderScore { get; set; }
+
 		public TestDBContext(DbContextOptions options)
 			: base(options)
 		{

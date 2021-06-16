@@ -21,6 +21,8 @@ namespace GGDBF
 
         public IReadOnlyDictionary<int, TestModelType5<Int32, TestModelType4, TestModelType, Int16>> Test5Datas { get; init; }
 
+        public IReadOnlyDictionary<short, TestModelTypeUnderscore> TestDatasWithUnderScore { get; init; }
+
     }
 
     [GeneratedCodeAttribute("GGDBF", "0.0.4.0")]
@@ -38,6 +40,8 @@ namespace GGDBF
 
         public IReadOnlyDictionary<int, TestModelType5<Int32, TestModelType4, TestModelType, Int16>> Test5Datas { get; init; }
 
+        public IReadOnlyDictionary<short, TestModelTypeUnderscore> TestDatasWithUnderScore { get; init; }
+
         public static async Task Initialize(IGGDBFDataSource source)
         {
             Instance = new()
@@ -47,6 +51,7 @@ namespace GGDBF
                 Test3DatasWithFK = await source.RetrieveTableAsync<string, TestModelType3, TestContext_TestModelType3>(new NameOverrideTableRetrievalConfig<string, TestModelType3>("Test3DatasWithFK")),
                 Test4Datas = await source.RetrieveTableAsync<string, TestModelType4, TestContext_TestModelType4>(new NameOverrideTableRetrievalConfig<string, TestModelType4>("Test4Datas")),
                 Test5Datas = await source.RetrieveTableAsync<int, TestModelType5<Int32, TestModelType4, TestModelType, Int16>, TestContext_TestModelType5>(new NameOverrideTableRetrievalConfig<int, TestModelType5<Int32, TestModelType4, TestModelType, Int16>>("Test5Datas")),
+                TestDatasWithUnderScore = await source.RetrieveTableAsync<short, TestModelTypeUnderscore>(new NameOverrideTableRetrievalConfig<short, TestModelTypeUnderscore>("TestDatasWithUnderScore")),
             };
         }
     }

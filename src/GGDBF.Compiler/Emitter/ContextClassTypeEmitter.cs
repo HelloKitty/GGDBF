@@ -164,7 +164,7 @@ namespace GGDBF
 		private string CreateTableConfig(string tableName, string primaryKeyTypeString, string modelTypeString)
 		{
 			if (string.IsNullOrWhiteSpace(tableName)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(tableName));
-			return $"new {nameof(NameOverrideTableRetrievalConfig<object, object>)}<{primaryKeyTypeString}, {modelTypeString}>(\"{tableName}\")";
+			return $"new {nameof(NameOverrideTableRetrievalConfig<object, object>)}<{primaryKeyTypeString}, {modelTypeString}>({new TableNameParser().ParseNameToStringLiteral(tableName)})";
 		}
 
 		private string CreatePropertyType(PropertyDefinition entry)
