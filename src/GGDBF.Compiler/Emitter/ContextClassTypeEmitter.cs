@@ -51,7 +51,7 @@ namespace GGDBF
 			builder.Append($"public static {ComputeContextTypeName()} Instance {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}");
 
 			//Don't include any open generic property types. Any generic model fields must be included manually.
-			foreach(var entry in Properties.Where(p => !p.IsRuntimeUnbounded))
+			foreach(var entry in Properties.Where(p => !p.IsRuntimeUnbounded && !p.PropertyType.IsUnboundGenericType))
 				EmitTableProperty(builder, entry);
 
 			AddInitializeMethod(builder);
@@ -154,6 +154,7 @@ namespace GGDBF
 		{
 			string typeName = GetModelTypeName(prop);
 
+			//TODO: This doesn't work for unbound generic types. The rest of the class does.
 			if (prop.PropertyType.HasForeignKeyDefined())
 				return $"{RetrievePropertyPrimaryKey(prop)}, {typeName}, {new ForeignKeyContainingPropertyNameParser().Parse(OriginalContextSymbol, prop.PropertyType)}";
 

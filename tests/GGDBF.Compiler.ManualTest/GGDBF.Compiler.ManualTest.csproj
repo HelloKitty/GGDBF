@@ -27,8 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="GeneratorOutput\" />
-    <Folder Include="GeneratorOutput\GGDBF.Compiler\GGDBF.ContextGenerator\" />
+    <Folder Include="GeneratorOutput\GGDBF.Compiler\" />
   </ItemGroup>
 
   <ItemGroup>

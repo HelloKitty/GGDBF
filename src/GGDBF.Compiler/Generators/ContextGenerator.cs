@@ -187,6 +187,7 @@ namespace GGDBF
 
 			foreach (INamedTypeSymbol modelType in RetrieveModelTypes(contextSymbol))
 			{
+				//TODO: Class emitter works for unbound generic types EXCEPT for determining if it is a foreign key type.
 				if (modelType.IsUnboundGenericType)
 				{
 					INamedTypeSymbol typeToPass = ConvertContextOpenGenericTypeToClosedGenericType(contextSymbol, modelType);
