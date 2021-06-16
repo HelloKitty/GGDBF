@@ -24,6 +24,15 @@ namespace GGDBF
 			//All tables should start with capitalized letters
 			if(Char.IsLower(tableName[0]))
 				tableName = tableName.First().ToString().ToUpper() + tableName.Substring(1);
+
+			//Before removing underscores we should capitalize after the underscores
+			var tableNameArray = tableName.ToCharArray();
+			for(int i = 1; i < tableNameArray.Length; i++)
+				if (tableNameArray[i - 1] == '_')
+					tableNameArray[i] = Char.ToUpper(tableNameArray[i]);
+
+			tableName = new string(tableNameArray);
+
 			//Remove underscores from table names since they look terrible
 			//in actual code.
 			tableName = tableName.Replace("_", "");

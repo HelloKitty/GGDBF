@@ -36,7 +36,7 @@ namespace GGDBF
 namespace TestNamespace
 {
 	[DataContract]
-	[Table("TestDatas")]
+	[Table("testDatas")]
 	public class TestModelType
 	{
 		[DataMember(Order = 1)]
@@ -58,7 +58,7 @@ namespace TestNamespace
 namespace TestNamespace2
 {
 	[DataContract]
-	[Table("Test2Datas")]
+	[Table("test2_datas")]
 	public class TestModelType2
 	{
 		[Key]
