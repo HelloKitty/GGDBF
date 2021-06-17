@@ -9,6 +9,7 @@ using TestNamespace2;
 using System.Linq;
 using ProtoBuf;
 using Fasterflect;
+using TestNameSpace.Extended.Multiple.Words;
 
 namespace GGDBF.Generator.ManualTest
 {
@@ -29,23 +30,23 @@ namespace GGDBF.Generator.ManualTest
 
 			await InitializeDatabase(context);
 
-			ContextGenerator<TestContext> generator = new ContextGenerator<TestContext>(new EntityFrameworkGGDBFDataSource(context), writer);
+			ContextGenerator<TestContextGeneric<int>> generator = new ContextGenerator<TestContextGeneric<int>>(new EntityFrameworkGGDBFDataSource(context), writer);
 
 			await generator.Generate();
 
 			//Reload the data
-			await TestContext.Initialize(new FileGGDBFDataSource(new DefaultGGDBFProtobufNetSerializer()));
+			await TestContextGeneric<int>.Initialize(new FileGGDBFDataSource(new DefaultGGDBFProtobufNetSerializer()));
 
-			if (TestContext.Instance.TestDatas.Values.Count() != 3)
+			if (TestContextGeneric<int>.Instance.TestDatas.Values.Count() != 3)
 				throw new InvalidOperationException($"{nameof(TestModelType)} does not have expected entry count.");
 
-			if (TestContext.Instance.Test3DatasWithFK.Values.First().ModelId == null)
+			if (TestContextGeneric<int>.Instance.Test3DatasWithFK.Values.First().ModelId == null)
 				throw new InvalidOperationException($"{nameof(TestModelType3)} nav property key null.");
 
-			if (TestContext.Instance.Test3DatasWithFK.Values.First().Model == null)
+			if (TestContextGeneric<int>.Instance.Test3DatasWithFK.Values.First().Model == null)
 				throw new InvalidOperationException($"{nameof(TestModelType3)} nav property is null.");
 
-			if (TestContext.Instance.Test4Datas.Values.First().ModelCollection.Count() != 3)
+			if (TestContextGeneric<int>.Instance.Test4Datas.Values.First().ModelCollection.Count() != 3)
 				throw new InvalidOperationException($"{nameof(TestModelType4)} collection nav property is invalid.");
 		}
 
@@ -56,21 +57,6 @@ namespace GGDBF.Generator.ManualTest
 
 			await context.Test4Datas.AddAsync(model4);
 			await context.SaveChangesAsync();
-		}
-
-		private static void TestProtobufSerialization()
-		{
-			TestContext_TestModelType3 model = new TestContext_TestModelType3();
-			model.SetPropertyValue(nameof(TestModelType3.Id), "1");
-			model.SetPropertyValue(nameof(TestModelType3.ModelId), "69");
-
-			using MemoryStream ms = new MemoryStream();
-			Serializer.Serialize(ms, model);
-			ms.Position = 0;
-
-			var deserializedModel = Serializer.Deserialize<TestContext_TestModelType3>(ms);
-			if (deserializedModel.ModelId != model.ModelId)
-				throw new InvalidOperationException($"Failed to deserialize.");
 		}
 	}
 
