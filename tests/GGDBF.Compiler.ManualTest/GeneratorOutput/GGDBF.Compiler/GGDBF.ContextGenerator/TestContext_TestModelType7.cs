@@ -10,14 +10,14 @@ namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.0.10.0")]
     [DataContractAttribute]
-    public partial class TestContext_TestModelType3 : TestModelType3, IGGDBFSerializable
+    public partial class TestContext_TestModelType7 : TestModelType7, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
-        public override TestModelType2 Model
+        public override TestModelType4 Model
         {
-            get => TestContext.Instance.Test2Datas[base.ModelId];
+            get => TestContext.Instance.Test4Datas[base.ModelId];
         }
-        public TestContext_TestModelType3() { }
+        public TestContext_TestModelType7() { }
 
         public void Initialize()
         {

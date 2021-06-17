@@ -8,14 +8,14 @@ using GGDBF;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.9.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.10.0")]
     [DataContractAttribute]
     public partial class TestContextGenericConstraints_TestModelType4<TKey, TAnotherType, TAnotherType2> : TestModelType4, IGGDBFSerializable where TKey : unmanaged, System.IConvertible
        where TAnotherType : class, System.Enum
        where TAnotherType2 : unmanaged
     {
         [DataMemberAttribute(Order = 1)]
-        public SerializableGGDBFCollection<string, TestModelType2> _SerializedModelCollection;
+        public SerializableGGDBFCollection<String, TestModelType2> _SerializedModelCollection;
 
         [IgnoreDataMemberAttribute]
         public override ICollection<TestModelType2> ModelCollection

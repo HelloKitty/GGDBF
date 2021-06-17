@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,6 +44,11 @@ namespace GGDBF
 				if(!String.IsNullOrWhiteSpace(constraintString))
 					builder.Append($" {constraintString}");
 			}
+		}
+
+		protected static void AppendGeneratedCodeAttribute(StringBuilder builder)
+		{
+			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
 		}
 	}
 }

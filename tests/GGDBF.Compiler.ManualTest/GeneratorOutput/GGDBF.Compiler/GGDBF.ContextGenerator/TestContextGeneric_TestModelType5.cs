@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.9.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.10.0")]
     [DataContractAttribute]
     public partial class TestContextGeneric_TestModelType5<TKey> : TestModelType5<TKey, TestModelType4, TestModelType, Int16>, IGGDBFSerializable
     {
@@ -19,7 +19,7 @@ namespace GGDBF
             get => TestContextGeneric<TKey>.Instance.TestDatas[base.ModelId];
         }
         [DataMemberAttribute(Order = 1)]
-        public SerializableGGDBFCollection<string, TestModelType4> _SerializedModelCollection;
+        public SerializableGGDBFCollection<String, TestModelType4> _SerializedModelCollection;
 
         [IgnoreDataMemberAttribute]
         public override ICollection<TestModelType4> ModelCollection

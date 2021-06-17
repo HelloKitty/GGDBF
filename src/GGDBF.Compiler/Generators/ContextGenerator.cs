@@ -98,6 +98,7 @@ namespace GGDBF
 				context.AddSource(contextSymbol.Name, ConvertFileToNode(context, builder).ToString());
 
 				EmitSerializableModelTypes(contextSymbol, context);
+				EmitModelKeyTypes(contextSymbol, context);
 			}
 		}
 
@@ -110,6 +111,30 @@ namespace GGDBF
 				foreach(var genericTypeArg in type.TypeArguments)
 					if (genericTypeArg.ContainingNamespace != null)
 						usingsEmitter.AddNamespace(genericTypeArg.ContainingNamespace.FullNamespaceString());
+		}
+
+		private static void EmitModelKeyTypes(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context)
+		{
+			foreach(var type in RetrieveModelTypes(contextSymbol))
+			{
+				//TODO: This is a hack because for some reason parsing the unbound generic type doesn't work
+				if(type.IsUnboundGenericType)
+				{
+					INamedTypeSymbol typeToPass = ConvertContextOpenGenericTypeToClosedGenericType(contextSymbol, type);
+
+					if (!typeToPass.HasAttributeExact<CompositeKeyHintAttribute>())
+						continue;
+
+					EmitModelKeyTypeSource(contextSymbol, context, typeToPass);
+				}
+				else
+				{
+					if(!type.HasAttributeExact<CompositeKeyHintAttribute>())
+						continue;
+
+					EmitModelKeyTypeSource(contextSymbol, context, type);
+				}
+			}
 		}
 
 		private static void EmitSerializableModelTypes(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context)
@@ -152,6 +177,26 @@ namespace GGDBF
 				})
 				.Where(t => t != null)
 				.First(t => t.IsGenericType && t.ConstructUnboundGenericType().Equals(type, SymbolEqualityComparer.Default));
+		}
+
+		private static void EmitModelKeyTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type)
+		{
+			string keyName = new TablePrimaryKeyParser().Parse(type);
+
+			StringBuilder builder = new StringBuilder();
+			UsingsEmitter usingsEmitter = new();
+			NamespaceDecoratorEmitter namespaceDecorator = new NamespaceDecoratorEmitter(new CompositeKeyTypeEmitter(keyName, type, Accessibility.Public), contextSymbol.ContainingNamespace.FullNamespaceString());
+
+			//If the type is another namespace we should import it
+			//so we don't have to use fullnames.
+			AddNamespacesForType(type, usingsEmitter);
+
+			usingsEmitter.AddNamespaces(GGDBFConstants.DEFAULT_NAMESPACES);
+
+			usingsEmitter.Emit(builder);
+			namespaceDecorator.Emit(builder);
+
+			context.AddSource($"{keyName}", ConvertFileToNode(context, builder).ToString());
 		}
 
 		private static void EmitSerializableTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type)

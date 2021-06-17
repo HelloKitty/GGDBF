@@ -32,7 +32,7 @@ namespace GGDBF
 		public override void Emit(StringBuilder builder)
 		{
 			//First we build the interface for the context type
-			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
+			AppendGeneratedCodeAttribute(builder);
 			EmitContextInterface(builder);
 			
 			//We emit even unbounded generic models on to the interface
@@ -42,7 +42,7 @@ namespace GGDBF
 			builder.Append($"}}{Environment.NewLine}{Environment.NewLine}");
 
 			//Class time!
-			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
+			AppendGeneratedCodeAttribute(builder);
 			if (ClassAccessibility == Accessibility.NotApplicable)
 				builder.Append($"partial class {ComputeContextTypeName()} : {EmitInterfaceTypeName()}{Environment.NewLine}");
 			else

@@ -26,7 +26,7 @@ namespace GGDBF
 		public override void Emit(StringBuilder builder)
 		{
 			//Class time!
-			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
+			AppendGeneratedCodeAttribute(builder);
 			builder.Append($"[{nameof(DataContractAttribute)}]{Environment.NewLine}");
 			if(ClassAccessibility == Accessibility.NotApplicable)
 				builder.Append($"partial class {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}");
@@ -114,9 +114,9 @@ namespace GGDBF
 			{
 				string fieldName = ComputeCollectionPropertyBackingFieldName(prop);
 				ITypeSymbol collectionElementType = ComputeCollectionElementType(prop);
-				string primaryKeyPropertyName = new TablePrimaryKeyParser().ParseProperty(collectionElementType).Name;
+				string keyResolutionLambda = new TablePrimaryKeyParser().BuildKeyResolutionLambda(collectionElementType);
 
-				builder.Append($"{fieldName} = {nameof(GGDBFHelpers)}.{nameof(GGDBFHelpers.CreateSerializableCollection)}(m => m.{primaryKeyPropertyName}, {prop.Name});");
+				builder.Append($"{fieldName} = {nameof(GGDBFHelpers)}.{nameof(GGDBFHelpers.CreateSerializableCollection)}({keyResolutionLambda}, {prop.Name});");
 			}
 
 			builder.Append($"{Environment.NewLine}}}");
