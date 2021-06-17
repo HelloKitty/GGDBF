@@ -58,6 +58,17 @@ namespace GGDBF
 
 		private string GetPropertyType(string entry)
 		{
+			//We need the model's type parameters, not the substituted ones from the DBContext.
+			if (ModelType.IsGenericType)
+				return ModelType
+					.GetMembers()
+					.Where(m => m.Kind == SymbolKind.Property)
+					.Cast<IPropertySymbol>()
+					.First(m => m.Name == entry)
+					.OriginalDefinition
+					.Type
+					.ToFullName();
+
 			//We do full name because we don't know the namespaces of members.
 			return ModelType
 				.GetMembers()

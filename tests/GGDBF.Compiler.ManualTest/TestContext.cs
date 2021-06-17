@@ -39,12 +39,15 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType2))]
 	[RequiredDataModel(typeof(TestModelType4))]
 	[RequiredDataModel(typeof(TestModelType6<>))]
+	[RequiredDataModel(typeof(TestModelType9<,>))]
 	public partial class TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2>
 		where TKey : unmanaged, IConvertible
 		where TAnotherType : class, Enum
 		where TAnotherType2 : unmanaged
 	{
 		public IReadOnlyDictionary<TKey, TestModelType6<TKey>> Test6Datas { get; init; }
+
+		public IReadOnlyDictionary<TestModelType9Key<TKey, TAnotherType>, TestModelType9<TKey, TAnotherType>> Test9Datas { get; init; }
 	}
 }
 
@@ -231,6 +234,36 @@ namespace TestNamespace2
 		}
 
 		public TestModelType8()
+		{
+
+		}
+	}
+
+	[DataContract]
+	[CompositeKeyHint(nameof(Id1), nameof(Id2))]
+	[Table("Test9Datas")]
+	public class TestModelType9<TKeyType1, TKeyType2>
+	{
+		[DataMember(Order = 1)]
+		public TKeyType1 Id1 { get; private set; }
+
+		[DataMember(Order = 2)]
+		public TKeyType2 Id2 { get; private set; }
+
+		[DataMember(Order = 3)]
+		public string ModelId { get; private set; }
+
+		[ForeignKey(nameof(ModelId))]
+		public virtual TestModelType4 Model { get; private set; }
+
+		public TestModelType9(TKeyType1 id1, TKeyType2 id2, string modelId)
+		{
+			Id1 = id1;
+			Id2 = id2;
+			ModelId = modelId;
+		}
+
+		public TestModelType9()
 		{
 
 		}

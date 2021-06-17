@@ -181,7 +181,7 @@ namespace GGDBF
 
 		private static void EmitModelKeyTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type)
 		{
-			string keyName = new TablePrimaryKeyParser().Parse(type);
+			string keyName = new TablePrimaryKeyParser().ParseSimple(type);
 
 			StringBuilder builder = new StringBuilder();
 			UsingsEmitter usingsEmitter = new();

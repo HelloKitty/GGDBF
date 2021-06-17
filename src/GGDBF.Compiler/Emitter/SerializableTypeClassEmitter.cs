@@ -71,7 +71,7 @@ namespace GGDBF
 			int propCount = 1;
 			foreach (var prop in EnumerateCollectionProperties())
 			{
-				ITypeSymbol collectionElementType = ComputeCollectionElementType(prop);
+				INamedTypeSymbol collectionElementType = (INamedTypeSymbol) ComputeCollectionElementType(prop);
 				string backingPropertyName = ComputeCollectionPropertyBackingFieldName(prop);
 
 				//We must emit a serializable backing field for the collection property
@@ -127,7 +127,7 @@ namespace GGDBF
 			foreach (var prop in EnumerateCollectionProperties())
 			{
 				string fieldName = ComputeCollectionPropertyBackingFieldName(prop);
-				ITypeSymbol collectionElementType = ComputeCollectionElementType(prop);
+				INamedTypeSymbol collectionElementType = (INamedTypeSymbol) ComputeCollectionElementType(prop);
 				string keyResolutionLambda = new TablePrimaryKeyParser().BuildKeyResolutionLambda(collectionElementType);
 
 				builder.Append($"{fieldName} = {nameof(GGDBFHelpers)}.{nameof(GGDBFHelpers.CreateSerializableCollection)}({keyResolutionLambda}, {prop.Name});");

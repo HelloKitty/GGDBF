@@ -11,17 +11,32 @@ namespace GGDBF
 {
 	public sealed class TablePrimaryKeyParser
 	{
-		public string Parse(ITypeSymbol type)
+		public string Parse(INamedTypeSymbol type)
 		{
 			//First let's check for a CompositeKey attribute for types that have complex
 			//key scenarios.
-			if(type.HasAttributeExact<CompositeKeyHintAttribute>())
-				return $"{type.GetFriendlyName()}Key";
+			if (type.HasAttributeExact<CompositeKeyHintAttribute>())
+			{
+				if (type.IsGenericType || type.IsUnboundGenericType)
+					return new GenericTypeBuilder(type.OriginalDefinition.TypeParameters.Select(tp => tp.OriginalDefinition).ToArray()).Build($"{type.Name}Key");
+
+				return $"{type.Name}Key";
+			}
 
 			return GetPrimaryKeyProperty(type).Type.GetFriendlyName();
 		}
 
-		public string BuildCompositeKeyCreationExpression(ITypeSymbol type, string modelReference)
+		public string ParseSimple(INamedTypeSymbol type)
+		{
+			//First let's check for a CompositeKey attribute for types that have complex
+			//key scenarios.
+			if(type.HasAttributeExact<CompositeKeyHintAttribute>())
+				return $"{type.Name}Key";
+
+			return GetPrimaryKeyProperty(type).Type.GetFriendlyName();
+		}
+
+		public string BuildCompositeKeyCreationExpression(INamedTypeSymbol type, string modelReference)
 		{
 			string[] keyProperties = type
 				.GetAttributeExact<CompositeKeyHintAttribute>()
@@ -47,7 +62,7 @@ namespace GGDBF
 			return builder.ToString();
 		}
 
-		public string BuildKeyResolutionLambda(ITypeSymbol type)
+		public string BuildKeyResolutionLambda(INamedTypeSymbol type, string keyTypeNameOverride = null)
 		{
 			//First let's check for a CompositeKey attribute for types that have complex
 			//key scenarios.
@@ -62,8 +77,11 @@ namespace GGDBF
 					.Cast<string>()
 					.ToArray();
 
+				if (keyTypeNameOverride == null)
+					keyTypeNameOverride = Parse(type);
+
 				StringBuilder builder = new StringBuilder();
-				builder.Append($"m => new {Parse(type)}(");
+				builder.Append($"m => new {keyTypeNameOverride}(");
 				for (int i = 0; i < keyProperties.Length; i++)
 				{
 					builder.Append($"m.{keyProperties[i]}");
@@ -115,7 +133,7 @@ namespace GGDBF
 
 
 			StringBuilder builder = new StringBuilder();
-			builder.Append($"new {Parse(navProperty.Type)}(");
+			builder.Append($"new {Parse((INamedTypeSymbol) navProperty.Type)}(");
 			for(int i = 0; i < keyProperties.Length; i++)
 			{
 				builder.Append($"{modelReference}.{keyProperties[i]}");

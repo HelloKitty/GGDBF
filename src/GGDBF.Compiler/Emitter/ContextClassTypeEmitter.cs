@@ -157,7 +157,15 @@ namespace GGDBF
 					.First()
 					.Name;
 
-			return new TablePrimaryKeyParser().Parse(prop.PropertyType).ToString();
+			//Case where we have a generic composite key we should take the pre-defined property
+			//key as the type input
+			if (prop.PropertyType.IsGenericType && prop.PropertyType.HasAttributeExact<CompositeKeyHintAttribute>())
+				return ((INamedTypeSymbol)GetMatchingContextProperty(prop).Type)
+					.TypeArguments
+					.First()
+					.GetFriendlyName();
+
+			return new TablePrimaryKeyParser().Parse(prop.PropertyType);
 		}
 
 		private string CreateRetrieveGenericParameters(PropertyDefinition prop)
@@ -179,7 +187,7 @@ namespace GGDBF
 			//therefore we MUST provide it ANY loading context otherwise there is no way to deduce it.
 			if (modelType.HasAttributeExact<CompositeKeyHintAttribute>())
 			{
-				string keyResolutionLambda = new TablePrimaryKeyParser().BuildKeyResolutionLambda(modelType);
+				string keyResolutionLambda = new TablePrimaryKeyParser().BuildKeyResolutionLambda(modelType, primaryKeyTypeString);
 				return $"new {nameof(NameOverrideTableRetrievalConfig<object, object>)}<{primaryKeyTypeString}, {modelTypeString}>({new TableNameParser().ParseNameToStringLiteral(tableName)}) {{ {nameof(NameOverrideTableRetrievalConfig<object, object>.KeyResolutionFunction)} = {keyResolutionLambda} }}";
 			}
 
