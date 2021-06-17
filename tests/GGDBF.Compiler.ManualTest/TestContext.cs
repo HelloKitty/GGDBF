@@ -22,7 +22,7 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType7))]
 	[RequiredDataModel(typeof(TestModelType8))]
 	[RequiredDataModel(typeof(TestModelType9<int, string>))]
-	[RequiredDataModel(typeof(TestModelType10<int, short>))]
+	[RequiredDataModel(typeof(TestModelType10<int>))]
 	public partial class TestContext
 	{
 
@@ -274,15 +274,15 @@ namespace TestNamespace2
 	[DataContract]
 	[CompositeKeyHint(nameof(Id1), nameof(Id2))]
 	[Table("Test10Datas")]
-	public class TestModelType10<TKeyType1, TKeyType2>
+	public class TestModelType10<TKeyType1>
 	{
 		[DataMember(Order = 1)]
 		public TKeyType1 Id1 { get; private set; }
 
 		[DataMember(Order = 2)]
-		public TKeyType2 Id2 { get; private set; }
+		public short Id2 { get; private set; }
 
-		public TestModelType10(TKeyType1 id1, TKeyType2 id2)
+		public TestModelType10(TKeyType1 id1, short id2)
 		{
 			Id1 = id1;
 			Id2 = id2;
