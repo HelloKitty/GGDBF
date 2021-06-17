@@ -153,7 +153,7 @@ namespace GGDBF
 				return ClassName;
 			else
 			{
-				return new GenericTypeBuilder(OriginalContextSymbol.TypeArguments.ToArray())
+				return new GenericTypeBuilder(OriginalContextSymbol.TypeParameters.ToArray())
 					.Build(ClassName);
 			}
 		}

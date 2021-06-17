@@ -65,7 +65,7 @@ namespace GGDBF
 				return ClassName;
 			else
 			{
-				return new GenericTypeBuilder(OriginalContextSymbol.TypeArguments.ToArray())
+				return new GenericTypeBuilder(OriginalContextSymbol.TypeParameters.ToArray())
 					.Build(ClassName);
 			}
 		}
@@ -102,8 +102,8 @@ namespace GGDBF
 				builder.Append($"I{ClassName}");
 				return;
 			}
-
-			builder.Append(new GenericTypeBuilder(OriginalContextSymbol.TypeArguments.ToArray())
+			
+			builder.Append(new GenericTypeBuilder(OriginalContextSymbol.TypeParameters.ToArray())
 				.Build($"I{ClassName}"));
 		}
 

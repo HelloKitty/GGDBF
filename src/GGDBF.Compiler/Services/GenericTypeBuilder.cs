@@ -7,9 +7,9 @@ namespace GGDBF
 {
 	public sealed class GenericTypeBuilder
 	{
-		private ITypeSymbol[] TypeArgs { get; }
+		private ITypeParameterSymbol[] TypeArgs { get; }
 
-		public GenericTypeBuilder(ITypeSymbol[] typeArgs)
+		public GenericTypeBuilder(ITypeParameterSymbol[] typeArgs)
 		{
 			TypeArgs = typeArgs ?? throw new ArgumentNullException(nameof(typeArgs));
 		}

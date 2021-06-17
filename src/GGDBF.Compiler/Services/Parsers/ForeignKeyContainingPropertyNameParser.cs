@@ -29,7 +29,7 @@ namespace GGDBF
 
 			//If generic context then serializable type
 			//must carry its parameters
-			return new GenericTypeBuilder(contextType.TypeArguments.ToArray()).Build(prop.Name);
+			return new GenericTypeBuilder(contextType.TypeParameters.ToArray()).Build(prop.Name);
 		}
 	}
 }
