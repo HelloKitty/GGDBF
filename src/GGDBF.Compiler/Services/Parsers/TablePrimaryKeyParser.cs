@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using Glader.Essentials;
@@ -18,6 +19,32 @@ namespace GGDBF
 				return $"{type.GetFriendlyName()}Key";
 
 			return GetPrimaryKeyProperty(type).Type.GetFriendlyName();
+		}
+
+		public string BuildCompositeKeyCreationExpression(ITypeSymbol type, string modelReference)
+		{
+			string[] keyProperties = type
+				.GetAttributeExact<CompositeKeyHintAttribute>()
+				.ConstructorArguments
+				.First()
+				.Values
+				.Select(v => v.Value)
+				.Cast<string>()
+				.ToArray();
+
+			StringBuilder builder = new StringBuilder();
+			builder.Append($"new {Parse(type)}(");
+			for(int i = 0; i < keyProperties.Length; i++)
+			{
+				builder.Append($"{modelReference}.{keyProperties[i]}");
+
+				if(i < keyProperties.Length - 1)
+					builder.Append(", ");
+			}
+
+			builder.Append(')');
+
+			return builder.ToString();
 		}
 
 		public string BuildKeyResolutionLambda(ITypeSymbol type)
@@ -71,6 +98,35 @@ namespace GGDBF
 			}
 
 			throw new InvalidOperationException($"Failed to deduce PK from ModelType: {type.Name}:{type}");
+		}
+
+		public string BuildCompositeKeyCreationExpression(IPropertySymbol navProperty, string modelReference, INamedTypeSymbol referringType)
+		{
+			//TODO: We don't support all ForeignKey attribute setups
+			//This overload will provide a key creation expression using the foreign key property on the
+			//referring type.
+			string[] keyProperties = ((string) navProperty
+					.GetAttributeExact<ForeignKeyAttribute>()
+					.ConstructorArguments.First()
+					.Value)
+				.Split(',')
+				.Select(p => p.Replace(" ", ""))
+				.ToArray();
+
+
+			StringBuilder builder = new StringBuilder();
+			builder.Append($"new {Parse(navProperty.Type)}(");
+			for(int i = 0; i < keyProperties.Length; i++)
+			{
+				builder.Append($"{modelReference}.{keyProperties[i]}");
+
+				if(i < keyProperties.Length - 1)
+					builder.Append(", ");
+			}
+
+			builder.Append(')');
+
+			return builder.ToString();
 		}
 	}
 }

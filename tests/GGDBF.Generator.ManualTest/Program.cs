@@ -30,23 +30,23 @@ namespace GGDBF.Generator.ManualTest
 
 			await InitializeDatabase(context);
 
-			ContextGenerator<TestContextGeneric<int>> generator = new ContextGenerator<TestContextGeneric<int>>(new EntityFrameworkGGDBFDataSource(context), writer);
+			ContextGenerator<TestContext> generator = new ContextGenerator<TestContext>(new EntityFrameworkGGDBFDataSource(context), writer);
 
 			await generator.Generate();
 
 			//Reload the data
-			await TestContextGeneric<int>.Initialize(new FileGGDBFDataSource(new DefaultGGDBFProtobufNetSerializer()));
+			await TestContext.Initialize(new FileGGDBFDataSource(new DefaultGGDBFProtobufNetSerializer()));
 
-			if (TestContextGeneric<int>.Instance.TestDatas.Values.Count() != 3)
+			if (TestContext.Instance.TestDatas.Values.Count() != 3)
 				throw new InvalidOperationException($"{nameof(TestModelType)} does not have expected entry count.");
 
-			if (TestContextGeneric<int>.Instance.Test3DatasWithFK.Values.First().ModelId == null)
+			if (TestContext.Instance.Test3DatasWithFK.Values.First().ModelId == null)
 				throw new InvalidOperationException($"{nameof(TestModelType3)} nav property key null.");
 
-			if (TestContextGeneric<int>.Instance.Test3DatasWithFK.Values.First().Model == null)
+			if (TestContext.Instance.Test3DatasWithFK.Values.First().Model == null)
 				throw new InvalidOperationException($"{nameof(TestModelType3)} nav property is null.");
 
-			if (TestContextGeneric<int>.Instance.Test4Datas.Values.First().ModelCollection.Count() != 3)
+			if (TestContext.Instance.Test4Datas.Values.First().ModelCollection.Count() != 3)
 				throw new InvalidOperationException($"{nameof(TestModelType4)} collection nav property is invalid.");
 		}
 
@@ -76,6 +76,8 @@ namespace GGDBF.Generator.ManualTest
 		public DbSet<TestModelTypeUnderscore> TestDatasWithUnderScore { get; set; }
 
 		public DbSet<TestModelReservedNameTable> ReservedTable { get; set; }
+
+		public DbSet<TestModelType7> Test7Datas { get; set; }
 
 		public TestDBContext(DbContextOptions options)
 			: base(options)
@@ -107,6 +109,16 @@ namespace GGDBF.Generator.ManualTest
 				new TestModelType3("2", "69"),
 				new TestModelType3("3", "9001")
 			});
+
+			modelBuilder.Entity<TestModelType7>().HasData(new List<TestModelType7>()
+			{
+				new TestModelType7(1, "test", "2"),
+				new TestModelType7(2, "test", "2"),
+				new TestModelType7(1, "derp", "2")
+			});
+
+			modelBuilder.Entity<TestModelType7>()
+				.HasKey(m => new {m.Id1, m.Id2});
 
 			//Seeding is broken for collection props.
 			/*modelBuilder.Entity<TestModelType4>().HasData(new List<TestModelType4>()

@@ -133,7 +133,7 @@ namespace GGDBF
 
 				string typeName = GetModelTypeName(prop);
 
-				builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{CreateRetrieveGenericParameters(prop)}>({CreateTableConfig(tableName, RetrievePropertyPrimaryKey(prop), typeName)}),");
+				builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{CreateRetrieveGenericParameters(prop)}>({CreateTableConfig(tableName, RetrievePropertyPrimaryKey(prop), typeName, prop.PropertyType)}),");
 			}
 
 			builder.Append($"{Environment.NewLine}}};");
@@ -171,9 +171,18 @@ namespace GGDBF
 			return $"{RetrievePropertyPrimaryKey(prop)}, {typeName}";
 		}
 
-		private string CreateTableConfig(string tableName, string primaryKeyTypeString, string modelTypeString)
+		private string CreateTableConfig(string tableName, string primaryKeyTypeString, string modelTypeString, INamedTypeSymbol modelType)
 		{
 			if (string.IsNullOrWhiteSpace(tableName)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(tableName));
+
+			//Composite keys require specialized key resolution functions
+			//therefore we MUST provide it ANY loading context otherwise there is no way to deduce it.
+			if (modelType.HasAttributeExact<CompositeKeyHintAttribute>())
+			{
+				string keyResolutionLambda = new TablePrimaryKeyParser().BuildKeyResolutionLambda(modelType);
+				return $"new {nameof(NameOverrideTableRetrievalConfig<object, object>)}<{primaryKeyTypeString}, {modelTypeString}>({new TableNameParser().ParseNameToStringLiteral(tableName)}) {{ {nameof(NameOverrideTableRetrievalConfig<object, object>.KeyResolutionFunction)} = {keyResolutionLambda} }}";
+			}
+
 			return $"new {nameof(NameOverrideTableRetrievalConfig<object, object>)}<{primaryKeyTypeString}, {modelTypeString}>({new TableNameParser().ParseNameToStringLiteral(tableName)})";
 		}
 

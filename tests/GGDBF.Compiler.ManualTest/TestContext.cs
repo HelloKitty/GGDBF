@@ -20,6 +20,7 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelTypeUnderscore))]
 	[RequiredDataModel(typeof(TestModelReservedNameTable))]
 	[RequiredDataModel(typeof(TestModelType7))]
+	[RequiredDataModel(typeof(TestModelType8))]
 	public partial class TestContext
 	{
 
@@ -191,6 +192,48 @@ namespace TestNamespace2
 
 		[ForeignKey(nameof(ModelId))]
 		public virtual TestModelType4 Model { get; private set; }
+
+		public TestModelType7(int id1, string id2, string modelId)
+		{
+			Id1 = id1;
+			Id2 = id2;
+			ModelId = modelId;
+		}
+
+		public TestModelType7()
+		{
+			
+		}
+	}
+
+	[DataContract]
+	[Table("Test8Datas")]
+	public class TestModelType8
+	{
+		[Key]
+		[DataMember(Order = 1)]
+		public int Id { get; private set; }
+
+		[DataMember(Order = 2)]
+		public int ModelId1 { get; private set; }
+
+		[DataMember(Order = 3)]
+		public string ModelId2 { get; private set; }
+
+		[ForeignKey(nameof(ModelId1) + ", " + nameof(ModelId2))]
+		public virtual TestModelType7 Model { get; private set; }
+
+		public TestModelType8(int id, int modelId1, string modelId2)
+		{
+			Id = id;
+			ModelId1 = modelId1;
+			ModelId2 = modelId2;
+		}
+
+		public TestModelType8()
+		{
+
+		}
 	}
 
 	[DataContract]

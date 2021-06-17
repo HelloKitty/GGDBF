@@ -46,12 +46,26 @@ namespace GGDBF
 				.Cast<IPropertySymbol>())
 			{
 				IPropertySymbol navProperty = RetrieveNavigationPropertySymbol(prop);
-				IPropertySymbol keyProperty = RetrieveNavigationKeyPropertySymbol(prop);
 
-				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-				builder.Append($"public override {navProperty.Type.Name} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
+				//Special handling for composite key table references
+				if (navProperty.Type.HasAttributeExact<CompositeKeyHintAttribute>())
+				{
+					string keyResolution = new TablePrimaryKeyParser().BuildCompositeKeyCreationExpression(navProperty, "base", SerializableType);
 
-				builder.Append($"}}{Environment.NewLine}");
+					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
+					builder.Append($"public override {navProperty.Type.Name} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[{keyResolution}];{Environment.NewLine}");
+
+					builder.Append($"}}{Environment.NewLine}");
+				}
+				else
+				{
+					IPropertySymbol keyProperty = RetrieveNavigationKeyPropertySymbol(prop);
+
+					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
+					builder.Append($"public override {navProperty.Type.Name} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
+
+					builder.Append($"}}{Environment.NewLine}");
+				}
 			}
 
 			int propCount = 1;
@@ -144,11 +158,18 @@ namespace GGDBF
 
 		private IPropertySymbol RetrieveLinkedForeignKeyProperty(IPropertySymbol prop)
 		{
-			return SerializableType
-				.GetMembers()
-				.Where(m => m.Kind == SymbolKind.Property)
-				.Cast<IPropertySymbol>()
-				.First(m => m.Kind == SymbolKind.Property && m.Name == (string) prop.GetAttributeLike<ForeignKeyAttribute>().ConstructorArguments.First().Value);
+			try
+			{
+				return SerializableType
+					.GetMembers()
+					.Where(m => m.Kind == SymbolKind.Property)
+					.Cast<IPropertySymbol>()
+					.First(m => m.Kind == SymbolKind.Property && m.Name == (string)prop.GetAttributeLike<ForeignKeyAttribute>().ConstructorArguments.First().Value);
+			}
+			catch (Exception e)
+			{
+				throw new InvalidOperationException($"Failed to retrieve foreign key property for Type: {SerializableType.Name} Prop: {prop.Name}", e);
+			}
 		}
 
 		private string ComputeContextTypeName()
