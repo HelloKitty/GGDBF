@@ -37,8 +37,10 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType2))]
 	[RequiredDataModel(typeof(TestModelType4))]
 	[RequiredDataModel(typeof(TestModelType6<>))]
-	public partial class TestContextGenericConstraints<TKey>
+	public partial class TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2>
 		where TKey : unmanaged, IConvertible
+		where TAnotherType : class, Enum
+		where TAnotherType2 : unmanaged
 	{
 		public IReadOnlyDictionary<TKey, TestModelType6<TKey>> Test6Datas { get; init; }
 	}

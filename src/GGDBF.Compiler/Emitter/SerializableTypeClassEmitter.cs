@@ -29,7 +29,7 @@ namespace GGDBF
 			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
 			builder.Append($"[{nameof(DataContractAttribute)}]{Environment.NewLine}");
 			if(ClassAccessibility == Accessibility.NotApplicable)
-				builder.Append($"partial class {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}{Environment.NewLine}{{");
+				builder.Append($"partial class {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}");
 			else
 				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}");
 

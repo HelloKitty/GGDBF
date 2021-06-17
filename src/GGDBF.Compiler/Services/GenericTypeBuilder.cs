@@ -66,7 +66,7 @@ namespace GGDBF
 				}
 				
 				if (index < TypeArgs.Length - 1)
-					builder.Append($"{Environment.NewLine}");
+					builder.Append($"{Environment.NewLine}\t");
 			}
 
 			return builder.ToString();

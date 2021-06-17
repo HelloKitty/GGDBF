@@ -8,14 +8,16 @@ using System.Runtime.Serialization;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.7.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.8.0")]
     [DataContractAttribute]
-    public partial class TestContextGenericConstraints_TestModelType6<TKey> : TestModelType6<TKey>, IGGDBFSerializable
+    public partial class TestContextGenericConstraints_TestModelType6<TKey, TAnotherType, TAnotherType2> : TestModelType6<TKey>, IGGDBFSerializable where TKey : unmanaged, System.IConvertible
+       where TAnotherType : class, System.Enum
+       where TAnotherType2 : unmanaged
     {
         [IgnoreDataMemberAttribute]
         public override TestModelType4 Model
         {
-            get => TestContextGenericConstraints<TKey>.Instance.Test4Datas[base.ModelId];
+            get => TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2>.Instance.Test4Datas[base.ModelId];
         }
         public TestContextGenericConstraints_TestModelType6() { }
 

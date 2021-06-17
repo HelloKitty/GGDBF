@@ -8,9 +8,11 @@ using GGDBF;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.7.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.8.0")]
     [DataContractAttribute]
-    public partial class TestContextGenericConstraints_TestModelType4<TKey> : TestModelType4, IGGDBFSerializable
+    public partial class TestContextGenericConstraints_TestModelType4<TKey, TAnotherType, TAnotherType2> : TestModelType4, IGGDBFSerializable where TKey : unmanaged, System.IConvertible
+       where TAnotherType : class, System.Enum
+       where TAnotherType2 : unmanaged
     {
         [DataMemberAttribute(Order = 1)]
         public SerializableGGDBFCollection<string, TestModelType2> _SerializedModelCollection;
@@ -18,7 +20,7 @@ namespace GGDBF
         [IgnoreDataMemberAttribute]
         public override ICollection<TestModelType2> ModelCollection
         {
-            get => _SerializedModelCollection != null ? _SerializedModelCollection.Load(TestContextGenericConstraints<TKey>.Instance.Test2Datas) : base.ModelCollection;
+            get => _SerializedModelCollection != null ? _SerializedModelCollection.Load(TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2>.Instance.Test2Datas) : base.ModelCollection;
         }
         public TestContextGenericConstraints_TestModelType4() { }
 
