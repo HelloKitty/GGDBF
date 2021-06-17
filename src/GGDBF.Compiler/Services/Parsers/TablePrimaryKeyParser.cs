@@ -126,14 +126,13 @@ namespace GGDBF
 			//TODO: We don't support all ForeignKey attribute setups
 			//This overload will provide a key creation expression using the foreign key property on the
 			//referring type.
-			string[] keyProperties = ((string) navProperty
-					.GetAttributeExact<ForeignKeyAttribute>()
-					.ConstructorArguments.First()
-					.Value)
-				.Split(',')
-				.Select(p => p.Replace(" ", ""))
+			string[] keyProperties = navProperty
+				.GetAttributeExact<CompositeKeyHintAttribute>()
+				.ConstructorArguments
+				.First()
+				.Values
+				.Cast<string>()
 				.ToArray();
-
 
 			StringBuilder builder = new StringBuilder();
 			builder.Append($"new {Parse((INamedTypeSymbol) navProperty.Type)}(");

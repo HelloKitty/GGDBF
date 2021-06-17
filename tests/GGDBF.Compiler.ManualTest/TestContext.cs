@@ -225,7 +225,7 @@ namespace TestNamespace2
 		[DataMember(Order = 3)]
 		public string ModelId2 { get; private set; }
 
-		[ForeignKey(nameof(ModelId1) + ", " + nameof(ModelId2))]
+		[CompositeKeyHint(nameof(ModelId1), nameof(ModelId2))]
 		public virtual TestModelType7 Model { get; private set; }
 
 		public TestModelType8(int id, int modelId1, string modelId2)
