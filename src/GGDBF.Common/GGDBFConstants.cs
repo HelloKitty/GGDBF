@@ -8,13 +8,15 @@ namespace GGDBF
 	{
 		public const string FILE_EXTENSION_SUFFIX = "ggdbf";
 
+		//TODO: Move this constant to Compiler section
 		public static string[] DEFAULT_NAMESPACES = new string[]
 		{
 			"System",
 			"System.Collections.Generic",
 			"System.Threading.Tasks",
 			"System.CodeDom.Compiler",
-			"System.Runtime.Serialization"
+			"System.Runtime.Serialization",
+			"GGDBF"
 		};
 	}
 }
