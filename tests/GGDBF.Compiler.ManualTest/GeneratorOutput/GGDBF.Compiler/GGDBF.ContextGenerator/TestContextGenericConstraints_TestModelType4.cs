@@ -10,7 +10,7 @@ namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.0.7.0")]
     [DataContractAttribute]
-    public partial class TestContextGenericConstraints_TestModelType4<TKey> : TestModelType4, IGGDBFSerializable where TKey : unmanaged, System.IConvertible
+    public partial class TestContextGenericConstraints_TestModelType4<TKey> : TestModelType4, IGGDBFSerializable
     {
         [DataMemberAttribute(Order = 1)]
         public SerializableGGDBFCollection<string, TestModelType2> _SerializedModelCollection;

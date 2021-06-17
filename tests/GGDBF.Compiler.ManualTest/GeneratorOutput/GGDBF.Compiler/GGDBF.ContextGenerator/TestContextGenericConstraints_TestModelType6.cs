@@ -10,7 +10,7 @@ namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.0.7.0")]
     [DataContractAttribute]
-    public partial class TestContextGenericConstraints_TestModelType6<TKey> : TestModelType6<TKey>, IGGDBFSerializable where TKey : unmanaged, System.IConvertible
+    public partial class TestContextGenericConstraints_TestModelType6<TKey> : TestModelType6<TKey>, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
         public override TestModelType4 Model
