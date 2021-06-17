@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="GGDBF.Compiler" Version="0.0.5" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
+    <PackageReference Include="GGDBF.Compiler" Version="0.0.6" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
   </ItemGroup>
 
 </Project>
