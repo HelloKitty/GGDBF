@@ -79,6 +79,10 @@ namespace GGDBF.Generator.ManualTest
 
 		public DbSet<TestModelType7> Test7Datas { get; set; }
 
+		public DbSet<TestModelType8> Test8Datas { get; set; }
+
+		public DbSet<TestModelType9<int, string>> Test9Datas { get; set; }
+
 		public TestDBContext(DbContextOptions options)
 			: base(options)
 		{
@@ -119,6 +123,10 @@ namespace GGDBF.Generator.ManualTest
 
 			modelBuilder.Entity<TestModelType7>()
 				.HasKey(m => new {m.Id1, m.Id2});
+
+
+			modelBuilder.Entity<TestModelType9<int, string>>()
+				.HasKey(m => new { m.Id1, m.Id2 });
 
 			//Seeding is broken for collection props.
 			/*modelBuilder.Entity<TestModelType4>().HasData(new List<TestModelType4>()

@@ -21,6 +21,8 @@ namespace GGDBF
 			AppDomain.CurrentDomain.AssemblyResolve += ResolveAnnotationsAssembly;
 		}
 
+		private HashSet<string> EmittedKeyTypes { get; } = new HashSet<string>();
+
 		//Runtime binding redirection maybe?? This may have helped fix a case where the annotations library wasn't loaded.
 		private static Assembly ResolveAnnotationsAssembly(object sender, ResolveEventArgs args)
 		{
@@ -67,7 +69,7 @@ namespace GGDBF
 			}
 		}
 
-		private static void ExecuteGenerator(GeneratorExecutionContext context)
+		private void ExecuteGenerator(GeneratorExecutionContext context)
 		{
 			INamedTypeSymbol[] symbols = context
 				.GetAllTypes()
@@ -113,7 +115,7 @@ namespace GGDBF
 						usingsEmitter.AddNamespace(genericTypeArg.ContainingNamespace.FullNamespaceString());
 		}
 
-		private static void EmitModelKeyTypes(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context)
+		private void EmitModelKeyTypes(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context)
 		{
 			foreach(var type in RetrieveModelTypes(contextSymbol))
 			{
@@ -179,9 +181,13 @@ namespace GGDBF
 				.First(t => t.IsGenericType && t.ConstructUnboundGenericType().Equals(type, SymbolEqualityComparer.Default));
 		}
 
-		private static void EmitModelKeyTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type)
+		private void EmitModelKeyTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type)
 		{
 			string keyName = new TablePrimaryKeyParser().ParseSimple(type);
+
+			//Keys could be shared in cases of multiple contexts
+			if (EmittedKeyTypes.Contains(keyName))
+				return;
 
 			StringBuilder builder = new StringBuilder();
 			UsingsEmitter usingsEmitter = new();
@@ -196,6 +202,7 @@ namespace GGDBF
 			usingsEmitter.Emit(builder);
 			namespaceDecorator.Emit(builder);
 
+			EmittedKeyTypes.Add(keyName);
 			context.AddSource($"{keyName}", ConvertFileToNode(context, builder).ToString());
 		}
 

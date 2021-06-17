@@ -159,11 +159,21 @@ namespace GGDBF
 
 			//Case where we have a generic composite key we should take the pre-defined property
 			//key as the type input
+			//Important to skip if no property is defined because it means it's a generic model and key *but* type parameters were specified
+			//in the ModelAttribute (not really unbounded)
 			if (prop.PropertyType.IsGenericType && prop.PropertyType.HasAttributeExact<CompositeKeyHintAttribute>())
-				return ((INamedTypeSymbol)GetMatchingContextProperty(prop).Type)
-					.TypeArguments
-					.First()
-					.GetFriendlyName();
+			{
+				if(HasExistingPropertyNamed(prop.Name))
+				{
+					return ((INamedTypeSymbol)GetMatchingContextProperty(prop).Type)
+						.TypeArguments
+						.First()
+						.GetFriendlyName();
+				}
+				else
+					return new TablePrimaryKeyParser().Parse(prop.PropertyType, true);
+			}
+
 
 			return new TablePrimaryKeyParser().Parse(prop.PropertyType);
 		}
@@ -217,6 +227,15 @@ namespace GGDBF
 			{
 				throw new InvalidOperationException($"Failed to retrieve generic model's table property from: {OriginalContextSymbol.Name}. Prop: {entry.Name}:{entry.PropertyType}", e);
 			}
+		}
+
+		private bool HasExistingPropertyNamed(string propertyName)
+		{
+			return OriginalContextSymbol
+				.GetMembers()
+				.Where(m => m.Kind == SymbolKind.Property)
+				.Cast<IPropertySymbol>()
+				.Any(m => m.Name == propertyName);
 		}
 	}
 }

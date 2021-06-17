@@ -21,6 +21,7 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelReservedNameTable))]
 	[RequiredDataModel(typeof(TestModelType7))]
 	[RequiredDataModel(typeof(TestModelType8))]
+	[RequiredDataModel(typeof(TestModelType9<int, string>))]
 	public partial class TestContext
 	{
 

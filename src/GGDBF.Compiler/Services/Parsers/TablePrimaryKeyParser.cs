@@ -11,14 +11,17 @@ namespace GGDBF
 {
 	public sealed class TablePrimaryKeyParser
 	{
-		public string Parse(INamedTypeSymbol type)
+		public string Parse(INamedTypeSymbol type, bool useModelTypeParameters = false)
 		{
 			//First let's check for a CompositeKey attribute for types that have complex
 			//key scenarios.
 			if (type.HasAttributeExact<CompositeKeyHintAttribute>())
 			{
 				if (type.IsGenericType || type.IsUnboundGenericType)
-					return new GenericTypeBuilder(type.OriginalDefinition.TypeParameters.Select(tp => tp.OriginalDefinition).ToArray()).Build($"{type.Name}Key");
+					if (!useModelTypeParameters)
+						return new GenericTypeBuilder(type.TypeParameters.ToArray()).Build($"{type.Name}Key");
+					else
+						return new GenericTypeBuilder(type.TypeParameters.ToArray()).Build($"{type.Name}Key", type.TypeArguments.ToArray());
 
 				return $"{type.Name}Key";
 			}

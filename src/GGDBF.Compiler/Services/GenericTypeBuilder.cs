@@ -71,5 +71,21 @@ namespace GGDBF
 
 			return builder.ToString();
 		}
+
+		public string Build(string className, ITypeSymbol[] args)
+		{
+			StringBuilder builder = new StringBuilder();
+			builder.Append($"{className}<");
+
+			for(int i = 0; i < args.Length; i++)
+			{
+				builder.Append(args[i].Name);
+				if(i < args.Length - 1)
+					builder.Append(", ");
+			}
+
+			builder.Append($">");
+			return builder.ToString();
+		}
 	}
 }
