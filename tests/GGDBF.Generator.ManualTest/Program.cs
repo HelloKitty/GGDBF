@@ -83,6 +83,8 @@ namespace GGDBF.Generator.ManualTest
 
 		public DbSet<TestModelType9<int, string>> Test9Datas { get; set; }
 
+		public DbSet<TestModelType9<int, short>> Test10Datas { get; set; }
+
 		public TestDBContext(DbContextOptions options)
 			: base(options)
 		{
