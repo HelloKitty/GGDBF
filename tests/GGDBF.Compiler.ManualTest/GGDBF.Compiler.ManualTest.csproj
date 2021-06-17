@@ -5,8 +5,6 @@
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>GeneratorOutput</CompilerGeneratedFilesOutputPath>
     <LangVersion>preview</LangVersion>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -39,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="GGDBF.Compiler" Version="0.0.6" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
+    <PackageReference Include="GGDBF.Compiler" Version="0.0.7" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
   </ItemGroup>
 
 </Project>
