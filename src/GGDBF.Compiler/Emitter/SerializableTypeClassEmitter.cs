@@ -31,7 +31,11 @@ namespace GGDBF
 			if(ClassAccessibility == Accessibility.NotApplicable)
 				builder.Append($"partial class {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}{Environment.NewLine}{{");
 			else
-				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}{Environment.NewLine}{{");
+				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}");
+
+			CalculatePossibleTypeConstraints(OriginalContextSymbol, builder);
+
+			builder.Append($"{Environment.NewLine}{{");
 
 			//TODO: Support ALL foreign key scenarios. Right now only traditional attribute-based PropId and Prop pair scenarios are supported
 			//Find all foreign key references and generate

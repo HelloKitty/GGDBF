@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Glader.Essentials;
 using Microsoft.CodeAnalysis;
@@ -30,6 +31,18 @@ namespace GGDBF
 		protected static string ComputeTypeName(ITypeSymbol type)
 		{
 			return type.GetFriendlyName();
+		}
+
+		protected void CalculatePossibleTypeConstraints(INamedTypeSymbol type, StringBuilder builder)
+		{
+			if(type.IsGenericType)
+			{
+				var constraintString = new GenericTypeBuilder(type.TypeParameters.ToArray())
+					.BuildConstraints();
+
+				if(!String.IsNullOrWhiteSpace(constraintString))
+					builder.Append($" {constraintString}");
+			}
 		}
 	}
 }

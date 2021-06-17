@@ -44,9 +44,14 @@ namespace GGDBF
 			//Class time!
 			builder.Append($"[{nameof(GeneratedCodeAttribute)}(\"GGDBF\", \"{typeof(GGDBFTable<object, object>).Assembly.GetName().Version}\")]{Environment.NewLine}");
 			if (ClassAccessibility == Accessibility.NotApplicable)
-				builder.Append($"partial class {ComputeContextTypeName()} : {EmitInterfaceTypeName()}{Environment.NewLine}{{");
+				builder.Append($"partial class {ComputeContextTypeName()} : {EmitInterfaceTypeName()}{Environment.NewLine}");
 			else
-				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ComputeContextTypeName()} : {EmitInterfaceTypeName()}{Environment.NewLine}{{");
+				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ComputeContextTypeName()} : {EmitInterfaceTypeName()}");
+
+			//Handle possible generic type parameters
+			CalculatePossibleTypeConstraints(OriginalContextSymbol, builder);
+
+			builder.Append($"{Environment.NewLine}{{");
 
 			builder.Append($"public static {ComputeContextTypeName()} Instance {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}");
 
@@ -85,7 +90,12 @@ namespace GGDBF
 
 			EmitInterfaceTypeName(builder);
 
-			return builder.Append($" : {nameof(IGGDBFContext)}{Environment.NewLine}{{");
+			builder.Append($" : {nameof(IGGDBFContext)}");
+
+			//Handle possible generic type parameters
+			CalculatePossibleTypeConstraints(OriginalContextSymbol, builder);
+
+			return builder.Append($"{Environment.NewLine}{{");
 		}
 
 		private string EmitInterfaceTypeName()

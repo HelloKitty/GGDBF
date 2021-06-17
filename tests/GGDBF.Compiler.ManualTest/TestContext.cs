@@ -33,6 +33,15 @@ namespace GGDBF
 	{
 		public IReadOnlyDictionary<TKey, TestModelType5<TKey, TestModelType4, TestModelType, short>> Test5Datas { get; init; }
 	}
+
+	[RequiredDataModel(typeof(TestModelType2))]
+	[RequiredDataModel(typeof(TestModelType4))]
+	[RequiredDataModel(typeof(TestModelType6<>))]
+	public partial class TestContextGenericConstraints<TKey>
+		where TKey : unmanaged, IConvertible
+	{
+		public IReadOnlyDictionary<TKey, TestModelType6<TKey>> Test6Datas { get; init; }
+	}
 }
 
 namespace TestNamespace
@@ -145,6 +154,21 @@ namespace TestNamespace2
 		[IgnoreDataMember]
 		[ForeignKey(nameof(ModelId))]
 		public virtual TModelType2 Model { get; protected set; }
+	}
+
+	[DataContract]
+	[Table("Test6Datas")]
+	public class TestModelType6<TKeyType>
+		where TKeyType : unmanaged, IConvertible
+	{
+		[Key]
+		[DataMember(Order = 1)]
+		public TKeyType Id { get; private set; }
+
+		public string ModelId { get; private set; }
+
+		[ForeignKey(nameof(ModelId))]
+		public virtual TestModelType4 Model { get; private set; }
 	}
 
 	[DataContract]
