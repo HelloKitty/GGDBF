@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using GGDBF;
 using TestNamespace;
+using TestNameSpace.Extended.Multiple.Words;
 using TestNamespace2;
 
 namespace GGDBF
@@ -164,7 +165,10 @@ namespace TestNamespace2
 
 		}
 	}
+}
 
+namespace TestNameSpace.Extended.Multiple.Words
+{
 	[DataContract]
 	[Table("class")]
 	public class TestModelReservedNameTable

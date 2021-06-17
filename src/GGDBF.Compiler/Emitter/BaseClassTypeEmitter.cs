@@ -29,10 +29,7 @@ namespace GGDBF
 
 		protected static string ComputeTypeName(ITypeSymbol type)
 		{
-			if(type.ContainingNamespace != null)
-				return $"{type.ToFullName().Replace($"{type.ContainingNamespace.Name}.", "")}";
-
-			return $"{type.ToFullName()}";
+			return type.GetFriendlyName();
 		}
 	}
 }

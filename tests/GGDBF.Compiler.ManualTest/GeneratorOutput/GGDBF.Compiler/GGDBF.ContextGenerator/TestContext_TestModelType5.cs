@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.CodeDom.Compiler;
 using System.Runtime.Serialization;
+using GGDBF;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.5.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.6.0")]
     [DataContractAttribute]
     public partial class TestContext_TestModelType5 : TestModelType5<Int32, TestModelType4, TestModelType, Int16>, IGGDBFSerializable
     {

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.CodeDom.Compiler;
 using System.Runtime.Serialization;
+using GGDBF;
 using TestNamespace;
 using TestNamespace2;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.5.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.6.0")]
     public interface ITestContextGeneric<TKey> : IGGDBFContext
     {
         public IReadOnlyDictionary<short, TestModelType> TestDatas { get; init; }
@@ -23,7 +24,7 @@ namespace GGDBF
 
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.0.5.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.6.0")]
     public partial class TestContextGeneric<TKey> : ITestContextGeneric<TKey>
     {
         public static TestContextGeneric<TKey> Instance { get; private set; }
