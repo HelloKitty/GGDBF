@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.12.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.13.0")]
     [DataContractAttribute]
     public partial class TestContextGenericConstraints_TestModelType6<TKey, TAnotherType, TAnotherType2> : TestModelType6<TKey>, IGGDBFSerializable where TKey : unmanaged, System.IConvertible
        where TAnotherType : class, System.Enum
