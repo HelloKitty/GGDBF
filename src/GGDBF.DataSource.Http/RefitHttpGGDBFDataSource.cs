@@ -31,8 +31,8 @@ namespace GGDBF
 			where TModelType : class
 		{
 			return await RestService
-				.For<IGGDBFHttpNetworkClient<TPrimaryKeyType, TModelType>>(BaseUrl)
-				.RetrieveTableAsync(typeof(TModelType).GetCustomAttribute<TableAttribute>().Name, token);
+				.For<IGGDBFHttpNetworkClient>(BaseUrl)
+				.RetrieveTableAsync<TPrimaryKeyType, TModelType>(typeof(TPrimaryKeyType).Name, typeof(TModelType).Name, token);
 		}
 
 		/// <inheritdoc />
@@ -41,8 +41,8 @@ namespace GGDBF
 			where TSerializableModelType : class, TModelType, IGGDBFSerializable
 		{
 			return await RestService
-				.For<IGGDBFHttpNetworkClient<TPrimaryKeyType, TModelType>>(BaseUrl)
-				.RetrieveTableAsync(typeof(TModelType).GetCustomAttribute<TableAttribute>().Name, typeof(TSerializableModelType).Name, token);
+				.For<IGGDBFHttpNetworkClient>(BaseUrl)
+				.RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(typeof(TPrimaryKeyType).Name, typeof(TModelType).Name, typeof(TSerializableModelType).Name, token);
 		}
 	}
 }
