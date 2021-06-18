@@ -24,6 +24,7 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType9<int, string>))]
 	[RequiredDataModel(typeof(TestModelType10<int>))]
 	[RequiredDataModel(typeof(TestModelType11<int, short>))]
+	[RequiredDataModel(typeof(TestModelType12))]
 	public partial class TestContext
 	{
 
@@ -325,6 +326,39 @@ namespace TestNamespace2
 		public TestModelType11()
 		{
 			
+		}
+	}
+
+	public record TestOwnedTypeModel1<TKeyType>(TKeyType Id, string Data);
+
+	[DataContract]
+	[Table("Test12Datas")]
+	public class TestModelType12
+	{
+		[Key]
+		[DataMember(Order = 1)]
+		public int Id { get; private set; }
+
+		[DataMember(Order = 2)]
+		public ICollection<TestOwnedTypeModel1<int>> OwnedTypeModelCollection { get; private set; }
+
+		[DataMember(Order = 3)]
+		public string ModelId { get; private set; }
+
+		[IgnoreDataMember]
+		[ForeignKey(nameof(ModelId))]
+		public virtual TestModelType2 Model { get; private set; }
+
+		public TestModelType12(int id, string modelId, ICollection<TestOwnedTypeModel1<int>> ownedCollection)
+		{
+			Id = id;
+			ModelId = modelId;
+			OwnedTypeModelCollection = ownedCollection;
+		}
+
+		public TestModelType12()
+		{
+
 		}
 	}
 

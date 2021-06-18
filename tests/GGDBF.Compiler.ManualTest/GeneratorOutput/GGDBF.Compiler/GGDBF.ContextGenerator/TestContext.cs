@@ -10,7 +10,7 @@ using TestNameSpace.Extended.Multiple.Words;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.11.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.12.0")]
     public interface ITestContext : IGGDBFContext
     {
         public IReadOnlyDictionary<Int16, TestModelType> TestDatas { get; init; }
@@ -37,9 +37,11 @@ namespace GGDBF
 
         public IReadOnlyDictionary<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>> Test11Datas { get; init; }
 
+        public IReadOnlyDictionary<Int32, TestModelType12> Test12Datas { get; init; }
+
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.0.11.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.12.0")]
     public partial class TestContext : ITestContext
     {
         public static TestContext Instance { get; private set; }
@@ -68,6 +70,8 @@ namespace GGDBF
 
         public IReadOnlyDictionary<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>> Test11Datas { get; init; }
 
+        public IReadOnlyDictionary<Int32, TestModelType12> Test12Datas { get; init; }
+
         public static async Task Initialize(IGGDBFDataSource source)
         {
             Instance = new()
@@ -84,6 +88,7 @@ namespace GGDBF
                 Test9Datas = await source.RetrieveTableAsync<TestModelType9Key<Int32, String>, TestModelType9<Int32, String>, TestContext_TestModelType9>(new NameOverrideTableRetrievalConfig<TestModelType9Key<Int32, String>, TestModelType9<Int32, String>>("Test9Datas") { KeyResolutionFunction = m => new TestModelType9Key<Int32, String>(m.Id1, m.Id2) }),
                 Test10Datas = await source.RetrieveTableAsync<TestModelType10Key<Int32>, TestModelType10<Int32>>(new NameOverrideTableRetrievalConfig<TestModelType10Key<Int32>, TestModelType10<Int32>>("Test10Datas") { KeyResolutionFunction = m => new TestModelType10Key<Int32>(m.Id1, m.Id2) }),
                 Test11Datas = await source.RetrieveTableAsync<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>, TestContext_TestModelType11>(new NameOverrideTableRetrievalConfig<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>>("Test11Datas") { KeyResolutionFunction = m => new TestModelType11Key<Int32, Int16>(m.Id1, m.Id2) }),
+                Test12Datas = await source.RetrieveTableAsync<Int32, TestModelType12, TestContext_TestModelType12>(new NameOverrideTableRetrievalConfig<Int32, TestModelType12>("Test12Datas")),
             };
         }
     }
