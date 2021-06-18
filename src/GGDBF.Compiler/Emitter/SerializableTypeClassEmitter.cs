@@ -69,7 +69,7 @@ namespace GGDBF
 			}
 
 			int propCount = 1;
-			foreach (var prop in EnumerateCollectionProperties())
+			foreach (var prop in EnumerateForeignCollectionProperties())
 			{
 				INamedTypeSymbol collectionElementType = (INamedTypeSymbol) ComputeCollectionElementType(prop);
 				string backingPropertyName = ComputeCollectionPropertyBackingFieldName(prop);
@@ -110,13 +110,13 @@ namespace GGDBF
 			return $"_Serialized{prop.Name}";
 		}
 
-		private IEnumerable<IPropertySymbol> EnumerateCollectionProperties()
+		private IEnumerable<IPropertySymbol> EnumerateForeignCollectionProperties()
 		{
 			return SerializableType
 				.GetMembers()
-				.Where(m => m.Kind == SymbolKind.Property)
+				.Where(m => m.Kind == SymbolKind.Property && m.IsVirtual)
 				.Cast<IPropertySymbol>()
-				.Where(p => p.IsICollectionType());
+				.Where(p => p.IsICollectionType() && p.Type.HasAttributeLike<TableAttribute>()); //important to ignore non-table types (probably complex/owned types)
 		}
 
 		private void EmitSerializableInitializeMethod(StringBuilder builder)
@@ -124,7 +124,7 @@ namespace GGDBF
 			builder.Append($"{Environment.NewLine}");
 			builder.Append($"public void {nameof(IGGDBFSerializable.Initialize)}(){Environment.NewLine}{{");
 
-			foreach (var prop in EnumerateCollectionProperties())
+			foreach (var prop in EnumerateForeignCollectionProperties())
 			{
 				string fieldName = ComputeCollectionPropertyBackingFieldName(prop);
 				INamedTypeSymbol collectionElementType = (INamedTypeSymbol) ComputeCollectionElementType(prop);
