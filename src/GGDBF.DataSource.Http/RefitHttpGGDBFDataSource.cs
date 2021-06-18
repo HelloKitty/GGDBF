@@ -8,8 +8,15 @@ using Refit;
 
 namespace GGDBF
 {
+	/// <summary>
+	/// An HTTP <see cref="IGGDBFDataSource"/> implementation that uses the Refit <see cref="RefitHttpGGDBFDataSource"/> interface
+	/// to source the data.
+	/// </summary>
 	public sealed class RefitHttpGGDBFDataSource : IGGDBFDataSource
 	{
+		/// <summary>
+		/// The base URL for the requests.
+		/// </summary>
 		private string BaseUrl { get; }
 
 		public RefitHttpGGDBFDataSource(string baseUrl)

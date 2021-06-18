@@ -7,6 +7,7 @@ using Refit;
 
 namespace GGDBF
 {
+	//TODO: Doc
 	public interface IGGDBFHttpNetworkClient
 	{
 		[Get("/api/GGDBF/{key}_{type}")]
