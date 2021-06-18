@@ -13,7 +13,7 @@ namespace GGDBF
 		public Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType>([AliasAs("key")] string keyType, [AliasAs("type")] string modelType, CancellationToken token = default);
 
 		[Get("/api/GGDBF/{key}_{type}/{derivedType}")]
-		public Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>([AliasAs("key")] string keyType, [AliasAs("type")] string modelType, [AliasAs("derivedType")] string modelType, CancellationToken token = default)
+		public Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>([AliasAs("key")] string keyType, [AliasAs("type")] string modelType, [AliasAs("derivedType")] string derivedModelType, CancellationToken token = default)
 			where TSerializableModelType : class, TModelType;
 	}
 }
