@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <PackageReference Include="Glader.Essentials.Refit" Version="2.2.73" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
   </ItemGroup>
 
   <ItemGroup>
