@@ -34,9 +34,15 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType3))]
 	[RequiredDataModel(typeof(TestModelType4))]
 	[RequiredDataModel(typeof(TestModelType5<,,,>))]
+	[RequiredDataModel(typeof(TestModelType10<>))]
+	[RequiredDataModel(typeof(TestModelType11<,>))]
 	public partial class TestContextGeneric<TKey>
 	{
 		public IReadOnlyDictionary<TKey, TestModelType5<TKey, TestModelType4, TestModelType, short>> Test5Datas { get; init; }
+
+		public IReadOnlyDictionary<TestModelType10Key<TKey>, TestModelType10<TKey>> Test10Datas { get; init; }
+
+		public IReadOnlyDictionary<TestModelType11Key<TKey, TKey>, TestModelType11<TKey, TKey>> Test11Datas { get; init; }
 	}
 
 	[RequiredDataModel(typeof(TestModelType2))]
@@ -297,7 +303,7 @@ namespace TestNamespace2
 
 	[DataContract]
 	[CompositeKeyHint(nameof(Id1), nameof(Id2))]
-	[Table("Tes11Datas")]
+	[Table("Test11Datas")]
 	public class TestModelType11<TKeyType1, TKeyType2>
 	{
 		[DataMember(Order = 1)]
