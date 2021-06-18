@@ -35,6 +35,8 @@ namespace GGDBF
 
         public IReadOnlyDictionary<TestModelType10Key<Int32>, TestModelType10<Int32>> Test10Datas { get; init; }
 
+        public IReadOnlyDictionary<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>> Tes11Datas { get; init; }
+
     }
 
     [GeneratedCodeAttribute("GGDBF", "0.0.11.0")]
@@ -64,6 +66,8 @@ namespace GGDBF
 
         public IReadOnlyDictionary<TestModelType10Key<Int32>, TestModelType10<Int32>> Test10Datas { get; init; }
 
+        public IReadOnlyDictionary<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>> Tes11Datas { get; init; }
+
         public static async Task Initialize(IGGDBFDataSource source)
         {
             Instance = new()
@@ -79,6 +83,7 @@ namespace GGDBF
                 Test8Datas = await source.RetrieveTableAsync<Int32, TestModelType8>(new NameOverrideTableRetrievalConfig<Int32, TestModelType8>("Test8Datas")),
                 Test9Datas = await source.RetrieveTableAsync<TestModelType9Key<Int32, String>, TestModelType9<Int32, String>, TestContext_TestModelType9>(new NameOverrideTableRetrievalConfig<TestModelType9Key<Int32, String>, TestModelType9<Int32, String>>("Test9Datas") { KeyResolutionFunction = m => new TestModelType9Key<Int32, String>(m.Id1, m.Id2) }),
                 Test10Datas = await source.RetrieveTableAsync<TestModelType10Key<Int32>, TestModelType10<Int32>>(new NameOverrideTableRetrievalConfig<TestModelType10Key<Int32>, TestModelType10<Int32>>("Test10Datas") { KeyResolutionFunction = m => new TestModelType10Key<Int32>(m.Id1, m.Id2) }),
+                Tes11Datas = await source.RetrieveTableAsync<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>, TestContext_TestModelType11>(new NameOverrideTableRetrievalConfig<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>>("Tes11Datas") { KeyResolutionFunction = m => new TestModelType11Key<Int32, Int16>(m.Id1, m.Id2) }),
             };
         }
     }

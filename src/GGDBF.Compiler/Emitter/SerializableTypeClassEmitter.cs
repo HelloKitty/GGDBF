@@ -76,14 +76,14 @@ namespace GGDBF
 
 				//We must emit a serializable backing field for the collection property
 				builder.Append($"[{nameof(DataMemberAttribute)}({nameof(DataMemberAttribute.Order)} = {propCount})]{Environment.NewLine}");
-				builder.Append($"public {nameof(SerializableGGDBFCollection<int, object>)}<{new TablePrimaryKeyParser().Parse(collectionElementType)}, {collectionElementType.Name}> {backingPropertyName};{Environment.NewLine}{Environment.NewLine}");
+				builder.Append($"public {nameof(SerializableGGDBFCollection<int, object>)}<{new TablePrimaryKeyParser().Parse(collectionElementType, true)}, {collectionElementType.GetFriendlyName()}> {backingPropertyName};{Environment.NewLine}{Environment.NewLine}");
 
 				//The concept of returning the base property getter if the derived field is null for cases where we want to access the collection
 				//during the process of serializing the real model type to the new model type. We need to access the collection and process it
 				//for keys to build the serializable collection.
 				//get => _ModelCollection != null ? _ModelCollection.Load(TestContext.Instance.Test4Datas) : base.ModelCollection;
 				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-				builder.Append($"public override {prop.Type.Name}<{collectionElementType.Name}> {prop.Name} {Environment.NewLine}{{ get => {backingPropertyName} != null ? {backingPropertyName}.{nameof(SerializableGGDBFCollection<int, object>.Load)}({OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(collectionElementType)}) : base.{prop.Name};{Environment.NewLine}");
+				builder.Append($"public override {prop.Type.Name}<{collectionElementType.GetFriendlyName()}> {prop.Name} {Environment.NewLine}{{ get => {backingPropertyName} != null ? {backingPropertyName}.{nameof(SerializableGGDBFCollection<int, object>.Load)}({OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(collectionElementType)}) : base.{prop.Name};{Environment.NewLine}");
 
 				builder.Append($"}}{Environment.NewLine}");
 
@@ -128,7 +128,11 @@ namespace GGDBF
 			{
 				string fieldName = ComputeCollectionPropertyBackingFieldName(prop);
 				INamedTypeSymbol collectionElementType = (INamedTypeSymbol) ComputeCollectionElementType(prop);
-				string keyResolutionLambda = new TablePrimaryKeyParser().BuildKeyResolutionLambda(collectionElementType);
+
+				//TODO: Hack to get the key name
+				//TODO: Is it ok for open generics to use the type args??
+				string keyTypeName = new GenericTypeBuilder(collectionElementType.TypeParameters.ToArray()).Build($"{collectionElementType.Name}Key", collectionElementType.TypeArguments.ToArray());
+				string keyResolutionLambda = new TablePrimaryKeyParser().BuildKeyResolutionLambda(collectionElementType, keyTypeName);
 
 				builder.Append($"{fieldName} = {nameof(GGDBFHelpers)}.{nameof(GGDBFHelpers.CreateSerializableCollection)}({keyResolutionLambda}, {prop.Name});");
 			}

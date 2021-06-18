@@ -53,9 +53,13 @@ namespace GGDBF.Generator.ManualTest
 		private static async Task InitializeDatabase(TestDBContext context)
 		{
 			var models = await context.Test2Datas.ToArrayAsync();
+			var models10 = await context.Test10Datas.ToArrayAsync();
 			var model4 = new TestModelType4("2", new List<TestModelType2>(models));
 
+			var model11 = new TestModelType11<int, short>(1, 2,models10);
+
 			await context.Test4Datas.AddAsync(model4);
+			await context.Tes11Datas.AddAsync(model11);
 			await context.SaveChangesAsync();
 		}
 	}
@@ -83,7 +87,9 @@ namespace GGDBF.Generator.ManualTest
 
 		public DbSet<TestModelType9<int, string>> Test9Datas { get; set; }
 
-		public DbSet<TestModelType9<int, short>> Test10Datas { get; set; }
+		public DbSet<TestModelType10<int>> Test10Datas { get; set; }
+
+		public DbSet<TestModelType11<Int32, Int16>> Tes11Datas { get; set; }
 
 		public TestDBContext(DbContextOptions options)
 			: base(options)
@@ -128,6 +134,20 @@ namespace GGDBF.Generator.ManualTest
 
 
 			modelBuilder.Entity<TestModelType9<int, string>>()
+				.HasKey(m => new { m.Id1, m.Id2 });
+
+			modelBuilder.Entity<TestModelType10<int>>()
+				.HasKey(m => new {m.Id1, m.Id2});
+
+			modelBuilder.Entity<TestModelType10<int>>()
+				.HasData(new List<TestModelType10<int>>()
+				{
+					new TestModelType10<int>(1, 2),
+					new TestModelType10<int>(2, 2),
+					new TestModelType10<int>(69, 3)
+				});
+
+			modelBuilder.Entity<TestModelType11<Int32, Int16>>()
 				.HasKey(m => new { m.Id1, m.Id2 });
 
 			//Seeding is broken for collection props.
