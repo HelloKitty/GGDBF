@@ -37,6 +37,7 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType5<,,,>))]
 	[RequiredDataModel(typeof(TestModelType10<>))]
 	[RequiredDataModel(typeof(TestModelType11<,>))]
+	[RequiredDataModel(typeof(TestModelType13<,>))]
 	public partial class TestContextGeneric<TKey>
 	{
 		public IReadOnlyDictionary<TKey, TestModelType5<TKey, TestModelType4, TestModelType, short>> Test5Datas { get; init; }
@@ -44,6 +45,8 @@ namespace GGDBF
 		public IReadOnlyDictionary<TestModelType10Key<TKey>, TestModelType10<TKey>> Test10Datas { get; init; }
 
 		public IReadOnlyDictionary<TestModelType11Key<TKey, TKey>, TestModelType11<TKey, TKey>> Test11Datas { get; init; }
+
+		public IReadOnlyDictionary<TestModelType13Key<TKey, TKey>, TestModelType13<TKey, TKey>> Test13Datas { get; init; }
 	}
 
 	[RequiredDataModel(typeof(TestModelType2))]
@@ -228,19 +231,19 @@ namespace TestNamespace2
 		public int Id { get; private set; }
 
 		[DataMember(Order = 2)]
-		public int ModelId1 { get; private set; }
+		public int ModelId1_Test123 { get; private set; }
 
 		[DataMember(Order = 3)]
-		public string ModelId2 { get; private set; }
+		public string ModelId2_Test345 { get; private set; }
 
-		[CompositeKeyHint(nameof(ModelId1), nameof(ModelId2))]
+		[CompositeKeyHint(nameof(ModelId1_Test123), nameof(ModelId2_Test345))]
 		public virtual TestModelType7 Model { get; private set; }
 
 		public TestModelType8(int id, int modelId1, string modelId2)
 		{
 			Id = id;
-			ModelId1 = modelId1;
-			ModelId2 = modelId2;
+			ModelId1_Test123 = modelId1;
+			ModelId2_Test345 = modelId2;
 		}
 
 		public TestModelType8()
@@ -360,6 +363,28 @@ namespace TestNamespace2
 		{
 
 		}
+	}
+
+	[DataContract]
+	[CompositeKeyHint(nameof(Id1), nameof(Id2))]
+	[Table("Test13Datas")]
+	public class TestModelType13<TKeyType1, TKeyType2>
+	{
+		[DataMember(Order = 1)]
+		public TKeyType1 Id1 { get; private set; }
+
+		[DataMember(Order = 2)]
+		public TKeyType2 Id2 { get; private set; }
+
+		[DataMember(Order = 3)]
+		public TKeyType1 ModelId1 { get; private set; }
+
+		[DataMember(Order = 4)]
+		public short ModelId2 { get; private set; }
+
+		[IgnoreDataMember]
+		[CompositeKeyHint(nameof(ModelId1), nameof(ModelId2))]
+		public virtual TestModelType10<TKeyType2> Model { get; private set; }
 	}
 
 	[DataContract]

@@ -12,7 +12,14 @@ namespace GGDBF
 	{
 		public static bool HasForeignKeyDefined(this ITypeSymbol type)
 		{
-			return HasForeignKeyAttributes(type) || HasForeignCollection(type);
+			return HasForeignKeyAttributes(type) || HasForeignCollection(type) || PropertyHasCompositeKeyAttribute(type);
+		}
+
+		private static bool PropertyHasCompositeKeyAttribute(ITypeSymbol type)
+		{
+			return type.GetMembers()
+				.Where(m => m.Kind == SymbolKind.Property && m.IsVirtual)
+				.Any(m => m.HasAttributeExact<CompositeKeyHintAttribute>());
 		}
 
 		private static bool HasForeignCollection(ITypeSymbol type)

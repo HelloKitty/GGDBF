@@ -185,10 +185,6 @@ namespace GGDBF
 		{
 			string keyName = new TablePrimaryKeyParser().ParseSimple(type);
 
-			//Keys could be shared in cases of multiple contexts
-			if (EmittedKeyTypes.Contains(keyName))
-				return;
-
 			StringBuilder builder = new StringBuilder();
 			UsingsEmitter usingsEmitter = new();
 			NamespaceDecoratorEmitter namespaceDecorator = new NamespaceDecoratorEmitter(new CompositeKeyTypeEmitter(keyName, type, Accessibility.Public), contextSymbol.ContainingNamespace.FullNamespaceString());
@@ -202,8 +198,14 @@ namespace GGDBF
 			usingsEmitter.Emit(builder);
 			namespaceDecorator.Emit(builder);
 
-			EmittedKeyTypes.Add(keyName);
-			context.AddSource($"{keyName}", ConvertFileToNode(context, builder).ToString());
+			string source = builder.ToString();
+			string hashMapKey = $"{keyName} {source.Substring(source.IndexOf('{'))}";
+			//Keys could be shared in cases of multiple contexts
+			if(EmittedKeyTypes.Contains(hashMapKey))
+				return;
+
+			EmittedKeyTypes.Add(hashMapKey);
+			context.AddSource($"{contextSymbol.Name}_{keyName}", ConvertFileToNode(context, builder).ToString());
 		}
 
 		private static void EmitSerializableTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type)

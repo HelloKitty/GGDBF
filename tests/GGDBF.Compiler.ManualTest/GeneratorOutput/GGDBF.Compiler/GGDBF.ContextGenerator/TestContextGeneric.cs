@@ -26,6 +26,8 @@ namespace GGDBF
 
         public IReadOnlyDictionary<TestModelType11Key<TKey, TKey>, TestModelType11<TKey, TKey>> Test11Datas { get; init; }
 
+        public IReadOnlyDictionary<TestModelType13Key<TKey, TKey>, TestModelType13<TKey, TKey>> Test13Datas { get; init; }
+
     }
 
     [GeneratedCodeAttribute("GGDBF", "0.0.13.0")]
@@ -52,6 +54,7 @@ namespace GGDBF
                 Test5Datas = await source.RetrieveTableAsync<TKey, TestModelType5<TKey, TestModelType4, TestModelType, Int16>, TestContextGeneric_TestModelType5<TKey>>(new NameOverrideTableRetrievalConfig<TKey, TestModelType5<TKey, TestModelType4, TestModelType, Int16>>("Test5Datas")),
                 Test10Datas = await source.RetrieveTableAsync<TestModelType10Key<TKey>, TestModelType10<TKey>>(new NameOverrideTableRetrievalConfig<TestModelType10Key<TKey>, TestModelType10<TKey>>("Test10Datas") { KeyResolutionFunction = m => new TestModelType10Key<TKey>(m.Id1, m.Id2) }),
                 Test11Datas = await source.RetrieveTableAsync<TestModelType11Key<TKey, TKey>, TestModelType11<TKey, TKey>, TestContextGeneric_TestModelType11<TKey>>(new NameOverrideTableRetrievalConfig<TestModelType11Key<TKey, TKey>, TestModelType11<TKey, TKey>>("Test11Datas") { KeyResolutionFunction = m => new TestModelType11Key<TKey, TKey>(m.Id1, m.Id2) }),
+                Test13Datas = await source.RetrieveTableAsync<TestModelType13Key<TKey, TKey>, TestModelType13<TKey, TKey>, TestContextGeneric_TestModelType13<TKey>>(new NameOverrideTableRetrievalConfig<TestModelType13Key<TKey, TKey>, TestModelType13<TKey, TKey>>("Test13Datas") { KeyResolutionFunction = m => new TestModelType13Key<TKey, TKey>(m.Id1, m.Id2) }),
             };
         }
     }

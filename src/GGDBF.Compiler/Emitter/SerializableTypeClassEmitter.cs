@@ -42,27 +42,29 @@ namespace GGDBF
 			//the required overrides for their navigation properties.
 			foreach (var prop in SerializableType
 				.GetMembers()
-				.Where(m => m.HasAttributeLike<ForeignKeyAttribute>())
+				.Where(m => m.HasAttributeLike<ForeignKeyAttribute>() || m.HasAttributeExact<CompositeKeyHintAttribute>())
 				.Cast<IPropertySymbol>())
 			{
-				IPropertySymbol navProperty = RetrieveNavigationPropertySymbol(prop);
-
 				//Special handling for composite key table references
-				if (navProperty.Type.HasAttributeExact<CompositeKeyHintAttribute>())
+				if (prop.Type.HasAttributeExact<CompositeKeyHintAttribute>() && prop.HasAttributeLike<CompositeKeyHintAttribute>())
 				{
-					string keyResolution = new TablePrimaryKeyParser().BuildCompositeKeyCreationExpression(navProperty, "base", SerializableType);
+					//TODO: Hack to get the key name
+					//TODO: Is it ok for open generics to use the type args??
+					string keyTypeName = ComputeCompositeKeyTypeName(prop);
+					string keyResolution = new TablePrimaryKeyParser().BuildCompositeKeyCreationExpression(prop, "base", keyTypeName);
 
 					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-					builder.Append($"public override {navProperty.Type.Name} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[{keyResolution}];{Environment.NewLine}");
+					builder.Append($"public override {prop.Type.GetFriendlyName()} {prop.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(prop.Type)}[{keyResolution}];{Environment.NewLine}");
 
 					builder.Append($"}}{Environment.NewLine}");
 				}
 				else
 				{
+					IPropertySymbol navProperty = RetrieveNavigationPropertySymbol(prop);
 					IPropertySymbol keyProperty = RetrieveNavigationKeyPropertySymbol(prop);
 
 					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-					builder.Append($"public override {navProperty.Type.Name} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
+					builder.Append($"public override {navProperty.Type.GetFriendlyName()} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
 
 					builder.Append($"}}{Environment.NewLine}");
 				}
@@ -96,6 +98,13 @@ namespace GGDBF
 			EmitSerializableInitializeMethod(builder);
 
 			builder.Append($"}}");
+		}
+
+		private static string ComputeCompositeKeyTypeName(IPropertySymbol prop)
+		{
+			if (((INamedTypeSymbol)prop.Type).IsGenericType)
+				return new GenericTypeBuilder(((INamedTypeSymbol)prop.Type).TypeParameters.ToArray()).Build($"{prop.Type.Name}Key", ((INamedTypeSymbol)prop.Type).TypeArguments.ToArray());
+			return new TablePrimaryKeyParser().Parse((INamedTypeSymbol) prop.Type);
 		}
 
 		private static ITypeSymbol ComputeCollectionElementType(IPropertySymbol prop)

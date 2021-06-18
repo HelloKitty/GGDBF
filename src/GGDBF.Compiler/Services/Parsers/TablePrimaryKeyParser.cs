@@ -39,32 +39,6 @@ namespace GGDBF
 			return GetPrimaryKeyProperty(type).Type.GetFriendlyName();
 		}
 
-		public string BuildCompositeKeyCreationExpression(INamedTypeSymbol type, string modelReference)
-		{
-			string[] keyProperties = type
-				.GetAttributeExact<CompositeKeyHintAttribute>()
-				.ConstructorArguments
-				.First()
-				.Values
-				.Select(v => v.Value)
-				.Cast<string>()
-				.ToArray();
-
-			StringBuilder builder = new StringBuilder();
-			builder.Append($"new {Parse(type)}(");
-			for(int i = 0; i < keyProperties.Length; i++)
-			{
-				builder.Append($"{modelReference}.{keyProperties[i]}");
-
-				if(i < keyProperties.Length - 1)
-					builder.Append(", ");
-			}
-
-			builder.Append(')');
-
-			return builder.ToString();
-		}
-
 		public string BuildKeyResolutionLambda(INamedTypeSymbol type, string keyTypeNameOverride = null)
 		{
 			//First let's check for a CompositeKey attribute for types that have complex
@@ -121,21 +95,26 @@ namespace GGDBF
 			throw new InvalidOperationException($"Failed to deduce PK from ModelType: {type.Name}:{type}");
 		}
 
-		public string BuildCompositeKeyCreationExpression(IPropertySymbol navProperty, string modelReference, INamedTypeSymbol referringType)
+		public string BuildCompositeKeyCreationExpression(IPropertySymbol property, string modelReference, string keyTypeNameOverride = null)
 		{
-			//TODO: We don't support all ForeignKey attribute setups
-			//This overload will provide a key creation expression using the foreign key property on the
-			//referring type.
-			string[] keyProperties = navProperty
+			INamedTypeSymbol type = (INamedTypeSymbol) property.Type;
+
+			//Important we get PROPERTIES key defs and not from
+			//the prop type because they may not match.
+			string[] keyProperties = property
 				.GetAttributeExact<CompositeKeyHintAttribute>()
 				.ConstructorArguments
 				.First()
 				.Values
+				.Select(v => v.Value)
 				.Cast<string>()
 				.ToArray();
 
+			if(keyTypeNameOverride == null)
+				keyTypeNameOverride = Parse(type);
+
 			StringBuilder builder = new StringBuilder();
-			builder.Append($"new {Parse((INamedTypeSymbol) navProperty.Type)}(");
+			builder.Append($"new {keyTypeNameOverride}(");
 			for(int i = 0; i < keyProperties.Length; i++)
 			{
 				builder.Append($"{modelReference}.{keyProperties[i]}");

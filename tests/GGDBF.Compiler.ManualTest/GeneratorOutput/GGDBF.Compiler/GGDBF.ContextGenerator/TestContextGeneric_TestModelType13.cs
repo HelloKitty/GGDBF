@@ -1,23 +1,23 @@
 ﻿using TestNamespace2;
+using GGDBF;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.CodeDom.Compiler;
 using System.Runtime.Serialization;
-using GGDBF;
 
 namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.0.13.0")]
     [DataContractAttribute]
-    public partial class TestContext_TestModelType8 : TestModelType8, IGGDBFSerializable
+    public partial class TestContextGeneric_TestModelType13<TKey> : TestModelType13<TKey, TKey>, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
-        public override TestModelType7 Model
+        public override TestModelType10<TKey> Model
         {
-            get => TestContext.Instance.Test7Datas[new TestModelType7Key(base.ModelId1_Test123, base.ModelId2_Test345)];
+            get => TestContextGeneric<TKey>.Instance.Test10Datas[new TestModelType10Key<TKey>(base.ModelId1, base.ModelId2)];
         }
-        public TestContext_TestModelType8() { }
+        public TestContextGeneric_TestModelType13() { }
 
         public void Initialize()
         {
