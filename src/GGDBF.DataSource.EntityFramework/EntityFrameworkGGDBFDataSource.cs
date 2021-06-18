@@ -14,20 +14,22 @@ namespace GGDBF
 	/// <summary>
 	/// EntityFramework <see cref="DbContext"/>-base implementation of <see cref="IGGDBFDataSource"/>.
 	/// </summary>
-	public sealed class EntityFrameworkGGDBFDataSource : IGGDBFDataSource
+	/// <typeparam name="TContextType">The DB context type.</typeparam>
+	public class EntityFrameworkGGDBFDataSource<TContextType> : IGGDBFDataSource
+		where TContextType : DbContext
 	{
 		/// <summary>
 		/// Internal data source.
 		/// </summary>
-		private DbContext Context { get; }
+		private TContextType Context { get; }
 
-		public EntityFrameworkGGDBFDataSource(DbContext context)
+		public EntityFrameworkGGDBFDataSource(TContextType context)
 		{
 			Context = context ?? throw new ArgumentNullException(nameof(context));
 		}
 
 		/// <inheritdoc />
-		public async Task<IEnumerable<TModelType>> RetrieveAllAsync<TModelType>(CancellationToken token = default) 
+		public async Task<IEnumerable<TModelType>> RetrieveAllAsync<TModelType>(CancellationToken token = default)
 			where TModelType : class
 		{
 			return await Context
@@ -36,14 +38,14 @@ namespace GGDBF
 		}
 
 		/// <inheritdoc />
-		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
+		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default)
 			where TModelType : class
 		{
 			IEnumerable<TModelType> models = await RetrieveAllAsync<TModelType>(token);
 
-			if (config == null)
+			if(config == null)
 				throw new NotSupportedException($"TODO: Cannot support no config.");
-			else if (config.KeyResolutionFunction == null)
+			else if(config.KeyResolutionFunction == null)
 			{
 				//TODO: This only supports simple primary keys
 				var keyName = Context.Model
@@ -53,15 +55,15 @@ namespace GGDBF
 					.Select(x => x.Name)
 					.Single();
 
-				config = new TableRetrievalConfig<TPrimaryKeyType, TModelType>(m => (TPrimaryKeyType) m.GetPropertyValue(keyName), config.TableNameOverride);
+				config = new TableRetrievalConfig<TPrimaryKeyType, TModelType>(m => (TPrimaryKeyType)m.GetPropertyValue(keyName), config.TableNameOverride);
 			}
-				
+
 
 			var map = new Dictionary<TPrimaryKeyType, TModelType>();
 			var version = GGDBFTable<TPrimaryKeyType, TModelType>.ConvertToVersion(typeof(GGDBFTable<TPrimaryKeyType, TModelType>).Assembly.GetName().Version);
 			string name = string.IsNullOrWhiteSpace(config.TableNameOverride) ? typeof(TModelType).GetCustomAttribute<TableAttribute>(true).Name : config.TableNameOverride;
 
-			foreach (var model in models)
+			foreach(var model in models)
 				map[config.KeyResolutionFunction(model)] = model;
 
 			return new GGDBFTable<TPrimaryKeyType, TModelType>()
@@ -73,13 +75,25 @@ namespace GGDBF
 		}
 
 		/// <inheritdoc />
-		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
-			where TModelType : class 
+		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default)
+			where TModelType : class
 			where TSerializableModelType : class, TModelType, IGGDBFSerializable
 		{
 			//EF Core doesn't support the concept of serializable subtypes.
 			//So we can only return the actual model type.
 			return await RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(config, token);
+		}
+	}
+
+	/// <summary>
+	/// EntityFramework <see cref="DbContext"/>-base implementation of <see cref="IGGDBFDataSource"/>.
+	/// </summary>
+	public sealed class EntityFrameworkGGDBFDataSource : EntityFrameworkGGDBFDataSource<DbContext>
+	{
+		public EntityFrameworkGGDBFDataSource(DbContext context) 
+			: base(context)
+		{
+
 		}
 	}
 }
