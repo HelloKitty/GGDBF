@@ -32,7 +32,7 @@ namespace GGDBF
 
 			//Total hack but the best way to get the data I guess.
 			var modelDictionary = (IReadOnlyDictionary<TPrimaryKeyType, TModelType>)typeof(TGGDBFContextType)
-				.GetProperties(BindingFlags.Public)
+				.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty)
 				.First(p => p.PropertyType == typeof(IReadOnlyDictionary<TPrimaryKeyType, TModelType>))
 				.GetValue(context);
 
