@@ -11,6 +11,7 @@ namespace GGDBF
 	/// <summary>
 	/// <see cref="IGGDBFDataSource"/> adapter that will use a <see cref="IGGDBFDataConverter"/> to convert serializable types
 	/// when reading from the datasource.
+	/// WARNING: This only works for simple primary key cases. Complex/composite primary keys don't work unless the DataSource can deduce them.
 	/// </summary>
 	public sealed class ConverterDataSourceGGDBFAdapter : IGGDBFDataSource
 	{
