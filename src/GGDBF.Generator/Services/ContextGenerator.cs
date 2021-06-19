@@ -29,7 +29,7 @@ namespace GGDBF
 			//It's ok to use hacky non-AOT friendly and slow reflection here because
 			//this only runs offline
 			await (Task)typeof(TContextType)
-				.GetMethod("Initialize", BindingFlags.Static | BindingFlags.Public)
+				.GetMethod(GGDBFConstants.INITIALIZE_METHOD_NAME, BindingFlags.Static | BindingFlags.Public)
 				.Invoke(null, new object[1] {sourceWriter});
 
 			await sourceWriter.WriteAsync(Writer, token);
