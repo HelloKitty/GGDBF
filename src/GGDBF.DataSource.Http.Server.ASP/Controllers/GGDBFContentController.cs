@@ -21,7 +21,7 @@ namespace GGDBF
 		//[Get("/api/GGDBF/{key}_{name}")]
 		[ProducesJson]
 		[HttpGet("{key}_{type}")]
-		public async Task<IActionResult> RetrieveTableAsync([FromRoute(Name = "key")] string keyType, [FromRoute(Name = "type")] string modelType, CancellationToken token = default)
+		public async Task<IActionResult> GetAsync([FromRoute(Name = "key")] string keyType, [FromRoute(Name = "type")] string modelType, CancellationToken token = default)
 		{
 			if (modelType == null) throw new ArgumentNullException(nameof(modelType));
 
@@ -41,13 +41,13 @@ namespace GGDBF
 
 		[ProducesJson]
 		[HttpGet("{key}_{type}/{derivedType}")]
-		public async Task<IActionResult> RetrieveTableAsync([FromRoute(Name = "key")] string keyType, [FromRoute(Name = "type")] string modelType, [FromRoute(Name = "derivedType")] string derivedType, CancellationToken token = default)
+		public async Task<IActionResult> GetAsync([FromRoute(Name = "key")] string keyType, [FromRoute(Name = "type")] string modelType, [FromRoute(Name = "derivedType")] string derivedType, CancellationToken token = default)
 		{
 			if (keyType == null) throw new ArgumentNullException(nameof(keyType));
 			if (modelType == null) throw new ArgumentNullException(nameof(modelType));
 
 			//WARNING: Not safe to expose in production https://stackoverflow.com/questions/23895563/is-it-safe-to-call-type-gettype-with-an-untrusted-type-name
-			var resultAwaitable = (Task)GetType().GetMethod(nameof(RetrieveTableAsync), new Type[] { typeof(string), typeof(string), typeof(CancellationToken) })
+			var resultAwaitable = (Task)GetType().GetMethod(nameof(RetrieveTableAsync), new Type[] { typeof(string), typeof(string), typeof(string), typeof(CancellationToken) })
 				.MakeGenericMethod(Type.GetType(keyType), Type.GetType(modelType), Type.GetType(derivedType))
 				.Invoke(this, new object[] { keyType, modelType, derivedType, token });
 
