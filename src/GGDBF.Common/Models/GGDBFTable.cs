@@ -43,7 +43,7 @@ namespace GGDBF
 		/// <returns>A read-only <see cref="IReadOnlyDictionary{TKey,TValue}"/> version of <see cref="TableData"/>.</returns>
 		public IReadOnlyDictionary<TPrimaryKeyType, TModelType> ToReadOnly()
 		{
-			return new ReadOnlyDictionary<TPrimaryKeyType, TModelType>(TableData);
+			return TableData;
 		}
 
 		public static int[] ConvertToVersion(Version version)
