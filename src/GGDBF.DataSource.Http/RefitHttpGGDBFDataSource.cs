@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Refit;
 
 namespace GGDBF
@@ -46,9 +47,25 @@ namespace GGDBF
 		{
 			await ReloadIfRequiredAsync<TPrimaryKeyType, TModelType>(token);
 
-			return await RestService
-				.For<IGGDBFHttpNetworkClient>(BaseUrl)
+			return await CreateServiceClient<TPrimaryKeyType, TModelType>()
 				.RetrieveTableAsync<TPrimaryKeyType, TModelType>(typeof(TPrimaryKeyType).AssemblyQualifiedName, typeof(TModelType).AssemblyQualifiedName, token);
+		}
+
+		private IGGDBFHttpNetworkClient CreateServiceClient<TPrimaryKeyType, TModelType>() 
+			where TModelType : class
+		{
+			//Creates a Refit client that can understand complex dictionary key type serialization.
+			return RestService
+				.For<IGGDBFHttpNetworkClient>(BaseUrl, new RefitSettings()
+				{
+					ContentSerializer = new NewtonsoftJsonContentSerializer(new JsonSerializerSettings()
+					{
+						Converters = new List<JsonConverter>()
+						{
+							new GGDBFComplexDictionaryJsonConverter()
+						}
+					})
+				});
 		}
 
 		/// <inheritdoc />
@@ -58,8 +75,7 @@ namespace GGDBF
 		{
 			await ReloadIfRequiredAsync<TPrimaryKeyType, TModelType>(token);
 
-			return await RestService
-				.For<IGGDBFHttpNetworkClient>(BaseUrl)
+			return await CreateServiceClient<TPrimaryKeyType, TModelType>()
 				.RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(typeof(TPrimaryKeyType).AssemblyQualifiedName, typeof(TModelType).AssemblyQualifiedName, typeof(TSerializableModelType).AssemblyQualifiedName, token);
 		}
 
