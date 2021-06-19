@@ -63,15 +63,20 @@ namespace GGDBF
 				.RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(typeof(TPrimaryKeyType).AssemblyQualifiedName, typeof(TModelType).AssemblyQualifiedName, typeof(TSerializableModelType).AssemblyQualifiedName, token);
 		}
 
+		/// <inheritdoc />
+		public async Task ReloadAsync(CancellationToken token = default)
+		{
+			await RestService
+				.For<IGGDBFHttpNetworkClient>(BaseUrl)
+				.ReloadContextAsync<TGGDBFContextType>(typeof(TGGDBFContextType).AssemblyQualifiedName, token);
+		}
+
 		private async Task ReloadIfRequiredAsync<TPrimaryKeyType, TModelType>(CancellationToken token = default) 
 			where TModelType : class
 		{
 			if (Options.RefreshOnFirstQuery && FirstQuery)
 			{
-				await RestService
-					.For<IGGDBFHttpNetworkClient>(BaseUrl)
-					.ReloadContextAsync<TGGDBFContextType>(typeof(TGGDBFContextType).AssemblyQualifiedName, token);
-
+				await ReloadAsync(token);
 				FirstQuery = true;
 			}
 		}

@@ -65,5 +65,11 @@ namespace GGDBF
 					.ToDictionary(t => t.Key, t => (TModelType) Converter.Convert<TModelType, TSerializableModelType>(t.Value))
 			};
 		}
+
+		/// <inheritdoc />
+		public async Task ReloadAsync(CancellationToken token = default)
+		{
+			await DataSource.ReloadAsync(token);
+		}
 	}
 }

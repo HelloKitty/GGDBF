@@ -82,6 +82,16 @@ namespace GGDBF
 			//So we can only return the actual model type.
 			return await RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(config, token);
 		}
+
+		/// <inheritdoc />
+		public async Task ReloadAsync(CancellationToken token = default)
+		{
+			//Not quite a good implementation but this is the closest logical
+			//thing to a Reload/Refresh for a DBContext
+			//See: https://stackoverflow.com/questions/20270599/entity-framework-refresh-context
+			foreach(var entity in Context.ChangeTracker.Entries())
+				await entity.ReloadAsync(token);
+		}
 	}
 
 	/// <summary>

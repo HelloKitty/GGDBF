@@ -67,6 +67,12 @@ namespace GGDBF
 			};
 		}
 
+		/// <inheritdoc />
+		public async Task ReloadAsync(CancellationToken token = default)
+		{
+			//There is nothing logically that can be done here.
+		}
+
 		private TableRetrievalConfig<TPrimaryKeyType, TSerializableModelType> CastConfig<TPrimaryKeyType, TModelType, TSerializableModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config)
 			where TModelType : class
 			where TSerializableModelType : class, TModelType, IGGDBFSerializable

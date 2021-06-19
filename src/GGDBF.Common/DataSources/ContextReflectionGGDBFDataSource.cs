@@ -51,6 +51,12 @@ namespace GGDBF
 			return await RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(config, token);
 		}
 
+		public async Task ReloadAsync(CancellationToken token = default)
+		{
+			await Source.ReloadAsync(token);
+			await GGDBFHelpers.CallInitialize<TGGDBFContextType>(Source);
+		}
+
 		private async Task<TGGDBFContextType> GetContext(IGGDBFDataSource source)
 		{
 			if (source == null) throw new ArgumentNullException(nameof(source));

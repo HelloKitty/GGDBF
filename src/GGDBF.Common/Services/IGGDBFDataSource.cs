@@ -53,5 +53,12 @@ namespace GGDBF
 		Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default)
 			where TModelType : class
 			where TSerializableModelType : class, TModelType, IGGDBFSerializable;
+
+		/// <summary>
+		/// Reloads/refreshs the datasource.
+		/// </summary>
+		/// <param name="token">Cancel token.</param>
+		/// <returns></returns>
+		Task ReloadAsync(CancellationToken token = default);
 	}
 }

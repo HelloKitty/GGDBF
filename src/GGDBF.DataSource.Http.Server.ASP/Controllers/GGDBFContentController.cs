@@ -61,6 +61,20 @@ namespace GGDBF
 			return Json(result);
 		}
 
+		//[Post("/api/GGDBF/{context}/reload")]
+		[HttpPost("{context}/reload")]
+		public async Task<IActionResult> ReloadAsync([FromRoute(Name = "context")] string contextType, CancellationToken token = default)
+		{
+			//WARNING: Not safe to expose in production https://stackoverflow.com/questions/23895563/is-it-safe-to-call-type-gettype-with-an-untrusted-type-name
+			var resultAwaitable = (Task)GetType().GetMethod(nameof(ReloadAsync), new Type[] { typeof(string), typeof(CancellationToken) })
+				.MakeGenericMethod(ResolveTypeForGGDBF(contextType))
+				.Invoke(this, new object[] { contextType, token });
+
+			await resultAwaitable;
+
+			return Ok();
+		}
+
 		private static Type ResolveTypeForGGDBF(string modelType)
 		{
 			return Type.GetType(modelType, GGDBFAssemblyResolver, null);
@@ -82,6 +96,12 @@ namespace GGDBF
 			//We can ignore parameters since this is generic and we're implementing using the generics and not the text types
 			return await DataSource
 				.RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(new TableRetrievalConfig<TPrimaryKeyType, TModelType>(), token);
+		}
+
+		public async Task ReloadContextAsync<TGGDBFContextType>(string contextType, CancellationToken token = default) 
+			where TGGDBFContextType : class, IGGDBFContext
+		{
+			await DataSource.ReloadAsync(token);
 		}
 
 		//See: https://stackoverflow.com/a/33277079

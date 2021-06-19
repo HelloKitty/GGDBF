@@ -60,6 +60,12 @@ namespace GGDBF
 			return table;
 		}
 
+		/// <inheritdoc />
+		public async Task ReloadAsync(CancellationToken token = default)
+		{
+			await DataSource.ReloadAsync(token);
+		}
+
 		public async Task WriteAsync(IGGDBFDataWriter writer, CancellationToken token = default)
 		{
 			if (writer == null) throw new ArgumentNullException(nameof(writer));
