@@ -4,10 +4,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Glader.Essentials;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
 
 namespace GGDBF
 {
@@ -26,5 +28,22 @@ namespace GGDBF
 			return builder
 				.RegisterController<GGDBFContentController>();
 		}
+
+#if NETCOREAPP3_1_OR_GREATER
+		/// <summary>
+		/// Registers the GGDBF JSON serializers.
+		/// </summary>
+		/// <param name="options">JSON serializer options.</param>
+		/// <returns>The options.</returns>
+		public static MvcNewtonsoftJsonOptions RegisterGGDBFSerializers(this MvcNewtonsoftJsonOptions options)
+		{
+			if (options.SerializerSettings.Converters.Any())
+				options.SerializerSettings.Converters.Add(new GGDBFComplexDictionaryJsonConverter());
+			else
+				options.SerializerSettings.Converters = new List<JsonConverter>() { new GGDBFComplexDictionaryJsonConverter() };
+
+			return options;
+		}
+#endif
 	}
 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -26,6 +26,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GGDBF.DataSource.Http\GGDBF.DataSource.Http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson">
+      <Version>3.1.10</Version>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
