@@ -92,14 +92,17 @@ namespace GGDBF
 		/// <returns></returns>
 		public static string GetTableName<TModelType>()
 		{
-			Type tableTypeAttribute = Type.GetType("System.ComponentModel.DataAnnotations.Schema.TableAttribute, System.ComponentModel.Annotations");
+			Type tableTypeAttribute = Type.GetType("System.ComponentModel.DataAnnotations.Schema.TableAttribute, System.ComponentModel.Annotations", true);
 
 			Attribute attribute = typeof(TModelType)
 				.GetCustomAttribute(tableTypeAttribute, true);
 
+			if (attribute == null)
+				throw new InvalidOperationException($"Failed to retrieve Table attribute from {typeof(TModelType).Name} AttributeType: {tableTypeAttribute.Name}");
+
 			return (string) attribute
 				.GetType()
-				.GetProperty("Name", BindingFlags.Public)
+				.GetProperty("Name", BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty)
 				.GetValue(attribute);
 		}
 	}
