@@ -14,20 +14,19 @@ namespace Glader.ASP.RPG
 		/// </summary>
 		/// <param name="services">Service container.</param>
 		/// <returns></returns>
-		public static IServiceCollection RegisterGGDBFContentServices<TGGDBFDataSourceType, TGGDBFConverterType>(this IServiceCollection services)
+		public static IServiceCollection RegisterGGDBFContentServices<TGGDBFDataSourceType, TGGDBFContextType>(this IServiceCollection services)
 			where TGGDBFDataSourceType : class, IGGDBFDataSource 
-			where TGGDBFConverterType : class, IGGDBFDataConverter
+			where TGGDBFContextType : class, IGGDBFContext
 		{
 			if(services == null) throw new ArgumentNullException(nameof(services));
 
 			services.AddTransient<TGGDBFDataSourceType>();
-			services.AddTransient<TGGDBFConverterType>();
 
 			//TODO: Maybe put this in the RegisterGGDBF
 			//GGDBF requires a datasource registered
 			services.AddTransient<IGGDBFDataSource>(provider =>
 			{
-				return new ConverterDataSourceGGDBFAdapter(provider.GetService<TGGDBFDataSourceType>(), provider.GetService<TGGDBFConverterType>());
+				return new ContextReflectionGGDBFDataSource<TGGDBFContextType>(provider.GetService<TGGDBFDataSourceType>());
 			});
 
 			return services;
