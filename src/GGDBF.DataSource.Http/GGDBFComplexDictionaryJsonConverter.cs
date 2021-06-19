@@ -93,7 +93,7 @@ namespace GGDBF
 			return GetType()
 				.GetMethod(nameof(ReadJsonGeneric), BindingFlags.NonPublic | BindingFlags.Static)
 				.MakeGenericMethod(objectType.GenericTypeArguments.First(), objectType.GenericTypeArguments.Last())
-				.Invoke(this, new object[] { reader, objectType, existingValue, serializer });
+				.Invoke(this, new object[] { reader, objectType, existingValue });
 		}
 
 		private static object ReadJsonGeneric<TKey, TValue>(JsonReader reader, Type objectType, object existingValue)
