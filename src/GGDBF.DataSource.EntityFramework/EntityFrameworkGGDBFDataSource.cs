@@ -58,9 +58,8 @@ namespace GGDBF
 				config = new TableRetrievalConfig<TPrimaryKeyType, TModelType>(m => (TPrimaryKeyType)m.GetPropertyValue(keyName), config.TableNameOverride);
 			}
 
-
 			var map = new Dictionary<TPrimaryKeyType, TModelType>();
-			var version = GGDBFTable<TPrimaryKeyType, TModelType>.ConvertToVersion(typeof(GGDBFTable<TPrimaryKeyType, TModelType>).Assembly.GetName().Version);
+			var version = GGDBFHelpers.ConvertToVersion(typeof(GGDBFTable<TPrimaryKeyType, TModelType>).Assembly.GetName().Version);
 			string name = string.IsNullOrWhiteSpace(config.TableNameOverride) ? typeof(TModelType).GetCustomAttribute<TableAttribute>(true).Name : config.TableNameOverride;
 
 			foreach(var model in models)

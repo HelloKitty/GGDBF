@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
@@ -41,15 +42,10 @@ namespace GGDBF
 		/// Converts the <see cref="TableData"/> to a <see cref="IReadOnlyDictionary{TKey,TValue}"/>.
 		/// </summary>
 		/// <returns>A read-only <see cref="IReadOnlyDictionary{TKey,TValue}"/> version of <see cref="TableData"/>.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IReadOnlyDictionary<TPrimaryKeyType, TModelType> ToReadOnly()
 		{
 			return TableData;
-		}
-
-		public static int[] ConvertToVersion(Version version)
-		{
-			if (version == null) throw new ArgumentNullException(nameof(version));
-			return new int[3] {version.Major, version.Minor, version.Build};
 		}
 
 		/// <inheritdoc />
