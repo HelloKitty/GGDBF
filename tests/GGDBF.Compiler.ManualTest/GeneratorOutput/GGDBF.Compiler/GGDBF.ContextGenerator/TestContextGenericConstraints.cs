@@ -8,7 +8,7 @@ using TestNamespace2;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.17.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.19.0")]
     public interface ITestContextGenericConstraints<TKey, TAnotherType, TAnotherType2> : IGGDBFContext where TKey : unmanaged, System.IConvertible
        where TAnotherType : class, System.Enum
        where TAnotherType2 : unmanaged
@@ -23,7 +23,7 @@ namespace GGDBF
 
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.0.17.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.19.0")]
     public partial class TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2> : ITestContextGenericConstraints<TKey, TAnotherType, TAnotherType2> where TKey : unmanaged, System.IConvertible
         where TAnotherType : class, System.Enum
         where TAnotherType2 : unmanaged

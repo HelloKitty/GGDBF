@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Glader.Essentials;
@@ -88,9 +89,10 @@ namespace GGDBF
 		private static System.Reflection.Assembly GGDBFAssemblyResolver(System.Reflection.AssemblyName assemblyName)
 		{
 			assemblyName.Version = null;
+			assemblyName.SetPublicKey(null);
+			assemblyName.SetPublicKeyToken(null);
 			assemblyName.CultureInfo = null;
 			assemblyName.CultureName = null;
-			assemblyName.SetPublicKey(null);
 
 			return System.Reflection.Assembly.Load(assemblyName);
 		}
