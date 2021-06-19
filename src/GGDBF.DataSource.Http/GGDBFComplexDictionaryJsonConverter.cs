@@ -42,7 +42,7 @@ namespace GGDBF
 
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 		{
-			var (keyProperty, valueProperty) = getKeyAndValueProperties(value);
+			var (keyProperty, valueProperty) = GetKeyAndValueProperties(value);
 
 			IEnumerable keys = (IEnumerable)keyProperty.GetValue(value, null);
 
@@ -66,23 +66,19 @@ namespace GGDBF
 			writer.WriteEndArray();
 		}
 
-		(PropertyInfo, PropertyInfo) getKeyAndValueProperties(object value)
+		(PropertyInfo, PropertyInfo) GetKeyAndValueProperties(object value)
 		{
 			Type type = value.GetType();
 
 			PropertyInfo keyProperty = type.GetProperty("Keys");
 
 			if(keyProperty == null)
-			{
 				throw new InvalidOperationException($"{value.GetType().Name} was expected to be a {typeof(Dictionary<,>).Name}, and doesn't have a Keys property.");
-			}
 
 			var valueProperty = type.GetProperty("Values");
 
 			if(valueProperty == null)
-			{
 				throw new InvalidOperationException($"{value.GetType().Name} was expected to be a {typeof(Dictionary<,>).Name}, and doesn't have a Values property.");
-			}
 
 			return (keyProperty, valueProperty);
 		}
