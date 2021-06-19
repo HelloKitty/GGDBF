@@ -18,5 +18,9 @@ namespace GGDBF
 			"System.Runtime.Serialization",
 			"GGDBF"
 		};
+
+		public const string INITIALIZE_METHOD_NAME = "Initialize";
+
+		public const string CONTEXT_SINGLETON_PROPERTY_NAME = "Instance";
 	}
 }
