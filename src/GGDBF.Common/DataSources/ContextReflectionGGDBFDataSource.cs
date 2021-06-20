@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using GGDBF.Generator;
 
 namespace GGDBF
 {
@@ -13,9 +14,12 @@ namespace GGDBF
 	{
 		private IGGDBFDataSource Source { get; }
 
-		public ContextReflectionGGDBFDataSource(IGGDBFDataSource source)
+		private IGGDBFDataConverter Converter { get; }
+
+		public ContextReflectionGGDBFDataSource(IGGDBFDataSource source, IGGDBFDataConverter converter)
 		{
 			Source = source ?? throw new ArgumentNullException(nameof(source));
+			Converter = converter ?? throw new ArgumentNullException(nameof(converter));
 		}
 
 		/// <inheritdoc />
@@ -47,8 +51,15 @@ namespace GGDBF
 		/// <inheritdoc />
 		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) where TModelType : class where TSerializableModelType : class, TModelType, IGGDBFSerializable
 		{
-			//Assume the datasource has handling the serializable types and such. Not much more we can do here.
-			return await RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(config, token);
+			var table = await RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(config, token);
+
+			return new GGDBFTable<TPrimaryKeyType, TModelType>()
+			{
+				Version = table.Version,
+				TableName = table.TableName,
+				TableData = table.TableData
+					.ToDictionary(t => t.Key, t => (TModelType)Converter.Convert<TModelType, TSerializableModelType>(t.Value))
+			};
 		}
 
 		public async Task ReloadAsync(CancellationToken token = default)
