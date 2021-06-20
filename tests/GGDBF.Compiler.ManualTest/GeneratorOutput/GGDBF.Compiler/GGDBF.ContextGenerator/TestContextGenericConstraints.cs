@@ -8,22 +8,22 @@ using TestNamespace2;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.24.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.27.0")]
     public interface ITestContextGenericConstraints<TKey, TAnotherType, TAnotherType2> : IGGDBFContext where TKey : unmanaged, System.IConvertible
        where TAnotherType : class, System.Enum
        where TAnotherType2 : unmanaged
     {
-        public IReadOnlyDictionary<String, TestModelType2> Test2Datas { get; init; }
+        public IReadOnlyDictionary<String, TestModelType2> Test2Datas { get; }
 
-        public IReadOnlyDictionary<String, TestModelType4> Test4Datas { get; init; }
+        public IReadOnlyDictionary<String, TestModelType4> Test4Datas { get; }
 
-        public IReadOnlyDictionary<TKey, TestModelType6<TKey>> Test6Datas { get; init; }
+        public IReadOnlyDictionary<TKey, TestModelType6<TKey>> Test6Datas { get; }
 
-        public IReadOnlyDictionary<TestModelType9Key<TKey, TAnotherType>, TestModelType9<TKey, TAnotherType>> Test9Datas { get; init; }
+        public IReadOnlyDictionary<TestModelType9Key<TKey, TAnotherType>, TestModelType9<TKey, TAnotherType>> Test9Datas { get; }
 
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.0.24.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.27.0")]
     public partial class TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2> : ITestContextGenericConstraints<TKey, TAnotherType, TAnotherType2> where TKey : unmanaged, System.IConvertible
         where TAnotherType : class, System.Enum
         where TAnotherType2 : unmanaged
