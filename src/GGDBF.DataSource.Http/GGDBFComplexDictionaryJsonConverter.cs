@@ -25,7 +25,9 @@ namespace GGDBF
 				return false;
 
 			//We don't need to handle primitive types here.
-			if (objectType.GenericTypeArguments[0].IsPrimitive || objectType.GenericTypeArguments[0] == typeof(string))
+			if (objectType.GenericTypeArguments[0].IsPrimitive 
+			    || objectType.GenericTypeArguments[0] == typeof(string) 
+			    || objectType.GenericTypeArguments[0].IsEnum)
 				return false;
 
 			if (objectType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
