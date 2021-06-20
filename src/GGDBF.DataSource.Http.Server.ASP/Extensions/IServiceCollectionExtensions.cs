@@ -28,7 +28,7 @@ namespace Glader.ASP.RPG
 			//GGDBF requires a datasource registered
 			services.AddTransient<IGGDBFDataSource>(provider =>
 			{
-				return new ContextReflectionGGDBFDataSource<TGGDBFContextType>(provider.GetService<TGGDBFDataSourceType>());
+				return new ContextReflectionGGDBFDataSource<TGGDBFContextType>(provider.GetService<TGGDBFDataSourceType>(), provider.GetService<TGGDBFConverterType>());
 			});
 
 			return services;
