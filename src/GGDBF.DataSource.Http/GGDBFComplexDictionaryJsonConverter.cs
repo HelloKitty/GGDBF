@@ -24,20 +24,18 @@ namespace GGDBF
 			if (!objectType.IsGenericType)
 				return false;
 
-			//We don't need to handle primitive types here.
-			if (objectType.GenericTypeArguments[0].IsPrimitive 
-			    || objectType.GenericTypeArguments[0] == typeof(string) 
-			    || objectType.GenericTypeArguments[0].IsEnum)
-				return false;
+			if (objectType.GetGenericTypeDefinition() == typeof(Dictionary<,>)
+			    || objectType.GetGenericTypeDefinition() == typeof(IDictionary<,>)
+			    || objectType.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>))
+			{
+				//We don't need to handle primitive types here.
+				if(objectType.GenericTypeArguments[0].IsPrimitive
+				   || objectType.GenericTypeArguments[0] == typeof(string)
+				   || objectType.GenericTypeArguments[0].IsEnum)
+					return false;
 
-			if (objectType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
 				return true;
-
-			if (objectType.GetGenericTypeDefinition() == typeof(IDictionary<,>))
-				return true;
-
-			if (objectType.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>))
-				return true;
+			}
 
 			return false;
 		}
