@@ -58,13 +58,7 @@ namespace GGDBF
 			where TSerializableModelType : class, TModelType, IGGDBFSerializable
 		{
 			var table = await RetrieveFullTableAsync<TPrimaryKeyType, TSerializableModelType>(CastConfig<TPrimaryKeyType, TModelType, TSerializableModelType>(config), token);
-
-			return new GGDBFTable<TPrimaryKeyType, TModelType>()
-			{
-				TableName = table.TableName,
-				Version = table.Version,
-				TableData = table.TableData.ToDictionary(kvp => kvp.Key, kvp => (TModelType) kvp.Value)
-			};
+			return table.ConvertFrom<TPrimaryKeyType, TModelType, TSerializableModelType>();
 		}
 
 		/// <inheritdoc />
