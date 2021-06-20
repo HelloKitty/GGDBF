@@ -75,8 +75,9 @@ namespace GGDBF
 		{
 			await ReloadIfRequiredAsync<TPrimaryKeyType, TModelType>(token);
 
-			return await CreateServiceClient<TPrimaryKeyType, TModelType>()
+			var table = await CreateServiceClient<TPrimaryKeyType, TModelType>()
 				.RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(typeof(TPrimaryKeyType).AssemblyQualifiedName, typeof(TModelType).AssemblyQualifiedName, typeof(TSerializableModelType).AssemblyQualifiedName, token);
+			return table.ConvertFrom<TPrimaryKeyType, TModelType, TSerializableModelType>();
 		}
 
 		/// <inheritdoc />

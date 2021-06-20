@@ -15,7 +15,7 @@ namespace GGDBF
 			where TModelType : class;
 
 		[Get("/api/GGDBF/{key}_{type}/{derivedType}")]
-		public Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>([AliasAs("key")] string keyType, [AliasAs("type")] string modelType, [AliasAs("derivedType")] string derivedModelType, CancellationToken token = default)
+		public Task<GGDBFTable<TPrimaryKeyType, TSerializableModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>([AliasAs("key")] string keyType, [AliasAs("type")] string modelType, [AliasAs("derivedType")] string derivedModelType, CancellationToken token = default)
 			where TSerializableModelType : class, TModelType, IGGDBFSerializable
 			where TModelType : class;
 

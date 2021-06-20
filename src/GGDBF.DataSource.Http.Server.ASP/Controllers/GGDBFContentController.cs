@@ -89,13 +89,14 @@ namespace GGDBF
 				.RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(new TableRetrievalConfig<TPrimaryKeyType, TModelType>(), token);
 		}
 
-		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(string keyType, string tableName, string modelType, CancellationToken token = default) 
+		public async Task<GGDBFTable<TPrimaryKeyType, TSerializableModelType>> RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(string keyType, string tableName, string modelType, CancellationToken token = default) 
 			where TSerializableModelType : class, TModelType, IGGDBFSerializable
 			where TModelType : class
 		{
 			//We can ignore parameters since this is generic and we're implementing using the generics and not the text types
-			return await DataSource
+			var table = await DataSource
 				.RetrieveFullTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(new TableRetrievalConfig<TPrimaryKeyType, TModelType>(), token);
+			return table.ConvertTo<TPrimaryKeyType, TModelType, TSerializableModelType>();
 		}
 
 		public async Task ReloadContextAsync<TGGDBFContextType>(string contextType, CancellationToken token = default) 
