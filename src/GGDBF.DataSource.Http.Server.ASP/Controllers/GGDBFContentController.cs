@@ -66,7 +66,7 @@ namespace GGDBF
 		public async Task<IActionResult> ReloadAsync([FromRoute(Name = "context")] string contextType, CancellationToken token = default)
 		{
 			//WARNING: Not safe to expose in production https://stackoverflow.com/questions/23895563/is-it-safe-to-call-type-gettype-with-an-untrusted-type-name
-			var resultAwaitable = (Task)GetType().GetMethod(nameof(ReloadAsync), new Type[] { typeof(string), typeof(CancellationToken) })
+			var resultAwaitable = (Task)GetType().GetMethod(nameof(ReloadContextAsync), new Type[] { typeof(string), typeof(CancellationToken) })
 				.MakeGenericMethod(ResolveTypeForGGDBF(contextType))
 				.Invoke(this, new object[] { contextType, token });
 
