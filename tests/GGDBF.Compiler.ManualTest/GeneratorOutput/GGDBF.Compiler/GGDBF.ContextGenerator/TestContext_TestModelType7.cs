@@ -8,7 +8,7 @@ using GGDBF;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.22.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.24.0")]
     [DataContractAttribute]
     public partial class TestContext_TestModelType7 : TestModelType7, IGGDBFSerializable
     {
