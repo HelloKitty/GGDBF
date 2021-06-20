@@ -37,7 +37,7 @@ namespace GGDBF
 		/// <returns>The options.</returns>
 		public static MvcNewtonsoftJsonOptions RegisterGGDBFSerializers(this MvcNewtonsoftJsonOptions options)
 		{
-			if (options.SerializerSettings.Converters.Any())
+			if (options.SerializerSettings.Converters != null && options.SerializerSettings.Converters.Any())
 				options.SerializerSettings.Converters.Add(new GGDBFComplexDictionaryJsonConverter());
 			else
 				options.SerializerSettings.Converters = new List<JsonConverter>() { new GGDBFComplexDictionaryJsonConverter() };
