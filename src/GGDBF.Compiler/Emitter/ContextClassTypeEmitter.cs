@@ -37,7 +37,7 @@ namespace GGDBF
 			
 			//We emit even unbounded generic models on to the interface
 			foreach(var entry in Properties)
-				EmitTableProperty(builder, entry);
+				EmitTableProperty(builder, entry, false);
 
 			builder.Append($"}}{Environment.NewLine}{Environment.NewLine}");
 
@@ -75,9 +75,9 @@ namespace GGDBF
 			}
 		}
 
-		private StringBuilder EmitTableProperty(StringBuilder builder, PropertyDefinition entry)
+		private StringBuilder EmitTableProperty(StringBuilder builder, PropertyDefinition entry, bool includeInit = true)
 		{
-			return builder.Append($"public {CreatePropertyType(entry)} {new TableNameParser().Parse(entry.PropertyType)} {{ get; init; }}{Environment.NewLine}{Environment.NewLine}");
+			return builder.Append($"public {CreatePropertyType(entry)} {new TableNameParser().Parse(entry.PropertyType)} {{ get;{(includeInit ? " init; " : "")}}}{Environment.NewLine}{Environment.NewLine}");
 		}
 
 		private StringBuilder EmitContextInterface(StringBuilder builder)
