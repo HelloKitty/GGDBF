@@ -9,7 +9,7 @@ using Refit;
 
 namespace GGDBF
 {
-	public record RefitHttpGGDBFDataSourceOptions(bool RefreshOnFirstQuery = false);
+	public record RefitHttpGGDBFDataSourceOptions(bool RefreshOnFirstQuery = false, RefitSettings Settings = null);
 
 	/// <summary>
 	/// An HTTP <see cref="IGGDBFDataSource"/> implementation that uses the Refit <see cref="IGGDBFHttpNetworkClient"/> interface
@@ -45,7 +45,7 @@ namespace GGDBF
 		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
 			where TModelType : class
 		{
-			await ReloadIfRequiredAsync<TPrimaryKeyType, TModelType>(token);
+			await ReloadIfRequiredAsync(token);
 
 			return await CreateServiceClient<TPrimaryKeyType, TModelType>()
 				.RetrieveTableAsync<TPrimaryKeyType, TModelType>(typeof(TPrimaryKeyType).AssemblyQualifiedName, typeof(TModelType).AssemblyQualifiedName, token);
@@ -56,16 +56,23 @@ namespace GGDBF
 		{
 			//Creates a Refit client that can understand complex dictionary key type serialization.
 			return RestService
-				.For<IGGDBFHttpNetworkClient>(BaseUrl, new RefitSettings()
+				.For<IGGDBFHttpNetworkClient>(BaseUrl, CreateRefitSettings());
+		}
+
+		private RefitSettings CreateRefitSettings()
+		{
+			//Important that we combine the Refit settings if they already exist.
+			var settings = Options.Settings ?? new RefitSettings();
+
+			settings.ContentSerializer = new NewtonsoftJsonContentSerializer(new JsonSerializerSettings()
+			{
+				Converters = new List<JsonConverter>()
 				{
-					ContentSerializer = new NewtonsoftJsonContentSerializer(new JsonSerializerSettings()
-					{
-						Converters = new List<JsonConverter>()
-						{
-							new GGDBFComplexDictionaryJsonConverter()
-						}
-					})
-				});
+					new GGDBFComplexDictionaryJsonConverter()
+				}
+			});
+
+			return settings;
 		}
 
 		/// <inheritdoc />
@@ -73,7 +80,7 @@ namespace GGDBF
 			where TModelType : class 
 			where TSerializableModelType : class, TModelType, IGGDBFSerializable
 		{
-			await ReloadIfRequiredAsync<TPrimaryKeyType, TModelType>(token);
+			await ReloadIfRequiredAsync(token);
 
 			var table = await CreateServiceClient<TPrimaryKeyType, TModelType>()
 				.RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(typeof(TPrimaryKeyType).AssemblyQualifiedName, typeof(TModelType).AssemblyQualifiedName, typeof(TSerializableModelType).AssemblyQualifiedName, token);
@@ -88,8 +95,7 @@ namespace GGDBF
 				.ReloadContextAsync<TGGDBFContextType>(typeof(TGGDBFContextType).AssemblyQualifiedName, token);
 		}
 
-		private async Task ReloadIfRequiredAsync<TPrimaryKeyType, TModelType>(CancellationToken token = default) 
-			where TModelType : class
+		private async Task ReloadIfRequiredAsync(CancellationToken token = default) 
 		{
 			if (Options.RefreshOnFirstQuery && FirstQuery)
 			{
