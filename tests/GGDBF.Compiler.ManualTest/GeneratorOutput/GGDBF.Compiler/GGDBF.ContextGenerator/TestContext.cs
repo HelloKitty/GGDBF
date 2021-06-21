@@ -10,38 +10,38 @@ using TestNameSpace.Extended.Multiple.Words;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.27.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.26.0")]
     public interface ITestContext : IGGDBFContext
     {
-        public IReadOnlyDictionary<Int16, TestModelType> TestDatas { get; }
+        public IReadOnlyDictionary<Int16, TestModelType> TestDatas { get; init; }
 
-        public IReadOnlyDictionary<String, TestModelType2> Test2Datas { get; }
+        public IReadOnlyDictionary<String, TestModelType2> Test2Datas { get; init; }
 
-        public IReadOnlyDictionary<String, TestModelType3> Test3DatasWithFK { get; }
+        public IReadOnlyDictionary<String, TestModelType3> Test3DatasWithFK { get; init; }
 
-        public IReadOnlyDictionary<String, TestModelType4> Test4Datas { get; }
+        public IReadOnlyDictionary<String, TestModelType4> Test4Datas { get; init; }
 
-        public IReadOnlyDictionary<Int32, TestModelType5<Int32, TestModelType4, TestModelType, Int16>> Test5Datas { get; }
+        public IReadOnlyDictionary<Int32, TestModelType5<Int32, TestModelType4, TestModelType, Int16>> Test5Datas { get; init; }
 
-        public IReadOnlyDictionary<Int16, TestModelTypeUnderscore> TestDatasWithUnderScore { get; }
+        public IReadOnlyDictionary<Int16, TestModelTypeUnderscore> TestDatasWithUnderScore { get; init; }
 
-        public IReadOnlyDictionary<Int16, TestModelReservedNameTable> @Class { get; }
+        public IReadOnlyDictionary<Int16, TestModelReservedNameTable> @Class { get; init; }
 
-        public IReadOnlyDictionary<TestModelType7Key, TestModelType7> Test7Datas { get; }
+        public IReadOnlyDictionary<TestModelType7Key, TestModelType7> Test7Datas { get; init; }
 
-        public IReadOnlyDictionary<Int32, TestModelType8> Test8Datas { get; }
+        public IReadOnlyDictionary<Int32, TestModelType8> Test8Datas { get; init; }
 
-        public IReadOnlyDictionary<TestModelType9Key<Int32, String>, TestModelType9<Int32, String>> Test9Datas { get; }
+        public IReadOnlyDictionary<TestModelType9Key<Int32, String>, TestModelType9<Int32, String>> Test9Datas { get; init; }
 
-        public IReadOnlyDictionary<TestModelType10Key<Int32>, TestModelType10<Int32>> Test10Datas { get; }
+        public IReadOnlyDictionary<TestModelType10Key<Int32>, TestModelType10<Int32>> Test10Datas { get; init; }
 
-        public IReadOnlyDictionary<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>> Test11Datas { get; }
+        public IReadOnlyDictionary<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>> Test11Datas { get; init; }
 
-        public IReadOnlyDictionary<Int32, TestModelType12> Test12Datas { get; }
+        public IReadOnlyDictionary<Int32, TestModelType12> Test12Datas { get; init; }
 
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.0.27.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.26.0")]
     public partial class TestContext : ITestContext
     {
         public static TestContext Instance { get; private set; }
