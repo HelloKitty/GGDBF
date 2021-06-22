@@ -125,7 +125,7 @@ namespace GGDBF
 				.GetMembers()
 				.Where(m => m.Kind == SymbolKind.Property && m.IsVirtual)
 				.Cast<IPropertySymbol>()
-				.Where(p => p.IsICollectionType() && p.Type.HasAttributeLike<TableAttribute>()); //important to ignore non-table types (probably complex/owned types)
+				.Where(p => p.IsICollectionType() && ComputeCollectionElementType(p).HasAttributeLike<TableAttribute>()); //important to ignore non-table types (probably complex/owned types)
 		}
 
 		private void EmitSerializableInitializeMethod(StringBuilder builder)
