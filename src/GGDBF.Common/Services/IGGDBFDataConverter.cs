@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GGDBF.Generator
+namespace GGDBF
 {
 	/// <summary>
 	/// GGDBF's conversion service.

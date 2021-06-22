@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using GGDBF;
-using GGDBF.Generator;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Glader.ASP.RPG
