@@ -8,7 +8,7 @@ namespace GGDBF
 	/// Hints to GGDBF that this is an OwnedType but not a Table type
 	/// and should generate foreign key properties if required.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Class)]
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
 	public sealed class OwnedTypeHintAttribute : Attribute
 	{
 
