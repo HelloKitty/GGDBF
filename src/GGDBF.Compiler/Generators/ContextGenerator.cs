@@ -223,6 +223,18 @@ namespace GGDBF
 			//so we don't have to use fullnames.
 			AddNamespacesForType(type, usingsEmitter);
 
+			//Add namespaces for each property
+			foreach (var t in type
+				.GetMembers()
+				.Where(m => m.Kind == SymbolKind.Property)
+				.Cast<IPropertySymbol>()
+				.Select(p => p.Type)
+				.Select(t => t as INamedTypeSymbol)
+				.Where(t => t != null))
+			{
+				AddNamespacesForType(t, usingsEmitter);
+			}
+
 			usingsEmitter.AddNamespaces(GGDBFConstants.DEFAULT_NAMESPACES);
 
 			usingsEmitter.Emit(builder);
