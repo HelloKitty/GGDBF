@@ -129,7 +129,7 @@ namespace GGDBF
 				{
 					//TODO: If multiple owned types with generic type parameters are used in the same table then this won't work.
 					INamedTypeSymbol ownedType = (INamedTypeSymbol) (prop.IsICollectionType() ? ((INamedTypeSymbol)prop.Type).TypeArguments.First() : prop.Type);
-					SerializableTypeClassEmitter emitter = new SerializableTypeClassEmitter(ComputeOwnedTypeName(ownedType), ownedType, OriginalContextSymbol);
+					SerializableTypeClassEmitter emitter = new SerializableTypeClassEmitter(ComputeOwnedTypeName(ownedType), ownedType, OriginalContextSymbol, ClassAccessibility);
 
 					builder.Append($"{Environment.NewLine}{Environment.NewLine}");
 					emitter.Emit(builder);
