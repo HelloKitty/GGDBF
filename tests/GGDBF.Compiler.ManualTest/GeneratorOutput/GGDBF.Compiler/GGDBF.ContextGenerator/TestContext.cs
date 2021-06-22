@@ -10,7 +10,7 @@ using TestNameSpace.Extended.Multiple.Words;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.31.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.32.0")]
     public interface ITestContext : IGGDBFContext
     {
         public IReadOnlyDictionary<Int16, TestModelType> TestDatas { get; }
@@ -41,9 +41,11 @@ namespace GGDBF
 
         public IReadOnlyDictionary<Int32, TestModelType14> Test14Datas { get; }
 
+        public IReadOnlyDictionary<Int32, TestModelType15<Int32>> Test15Datas { get; }
+
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.0.31.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.32.0")]
     public partial class TestContext : ITestContext
     {
         public static TestContext Instance { get; private set; }
@@ -76,6 +78,8 @@ namespace GGDBF
 
         public IReadOnlyDictionary<Int32, TestModelType14> Test14Datas { get; init; }
 
+        public IReadOnlyDictionary<Int32, TestModelType15<Int32>> Test15Datas { get; init; }
+
         public static async Task Initialize(IGGDBFDataSource source)
         {
             Instance = new()
@@ -94,6 +98,7 @@ namespace GGDBF
                 Test11Datas = await source.RetrieveTableAsync<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>, TestContext_TestModelType11>(new NameOverrideTableRetrievalConfig<TestModelType11Key<Int32, Int16>, TestModelType11<Int32, Int16>>("Test11Datas") { KeyResolutionFunction = m => new TestModelType11Key<Int32, Int16>(m.Id1, m.Id2) }),
                 Test12Datas = await source.RetrieveTableAsync<Int32, TestModelType12, TestContext_TestModelType12>(new NameOverrideTableRetrievalConfig<Int32, TestModelType12>("Test12Datas")),
                 Test14Datas = await source.RetrieveTableAsync<Int32, TestModelType14, TestContext_TestModelType14>(new NameOverrideTableRetrievalConfig<Int32, TestModelType14>("Test14Datas")),
+                Test15Datas = await source.RetrieveTableAsync<Int32, TestModelType15<Int32>, TestContext_TestModelType15>(new NameOverrideTableRetrievalConfig<Int32, TestModelType15<Int32>>("Test15Datas")),
             };
         }
     }

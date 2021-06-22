@@ -9,7 +9,7 @@ using TestNamespace2;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.31.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.32.0")]
     public interface ITestContextGeneric<TKey> : IGGDBFContext
     {
         public IReadOnlyDictionary<Int16, TestModelType> TestDatas { get; }
@@ -28,9 +28,11 @@ namespace GGDBF
 
         public IReadOnlyDictionary<TestModelType13Key<TKey, TKey>, TestModelType13<TKey, TKey>> Test13Datas { get; }
 
+        public IReadOnlyDictionary<TKey, TestModelType15<TKey>> Test15Datas { get; }
+
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.0.31.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.32.0")]
     public partial class TestContextGeneric<TKey> : ITestContextGeneric<TKey>
     {
         public static TestContextGeneric<TKey> Instance { get; private set; }
@@ -55,6 +57,7 @@ namespace GGDBF
                 Test10Datas = await source.RetrieveTableAsync<TestModelType10Key<TKey>, TestModelType10<TKey>>(new NameOverrideTableRetrievalConfig<TestModelType10Key<TKey>, TestModelType10<TKey>>("Test10Datas") { KeyResolutionFunction = m => new TestModelType10Key<TKey>(m.Id1, m.Id2) }),
                 Test11Datas = await source.RetrieveTableAsync<TestModelType11Key<TKey, TKey>, TestModelType11<TKey, TKey>, TestContextGeneric_TestModelType11<TKey>>(new NameOverrideTableRetrievalConfig<TestModelType11Key<TKey, TKey>, TestModelType11<TKey, TKey>>("Test11Datas") { KeyResolutionFunction = m => new TestModelType11Key<TKey, TKey>(m.Id1, m.Id2) }),
                 Test13Datas = await source.RetrieveTableAsync<TestModelType13Key<TKey, TKey>, TestModelType13<TKey, TKey>, TestContextGeneric_TestModelType13<TKey>>(new NameOverrideTableRetrievalConfig<TestModelType13Key<TKey, TKey>, TestModelType13<TKey, TKey>>("Test13Datas") { KeyResolutionFunction = m => new TestModelType13Key<TKey, TKey>(m.Id1, m.Id2) }),
+                Test15Datas = await source.RetrieveTableAsync<TKey, TestModelType15<TKey>, TestContextGeneric_TestModelType15<TKey>>(new NameOverrideTableRetrievalConfig<TKey, TestModelType15<TKey>>("Test15Datas")),
             };
         }
     }

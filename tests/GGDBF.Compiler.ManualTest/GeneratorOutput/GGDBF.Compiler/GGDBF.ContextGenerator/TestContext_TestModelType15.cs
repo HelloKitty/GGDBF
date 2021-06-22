@@ -11,7 +11,7 @@ namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.1.32.0")]
     [DataContractAttribute]
-    public partial class TestContext_TestModelType14 : TestModelType14, IGGDBFSerializable
+    public partial class TestContext_TestModelType15 : TestModelType15<Int32>, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
         public override TestNamespace.TestModelType Model
@@ -27,25 +27,25 @@ namespace GGDBF
             get => _SerializedModels != null ? _SerializedModels.Load(TestContext.Instance.TestDatas) : base.Models;
         }
         [DataMemberAttribute(Order = 2)]
-        public TestContext_TestModelType14_TestOwnedTypeModel2[] _SerializedOwnedTypeModelCollection;
+        public TestContext_TestModelType15_TestOwnedTypeModel2[] _SerializedOwnedTypeModelCollection;
 
         [IgnoreDataMemberAttribute]
         public override ICollection<TestOwnedTypeModel2<Int32>> OwnedTypeModelCollection
         {
             get => _SerializedOwnedTypeModelCollection != null ? _SerializedOwnedTypeModelCollection : base.OwnedTypeModelCollection;
         }
-        public TestContext_TestModelType14() { }
+        public TestContext_TestModelType15() { }
 
         public void Initialize(IGGDBFDataConverter converter)
         {
             _SerializedModels = GGDBFHelpers.CreateSerializableCollection(m => m.Id, Models);
-            _SerializedOwnedTypeModelCollection = converter.Convert<TestNamespace2.TestOwnedTypeModel2<Int32>, TestContext_TestModelType14_TestOwnedTypeModel2>(OwnedTypeModelCollection);
+            _SerializedOwnedTypeModelCollection = converter.Convert<TestNamespace2.TestOwnedTypeModel2<Int32>, TestContext_TestModelType15_TestOwnedTypeModel2>(OwnedTypeModelCollection);
         }
     }
 
     [GeneratedCodeAttribute("GGDBF", "0.1.32.0")]
     [DataContractAttribute]
-    public partial record TestContext_TestModelType14_TestOwnedTypeModel2 : TestOwnedTypeModel2<Int32>, IGGDBFSerializable
+    public partial record TestContext_TestModelType15_TestOwnedTypeModel2 : TestOwnedTypeModel2<Int32>, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
         public override TestNamespace.TestModelType Model

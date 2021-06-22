@@ -8,6 +8,6 @@ using GGDBF;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.31.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.32.0")]
     public record TestModelType7Key(System.Int32 Id1, System.String Id2);
 }
