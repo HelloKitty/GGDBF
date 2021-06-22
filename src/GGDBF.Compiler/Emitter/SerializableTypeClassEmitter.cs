@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Text;
 using Glader.Essentials;
@@ -129,7 +130,7 @@ namespace GGDBF
 				{
 					//TODO: If multiple owned types with generic type parameters are used in the same table then this won't work.
 					INamedTypeSymbol ownedType = (INamedTypeSymbol) (prop.IsICollectionType() ? ((INamedTypeSymbol)prop.Type).TypeArguments.First() : prop.Type);
-					SerializableTypeClassEmitter emitter = new SerializableTypeClassEmitter(ComputeOwnedTypeName(ownedType), ownedType, OriginalContextSymbol, ClassAccessibility);
+					SerializableTypeClassEmitter emitter = new SerializableTypeClassEmitter(ComputeOwnedTypeName(ownedType, true), ownedType, OriginalContextSymbol, ClassAccessibility);
 
 					builder.Append($"{Environment.NewLine}{Environment.NewLine}");
 					emitter.Emit(builder);
@@ -137,9 +138,15 @@ namespace GGDBF
 			}
 		}
 
-		private string ComputeOwnedTypeName(INamedTypeSymbol ownedType)
+		private string ComputeOwnedTypeName(INamedTypeSymbol ownedType, bool noGenericArgs = false)
 		{
-			return $"{ComputeContextTypeName()}_{ownedType.Name}";
+			//Both the owned type and the DB Context type need to be generic
+			//if the owned type name we reference will be generic.
+			//Otherwise owned type derives as non-generic when generated
+			if (!noGenericArgs && ownedType.IsGenericType && OriginalContextSymbol.IsGenericType)
+				return new GenericTypeBuilder(ownedType.TypeParameters.ToArray()).Build($"{ClassName}_{ownedType.ConstructUnboundGenericType().Name}", ownedType.TypeArguments.ToArray());
+
+			return $"{ClassName}_{ownedType.Name}";
 		}
 
 		private string ComputeClassOrRecordKeyword()
