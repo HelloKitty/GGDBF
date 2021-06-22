@@ -144,7 +144,7 @@ namespace GGDBF
 			//if the owned type name we reference will be generic.
 			//Otherwise owned type derives as non-generic when generated
 			if (!noGenericArgs && ownedType.IsGenericType && OriginalContextSymbol.IsGenericType)
-				return new GenericTypeBuilder(ownedType.TypeParameters.ToArray()).Build($"{ClassName}_{ownedType.ConstructUnboundGenericType().Name}", ownedType.TypeArguments.ToArray());
+				return new GenericTypeBuilder(OriginalContextSymbol.TypeParameters.ToArray()).Build($"{ClassName}_{ownedType.ConstructUnboundGenericType().Name}");
 
 			return $"{ClassName}_{ownedType.Name}";
 		}
