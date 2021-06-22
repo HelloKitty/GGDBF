@@ -27,7 +27,7 @@ namespace GGDBF
             get => _SerializedModels != null ? _SerializedModels.Load(TestContext.Instance.TestDatas) : base.Models;
         }
         [DataMemberAttribute(Order = 2)]
-        public TestOwnedTypeModel2<Int32>[] _SerializedOwnedTypeModelCollection;
+        public TestContext_TestModelType14_TestOwnedTypeModel2[] _SerializedOwnedTypeModelCollection;
 
         [IgnoreDataMemberAttribute]
         public override ICollection<TestOwnedTypeModel2<Int32>> OwnedTypeModelCollection
@@ -45,7 +45,7 @@ namespace GGDBF
 
     [GeneratedCodeAttribute("GGDBF", "0.0.31.0")]
     [DataContractAttribute]
-    partial record TestContext_TestModelType14_TestOwnedTypeModel2 : TestOwnedTypeModel2<Int32>, IGGDBFSerializable
+    public partial record TestContext_TestModelType14_TestOwnedTypeModel2 : TestOwnedTypeModel2<Int32>, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
         public override TestNamespace.TestModelType Model

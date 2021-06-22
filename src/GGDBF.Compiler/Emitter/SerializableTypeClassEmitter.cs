@@ -100,7 +100,7 @@ namespace GGDBF
 
 				//We must emit a serializable backing field for the collection property
 				builder.Append($"[{nameof(DataMemberAttribute)}({nameof(DataMemberAttribute.Order)} = {propCount})]{Environment.NewLine}");
-				builder.Append($"public {collectionElementType.GetFriendlyName()}[] {backingPropertyName};{Environment.NewLine}{Environment.NewLine}");
+				builder.Append($"public {ComputeOwnedTypeName(collectionElementType)}[] {backingPropertyName};{Environment.NewLine}{Environment.NewLine}");
 
 				//Just return backing field or base prop getter if null (could be null too)
 				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
