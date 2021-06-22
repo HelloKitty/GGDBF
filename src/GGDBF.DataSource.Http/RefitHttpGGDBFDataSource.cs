@@ -47,12 +47,11 @@ namespace GGDBF
 		{
 			await ReloadIfRequiredAsync(token);
 
-			return await CreateServiceClient<TPrimaryKeyType, TModelType>()
+			return await CreateServiceClient()
 				.RetrieveTableAsync<TPrimaryKeyType, TModelType>(typeof(TPrimaryKeyType).AssemblyQualifiedName, typeof(TModelType).AssemblyQualifiedName, token);
 		}
 
-		private IGGDBFHttpNetworkClient CreateServiceClient<TPrimaryKeyType, TModelType>() 
-			where TModelType : class
+		private IGGDBFHttpNetworkClient CreateServiceClient() 
 		{
 			//Creates a Refit client that can understand complex dictionary key type serialization.
 			return RestService
@@ -82,7 +81,7 @@ namespace GGDBF
 		{
 			await ReloadIfRequiredAsync(token);
 
-			var table = await CreateServiceClient<TPrimaryKeyType, TModelType>()
+			var table = await CreateServiceClient()
 				.RetrieveTableAsync<TPrimaryKeyType, TModelType, TSerializableModelType>(typeof(TPrimaryKeyType).AssemblyQualifiedName, typeof(TModelType).AssemblyQualifiedName, typeof(TSerializableModelType).AssemblyQualifiedName, token);
 			return table.ConvertFrom<TPrimaryKeyType, TModelType, TSerializableModelType>();
 		}
