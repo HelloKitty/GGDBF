@@ -25,13 +25,13 @@ namespace GGDBF
 
 		public override void Emit(StringBuilder builder)
 		{
-			//Class time!
+			//Class time! (or record lol)
 			AppendGeneratedCodeAttribute(builder);
 			builder.Append($"[{nameof(DataContractAttribute)}]{Environment.NewLine}");
 			if(ClassAccessibility == Accessibility.NotApplicable)
-				builder.Append($"partial class {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}");
+				builder.Append($"partial {ComputeClassOrRecordKeyword()} {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}");
 			else
-				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial class {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}");
+				builder.Append($"{ClassAccessibility.ToString().ToLower()} partial {ComputeClassOrRecordKeyword()} {ComputeContextTypeName()} : {SerializableType.GetFriendlyName()}, {nameof(IGGDBFSerializable)}");
 
 			CalculatePossibleTypeConstraints(OriginalContextSymbol, builder);
 
@@ -54,7 +54,7 @@ namespace GGDBF
 					string keyResolution = new TablePrimaryKeyParser().BuildCompositeKeyCreationExpression(prop, "base", keyTypeName);
 
 					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-					builder.Append($"public override {prop.Type.GetFriendlyName()} {prop.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(prop.Type)}[{keyResolution}];{Environment.NewLine}");
+					builder.Append($"public override {prop.Type.ToFullName()} {prop.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(prop.Type)}[{keyResolution}];{Environment.NewLine}");
 
 					builder.Append($"}}{Environment.NewLine}");
 				}
@@ -64,7 +64,7 @@ namespace GGDBF
 					IPropertySymbol keyProperty = RetrieveNavigationKeyPropertySymbol(prop);
 
 					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-					builder.Append($"public override {navProperty.Type.GetFriendlyName()} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
+					builder.Append($"public override {navProperty.Type.ToFullName()} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
 
 					builder.Append($"}}{Environment.NewLine}");
 				}
@@ -89,15 +89,62 @@ namespace GGDBF
 
 				builder.Append($"}}{Environment.NewLine}");
 
+				propCount++;
+			}
+
+			//This is for collections of owned types
+			foreach(var prop in EnumerateOwnedTypeForeignCollectionProperties())
+			{
+				INamedTypeSymbol collectionElementType = (INamedTypeSymbol)ComputeCollectionElementType(prop);
+				string backingPropertyName = ComputeCollectionPropertyBackingFieldName(prop);
+
+				//We must emit a serializable backing field for the collection property
+				builder.Append($"[{nameof(DataMemberAttribute)}({nameof(DataMemberAttribute.Order)} = {propCount})]{Environment.NewLine}");
+				builder.Append($"public {collectionElementType.GetFriendlyName()}[] {backingPropertyName};{Environment.NewLine}{Environment.NewLine}");
+
+				//Just return backing field or base prop getter if null (could be null too)
+				builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
+				builder.Append($"public override {prop.Type.Name}<{collectionElementType.GetFriendlyName()}> {prop.Name} {Environment.NewLine}{{ get => {backingPropertyName} != null ? {backingPropertyName} : base.{prop.Name};{Environment.NewLine}");
+
+				builder.Append($"}}{Environment.NewLine}");
 
 				propCount++;
 			}
 
-			builder.Append($"public {ClassName}() {{ }}{Environment.NewLine}");
+			if (!SerializableType.IsRecord)
+				builder.Append($"public {ClassName}() {{ }}{Environment.NewLine}");
 
 			EmitSerializableInitializeMethod(builder);
 
 			builder.Append($"}}");
+
+			//For all owned types we should maybe generate keys
+			if (SerializableType.HasOwnedTypePropertyWithForeignKey())
+			{
+				foreach (var prop in SerializableType
+					.GetMembers()
+					.Where(m => m.IsVirtual && m.Kind == SymbolKind.Property)
+					.Cast<IPropertySymbol>()
+					.Where(p => p.HasAttributeLike<OwnedTypeHintAttribute>() && p.IsOwnedPropertyWithForeignKey()))
+				{
+					//TODO: If multiple owned types with generic type parameters are used in the same table then this won't work.
+					INamedTypeSymbol ownedType = (INamedTypeSymbol) (prop.IsICollectionType() ? ((INamedTypeSymbol)prop.Type).TypeArguments.First() : prop.Type);
+					SerializableTypeClassEmitter emitter = new SerializableTypeClassEmitter(ComputeOwnedTypeName(ownedType), ownedType, OriginalContextSymbol);
+
+					builder.Append($"{Environment.NewLine}{Environment.NewLine}");
+					emitter.Emit(builder);
+				}
+			}
+		}
+
+		private string ComputeOwnedTypeName(INamedTypeSymbol ownedType)
+		{
+			return $"{ComputeContextTypeName()}_{ownedType.Name}";
+		}
+
+		private string ComputeClassOrRecordKeyword()
+		{
+			return SerializableType.IsRecord ? "record" : "class";
 		}
 
 		private static string ComputeCompositeKeyTypeName(IPropertySymbol prop)
@@ -128,10 +175,19 @@ namespace GGDBF
 				.Where(p => p.IsICollectionType() && ComputeCollectionElementType(p).HasAttributeLike<TableAttribute>()); //important to ignore non-table types (probably complex/owned types)
 		}
 
+		private IEnumerable<IPropertySymbol> EnumerateOwnedTypeForeignCollectionProperties()
+		{
+			return SerializableType
+				.GetMembers()
+				.Where(m => m.Kind == SymbolKind.Property && m.IsVirtual)
+				.Cast<IPropertySymbol>()
+				.Where(p => p.IsICollectionType() && (p.HasAttributeExact<OwnedTypeHintAttribute>() || p.Type.HasAttributeExact<OwnedTypeHintAttribute>())); //important to ignore non-table types (probably complex/owned types)
+		}
+
 		private void EmitSerializableInitializeMethod(StringBuilder builder)
 		{
 			builder.Append($"{Environment.NewLine}");
-			builder.Append($"public void {nameof(IGGDBFSerializable.Initialize)}(){Environment.NewLine}{{");
+			builder.Append($"public void {nameof(IGGDBFSerializable.Initialize)}({nameof(IGGDBFDataConverter)} converter){Environment.NewLine}{{{Environment.NewLine}");
 
 			foreach (var prop in EnumerateForeignCollectionProperties())
 			{
@@ -143,10 +199,18 @@ namespace GGDBF
 				string keyTypeName = new GenericTypeBuilder(collectionElementType.TypeParameters.ToArray()).Build($"{collectionElementType.Name}Key", collectionElementType.TypeArguments.ToArray());
 				string keyResolutionLambda = new TablePrimaryKeyParser().BuildKeyResolutionLambda(collectionElementType, keyTypeName);
 
-				builder.Append($"{fieldName} = {nameof(GGDBFHelpers)}.{nameof(GGDBFHelpers.CreateSerializableCollection)}({keyResolutionLambda}, {prop.Name});");
+				builder.Append($"{fieldName} = {nameof(GGDBFHelpers)}.{nameof(GGDBFHelpers.CreateSerializableCollection)}({keyResolutionLambda}, {prop.Name});{Environment.NewLine}");
 			}
 
-			builder.Append($"{Environment.NewLine}}}");
+			foreach (var prop in EnumerateOwnedTypeForeignCollectionProperties())
+			{
+				string fieldName = ComputeCollectionPropertyBackingFieldName(prop);
+				INamedTypeSymbol collectionElementType = (INamedTypeSymbol)ComputeCollectionElementType(prop);
+
+				builder.Append($"{fieldName} = converter.{nameof(IGGDBFDataConverter.Convert)}<{collectionElementType.ToFullName()}, {ComputeOwnedTypeName(collectionElementType)}>({prop.Name});{Environment.NewLine}");
+			}
+
+			builder.Append($"}}");
 		}
 
 		private IPropertySymbol RetrieveNavigationKeyPropertySymbol(IPropertySymbol prop)

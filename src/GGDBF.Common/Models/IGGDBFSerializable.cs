@@ -13,6 +13,6 @@ namespace GGDBF
 		/// <summary>
 		/// Initializes a model into a state where it can be serialized by GGDBF.
 		/// </summary>
-		void Initialize();
+		void Initialize(IGGDBFDataConverter converter);
 	}
 }

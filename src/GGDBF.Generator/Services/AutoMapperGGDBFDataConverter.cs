@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
-using GGDBF.Generator;
 using AutoMapper;
 
 namespace GGDBF
@@ -22,7 +21,7 @@ namespace GGDBF
 			if (MappingDictionary.ContainsKey(typeKey))
 			{
 				TSerializableModelType convertedModel = MappingDictionary[typeKey].Map<TModelType, TSerializableModelType>(model);
-				convertedModel.Initialize();
+				convertedModel.Initialize(this);
 				return convertedModel;
 			}
 			else

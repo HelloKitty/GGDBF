@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -39,7 +40,15 @@ namespace GGDBF
 
 		public void Initialize(GeneratorInitializationContext context)
 		{
-
+#if DEBUG && false
+			// Attach the debugger.
+			if(!Debugger.IsAttached)
+			{
+				Debugger.Launch();
+			}
+			else
+				throw new InvalidOperationException($"Failed to hook debugger.");
+#endif
 		}
 
 		public void Execute(GeneratorExecutionContext context)
@@ -210,7 +219,7 @@ namespace GGDBF
 
 		private static void EmitSerializableTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type)
 		{
-			if (!type.HasForeignKeyDefined())
+			if (!type.HasForeignKeyDefined() && !type.HasOwnedTypePropertyWithForeignKey())
 				return;
 
 			string serializableTypeName = new ForeignKeyContainingPropertyNameParser().ParseNonGeneric(contextSymbol, type);
