@@ -89,8 +89,7 @@ namespace GGDBF
 		/// <inheritdoc />
 		public async Task ReloadAsync(CancellationToken token = default)
 		{
-			await RestService
-				.For<IGGDBFHttpNetworkClient>(BaseUrl)
+			await CreateServiceClient()
 				.ReloadContextAsync<TGGDBFContextType>(typeof(TGGDBFContextType).AssemblyQualifiedName, token);
 		}
 
