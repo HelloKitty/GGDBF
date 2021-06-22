@@ -64,11 +64,20 @@ namespace GGDBF.Generator.ManualTest
 		}
 	}
 
-	/*[RequiredDataModel(typeof(TestModelType))]
+	/*	[RequiredDataModel(typeof(TestModelType))]
 	[RequiredDataModel(typeof(TestModelType2))]
 	[RequiredDataModel(typeof(TestModelType3))]
 	[RequiredDataModel(typeof(TestModelType4))]
-	[RequiredDataModel(typeof(TestModelType5<int, TestModelType4, TestModelType, short>))]*/
+	[RequiredDataModel(typeof(TestModelType5<int, TestModelType4, TestModelType, short>))]
+	[RequiredDataModel(typeof(TestModelTypeUnderscore))]
+	[RequiredDataModel(typeof(TestModelReservedNameTable))]
+	[RequiredDataModel(typeof(TestModelType7))]
+	[RequiredDataModel(typeof(TestModelType8))]
+	[RequiredDataModel(typeof(TestModelType9<int, string>))]
+	[RequiredDataModel(typeof(TestModelType10<int>))]
+	[RequiredDataModel(typeof(TestModelType11<int, short>))]
+	[RequiredDataModel(typeof(TestModelType12))]
+	[RequiredDataModel(typeof(TestModelType14))]*/
 	public class TestDBContext : DbContext
 	{
 		public DbSet<TestModelType> TestDatas { get; set; }
@@ -90,6 +99,10 @@ namespace GGDBF.Generator.ManualTest
 		public DbSet<TestModelType10<int>> Test10Datas { get; set; }
 
 		public DbSet<TestModelType11<Int32, Int16>> Tes11Datas { get; set; }
+
+		public DbSet<TestModelType12> Tes12Datas { get; set; }
+
+		public DbSet<TestModelType14> Tes14Datas { get; set; }
 
 		public TestDBContext(DbContextOptions options)
 			: base(options)
@@ -160,6 +173,6 @@ namespace GGDBF.Generator.ManualTest
 					new TestModelType2("9001")
 				})
 			});*/
-		}
+}
 	}
 }
