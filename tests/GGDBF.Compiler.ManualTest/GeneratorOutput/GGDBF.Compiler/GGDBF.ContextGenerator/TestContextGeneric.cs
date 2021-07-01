@@ -9,30 +9,30 @@ using TestNamespace2;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.1.33.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.26.0")]
     public interface ITestContextGeneric<TKey> : IGGDBFContext
     {
-        public IReadOnlyDictionary<Int16, TestModelType> TestDatas { get; }
+        public IReadOnlyDictionary<Int16, TestModelType> TestDatas { get; init; }
 
-        public IReadOnlyDictionary<String, TestModelType2> Test2Datas { get; }
+        public IReadOnlyDictionary<String, TestModelType2> Test2Datas { get; init; }
 
-        public IReadOnlyDictionary<String, TestModelType3> Test3DatasWithFK { get; }
+        public IReadOnlyDictionary<String, TestModelType3> Test3DatasWithFK { get; init; }
 
-        public IReadOnlyDictionary<String, TestModelType4> Test4Datas { get; }
+        public IReadOnlyDictionary<String, TestModelType4> Test4Datas { get; init; }
 
-        public IReadOnlyDictionary<TKey, TestModelType5<TKey, TestModelType4, TestModelType, Int16>> Test5Datas { get; }
+        public IReadOnlyDictionary<TKey, TestModelType5<TKey, TestModelType4, TestModelType, Int16>> Test5Datas { get; init; }
 
-        public IReadOnlyDictionary<TestModelType10Key<TKey>, TestModelType10<TKey>> Test10Datas { get; }
+        public IReadOnlyDictionary<TestModelType10Key<TKey>, TestModelType10<TKey>> Test10Datas { get; init; }
 
-        public IReadOnlyDictionary<TestModelType11Key<TKey, TKey>, TestModelType11<TKey, TKey>> Test11Datas { get; }
+        public IReadOnlyDictionary<TestModelType11Key<TKey, TKey>, TestModelType11<TKey, TKey>> Test11Datas { get; init; }
 
-        public IReadOnlyDictionary<TestModelType13Key<TKey, TKey>, TestModelType13<TKey, TKey>> Test13Datas { get; }
+        public IReadOnlyDictionary<TestModelType13Key<TKey, TKey>, TestModelType13<TKey, TKey>> Test13Datas { get; init; }
 
-        public IReadOnlyDictionary<TKey, TestModelType15<TKey>> Test15Datas { get; }
+        public IReadOnlyDictionary<TKey, TestModelType15<TKey>> Test15Datas { get; init; }
 
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.1.33.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.0.26.0")]
     public partial class TestContextGeneric<TKey> : ITestContextGeneric<TKey>
     {
         public static TestContextGeneric<TKey> Instance { get; private set; }
