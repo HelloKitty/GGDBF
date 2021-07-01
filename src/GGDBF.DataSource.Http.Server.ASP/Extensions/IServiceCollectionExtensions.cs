@@ -4,7 +4,7 @@ using System.Text;
 using GGDBF;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Glader.ASP.RPG
+namespace GGDBF
 {
 	public static class IServiceCollectionExtensions
 	{
