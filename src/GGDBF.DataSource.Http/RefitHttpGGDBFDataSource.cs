@@ -67,7 +67,8 @@ namespace GGDBF
 			{
 				Converters = new List<JsonConverter>()
 				{
-					new GGDBFComplexDictionaryJsonConverter()
+					new GGDBFComplexDictionaryJsonConverter(),
+					new SerializableGGDBFCollectionJsonConverter()
 				}
 			});
 

@@ -38,9 +38,12 @@ namespace GGDBF
 		public static MvcNewtonsoftJsonOptions RegisterGGDBFSerializers(this MvcNewtonsoftJsonOptions options)
 		{
 			if (options.SerializerSettings.Converters != null && options.SerializerSettings.Converters.Any())
+			{
 				options.SerializerSettings.Converters.Add(new GGDBFComplexDictionaryJsonConverter());
+				options.SerializerSettings.Converters.Add(new SerializableGGDBFCollectionJsonConverter());
+			}
 			else
-				options.SerializerSettings.Converters = new List<JsonConverter>() { new GGDBFComplexDictionaryJsonConverter() };
+				options.SerializerSettings.Converters = new List<JsonConverter>() { new GGDBFComplexDictionaryJsonConverter(), new SerializableGGDBFCollectionJsonConverter() };
 
 			return options;
 		}
