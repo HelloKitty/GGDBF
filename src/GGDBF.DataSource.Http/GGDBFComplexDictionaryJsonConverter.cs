@@ -49,6 +49,7 @@ namespace GGDBF
 			var values = ((IEnumerable)valueProperty.GetValue(value, null));
 			IEnumerator valueEnumerator = values.GetEnumerator();
 
+			var converters = serializer.Converters.ToArray();
 			writer.WriteStartArray();
 
 			foreach(object eachKey in keys)
@@ -57,8 +58,8 @@ namespace GGDBF
 
 				writer.WriteStartArray();
 
-				serializer.Serialize(writer, eachKey);
-				serializer.Serialize(writer, valueEnumerator.Current);
+				JToken.FromObject(eachKey, serializer).WriteTo(writer, converters);
+				JToken.FromObject(valueEnumerator.Current, serializer).WriteTo(writer, converters);
 
 				writer.WriteEndArray();
 			}
@@ -89,10 +90,10 @@ namespace GGDBF
 			return GetType()
 				.GetMethod(nameof(ReadJsonGeneric), BindingFlags.NonPublic | BindingFlags.Static)
 				.MakeGenericMethod(objectType.GenericTypeArguments.First(), objectType.GenericTypeArguments.Last())
-				.Invoke(this, new object[] { reader, objectType, existingValue });
+				.Invoke(this, new object[] { reader, objectType, existingValue, serializer });
 		}
 
-		private static object ReadJsonGeneric<TKey, TValue>(JsonReader reader, Type objectType, object existingValue)
+		private static object ReadJsonGeneric<TKey, TValue>(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
 			if (objectType.FullName != typeof(Dictionary<TKey, TValue>).FullName)
 				throw new NotSupportedException($"Type {objectType} unexpected, but got a {existingValue.GetType()}");
@@ -103,8 +104,8 @@ namespace GGDBF
 
 			foreach (var eachToken in tokens)
 			{
-				TKey key = eachToken[0].ToObject<TKey>();
-				TValue value = eachToken[1].ToObject<TValue>();
+				TKey key = eachToken[0].ToObject<TKey>(serializer);
+				TValue value = eachToken[1].ToObject<TValue>(serializer);
 
 				dictionary.Add(key, value);
 			}

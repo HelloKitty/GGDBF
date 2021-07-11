@@ -33,11 +33,12 @@ namespace GGDBF
 				.GetValue(value);
 
 			var values = ((IEnumerable)references);
+			var converters = serializer.Converters.ToArray();
 
 			writer.WriteStartArray();
 
 			foreach (var entry in values)
-				serializer.Serialize(writer, entry);
+				JToken.FromObject(entry, serializer).WriteTo(writer, converters);
 
 			writer.WriteEndArray();
 		}
@@ -48,19 +49,15 @@ namespace GGDBF
 			return GetType()
 				.GetMethod(nameof(ReadJsonGeneric), BindingFlags.NonPublic | BindingFlags.Static)
 				.MakeGenericMethod(objectType.GenericTypeArguments.First(), objectType.GenericTypeArguments.Last())
-				.Invoke(this, new object[] { reader, objectType, existingValue });
+				.Invoke(this, new object[] { reader, objectType, existingValue, serializer });
 		}
 
-		private static object ReadJsonGeneric<TKey, TValue>(JsonReader reader, Type objectType, object existingValue)
+		private static object ReadJsonGeneric<TKey, TValue>(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
 			if (objectType.FullName != typeof(SerializableGGDBFCollection<TKey, TValue>).FullName)
 				throw new NotSupportedException($"Type {objectType} unexpected, but got a {existingValue.GetType()}");
 
-			var references = JToken.Load(reader)
-				.Select(t => t.First.ToObject<TKey>())
-				.ToArray();
-
-			return new SerializableGGDBFCollection<TKey, TValue>(references);
+			return new SerializableGGDBFCollection<TKey, TValue>(JToken.Load(reader).ToObject<TKey[]>(serializer));
 		}
 	}
 }
