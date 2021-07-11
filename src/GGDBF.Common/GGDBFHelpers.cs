@@ -13,7 +13,11 @@ namespace GGDBF
 		public static SerializableGGDBFCollection<TKeyType, TModelType> CreateSerializableCollection<TKeyType, TModelType>(Func<TModelType, TKeyType> keyResolutionFunction, IEnumerable<TModelType> models)
 		{
 			if (keyResolutionFunction == null) throw new ArgumentNullException(nameof(keyResolutionFunction));
-			if (models == null) throw new ArgumentNullException(nameof(models));
+
+			//TODO: Should we log?
+			//Sometimes some implementations may have a property or collection field as null for perf/bandwidth reasons so we should treat null as empty.
+			if (models == null)
+				return new SerializableGGDBFCollection<TKeyType, TModelType>();
 
 			//Single enumeration
 			TModelType[] modelsArray = models as TModelType[] ?? models.ToArray();
