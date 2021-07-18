@@ -8,18 +8,18 @@ using GGDBF;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.0.26.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
     [DataContractAttribute]
     public partial class TestContext_TestModelType9 : TestModelType9<Int32, String>, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
-        public override TestModelType4 Model
+        public override TestNamespace2.TestModelType4 Model
         {
             get => TestContext.Instance.Test4Datas[base.ModelId];
         }
         public TestContext_TestModelType9() { }
 
-        public void Initialize()
+        public void Initialize(IGGDBFDataConverter converter)
         {
         }
     }
