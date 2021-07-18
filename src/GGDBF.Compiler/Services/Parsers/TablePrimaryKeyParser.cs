@@ -92,6 +92,11 @@ namespace GGDBF
 				}
 			}
 
+			//Maybe it's on the base type
+			var baseType = type.BaseType;
+			if (baseType != null)
+				return GetPrimaryKeyProperty(baseType);
+
 			throw new InvalidOperationException($"Failed to deduce PK from ModelType: {type.Name}:{type}");
 		}
 

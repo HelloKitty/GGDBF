@@ -38,38 +38,14 @@ namespace GGDBF
 
 			builder.Append($"{Environment.NewLine}{{");
 
-			//TODO: Support ALL foreign key scenarios. Right now only traditional attribute-based PropId and Prop pair scenarios are supported
-			//Find all foreign key references and generate
-			//the required overrides for their navigation properties.
-			foreach (var prop in SerializableType
-				.GetMembers()
-				.Where(m => m.HasAttributeLike<ForeignKeyAttribute>() || m.HasAttributeExact<CompositeKeyHintAttribute>())
-				.Cast<IPropertySymbol>())
+			//We do this to support nav properties in the base type
+			var typeToParse = SerializableType;
+			do
 			{
-				//Special handling for composite key table references
-				if (prop.Type.HasAttributeExact<CompositeKeyHintAttribute>() && prop.HasAttributeLike<CompositeKeyHintAttribute>())
-				{
-					//TODO: Hack to get the key name
-					//TODO: Is it ok for open generics to use the type args??
-					string keyTypeName = ComputeCompositeKeyTypeName(prop);
-					string keyResolution = new TablePrimaryKeyParser().BuildCompositeKeyCreationExpression(prop, "base", keyTypeName);
-
-					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-					builder.Append($"public override {prop.Type.ToFullName()} {prop.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(prop.Type)}[{keyResolution}];{Environment.NewLine}");
-
-					builder.Append($"}}{Environment.NewLine}");
-				}
-				else
-				{
-					IPropertySymbol navProperty = RetrieveNavigationPropertySymbol(prop);
-					IPropertySymbol keyProperty = RetrieveNavigationKeyPropertySymbol(prop);
-
-					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-					builder.Append($"public override {navProperty.Type.ToFullName()} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
-
-					builder.Append($"}}{Environment.NewLine}");
-				}
-			}
+				EmitOverridenNavigationProperties(builder, typeToParse);
+				typeToParse = typeToParse.BaseType;
+			} while (typeToParse != null);
+			
 
 			int propCount = 1;
 			foreach (var prop in EnumerateForeignCollectionProperties())
@@ -122,11 +98,7 @@ namespace GGDBF
 			//For all owned types we should maybe generate keys
 			if (SerializableType.HasOwnedTypePropertyWithForeignKey())
 			{
-				foreach (var prop in SerializableType
-					.GetMembers()
-					.Where(m => m.IsVirtual && m.Kind == SymbolKind.Property)
-					.Cast<IPropertySymbol>()
-					.Where(p => p.HasAttributeLike<OwnedTypeHintAttribute>() && p.IsOwnedPropertyWithForeignKey()))
+				foreach (var prop in EnumerateOwnedTypesWithForeignKeys())
 				{
 					//TODO: If multiple owned types with generic type parameters are used in the same table then this won't work.
 					INamedTypeSymbol ownedType = (INamedTypeSymbol) (prop.IsICollectionType() ? ((INamedTypeSymbol)prop.Type).TypeArguments.First() : prop.Type);
@@ -134,6 +106,61 @@ namespace GGDBF
 
 					builder.Append($"{Environment.NewLine}{Environment.NewLine}");
 					emitter.Emit(builder);
+				}
+			}
+		}
+
+		private IEnumerable<IPropertySymbol> EnumerateOwnedTypesWithForeignKeys()
+		{
+			//We do this Do While so we can support properties in BaseTypes
+			var type = SerializableType;
+			do
+			{
+				foreach(var member in type
+					.GetMembers()
+					.Where(m => m.IsVirtual && m.Kind == SymbolKind.Property)
+					.Cast<IPropertySymbol>()
+					.Where(p => p.HasAttributeLike<OwnedTypeHintAttribute>() && p.IsOwnedPropertyWithForeignKey()))
+				{
+					yield return member;
+				}
+
+				type = type.BaseType;
+			} while(type != null);
+		}
+
+		private void EmitOverridenNavigationProperties(StringBuilder builder, INamedTypeSymbol type)
+		{
+			//TODO: Support ALL foreign key scenarios. Right now only traditional attribute-based PropId and Prop pair scenarios are supported
+			//Find all foreign key references and generate
+			//the required overrides for their navigation properties.
+			foreach(var prop in type
+				.GetMembers()
+				.Where(m => m.HasAttributeLike<ForeignKeyAttribute>() || m.HasAttributeExact<CompositeKeyHintAttribute>())
+				.Cast<IPropertySymbol>())
+			{
+				//Special handling for composite key table references
+				if (prop.Type.HasAttributeExact<CompositeKeyHintAttribute>() && prop.HasAttributeLike<CompositeKeyHintAttribute>())
+				{
+					//TODO: Hack to get the key name
+					//TODO: Is it ok for open generics to use the type args??
+					string keyTypeName = ComputeCompositeKeyTypeName(prop);
+					string keyResolution = new TablePrimaryKeyParser().BuildCompositeKeyCreationExpression(prop, "base", keyTypeName);
+
+					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
+					builder.Append($"public override {prop.Type.ToFullName()} {prop.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(prop.Type)}[{keyResolution}];{Environment.NewLine}");
+
+					builder.Append($"}}{Environment.NewLine}");
+				}
+				else
+				{
+					IPropertySymbol navProperty = RetrieveNavigationPropertySymbol(prop);
+					IPropertySymbol keyProperty = RetrieveNavigationKeyPropertySymbol(prop);
+
+					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
+					builder.Append($"public override {navProperty.Type.ToFullName()} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
+
+					builder.Append($"}}{Environment.NewLine}");
 				}
 			}
 		}
@@ -175,20 +202,42 @@ namespace GGDBF
 
 		private IEnumerable<IPropertySymbol> EnumerateForeignCollectionProperties()
 		{
-			return SerializableType
-				.GetMembers()
-				.Where(m => m.Kind == SymbolKind.Property && m.IsVirtual)
-				.Cast<IPropertySymbol>()
-				.Where(p => p.IsICollectionType() && ComputeCollectionElementType(p).HasAttributeLike<TableAttribute>()); //important to ignore non-table types (probably complex/owned types)
+			//We do this Do While so we can support properties in BaseTypes
+			var type = SerializableType;
+			do
+			{
+				//important to ignore non-table types (probably complex/owned types)
+				foreach(var member in type
+					.GetMembers()
+					.Where(m => m.Kind == SymbolKind.Property && m.IsVirtual)
+					.Cast<IPropertySymbol>()
+					.Where(p => p.IsICollectionType() && ComputeCollectionElementType(p).HasAttributeLike<TableAttribute>()))
+				{
+					yield return member;
+				}
+
+				type = type.BaseType;
+			} while (type != null);
 		}
 
 		private IEnumerable<IPropertySymbol> EnumerateOwnedTypeForeignCollectionProperties()
 		{
-			return SerializableType
-				.GetMembers()
-				.Where(m => m.Kind == SymbolKind.Property && m.IsVirtual)
-				.Cast<IPropertySymbol>()
-				.Where(p => p.IsICollectionType() && (p.HasAttributeExact<OwnedTypeHintAttribute>() || p.Type.HasAttributeExact<OwnedTypeHintAttribute>())); //important to ignore non-table types (probably complex/owned types)
+			//We do this Do While so we can support properties in BaseTypes
+			var type = SerializableType;
+			do
+			{
+				//important to ignore non-table types (probably complex/owned types)
+				foreach(var member in type
+					.GetMembers()
+					.Where(m => m.Kind == SymbolKind.Property && m.IsVirtual)
+					.Cast<IPropertySymbol>()
+					.Where(p => p.IsICollectionType() && (p.HasAttributeExact<OwnedTypeHintAttribute>() || p.Type.HasAttributeExact<OwnedTypeHintAttribute>())))
+				{
+					yield return member;
+				}
+
+				type = type.BaseType;
+			} while (type != null);
 		}
 
 		private void EmitSerializableInitializeMethod(StringBuilder builder)
@@ -244,11 +293,24 @@ namespace GGDBF
 		{
 			try
 			{
-				return SerializableType
-					.GetMembers()
-					.Where(m => m.Kind == SymbolKind.Property)
-					.Cast<IPropertySymbol>()
-					.First(m => m.Kind == SymbolKind.Property && m.Name == (string)prop.GetAttributeLike<ForeignKeyAttribute>().ConstructorArguments.First().Value);
+				//We do this Do While so we can support properties in BaseTypes
+				//This is ugly but it's possible the foreign key is references base properties
+				var type = SerializableType;
+				do
+				{
+					var propResult = type.GetMembers()
+						.Where(m => m.Kind == SymbolKind.Property)
+						.Cast<IPropertySymbol>()
+						.FirstOrDefault(m => m.Kind == SymbolKind.Property && m.Name == (string) prop.GetAttributeLike<ForeignKeyAttribute>().ConstructorArguments.First().Value);
+
+					if (propResult != null)
+						return propResult;
+
+					type = type.BaseType;
+
+				} while (type != null);
+
+				throw new InvalidOperationException($"Failed to retrieve foreign key property for Type: {SerializableType.Name} Prop: {prop.Name}");
 			}
 			catch (Exception e)
 			{

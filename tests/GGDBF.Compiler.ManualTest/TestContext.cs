@@ -27,6 +27,7 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType12))]
 	[RequiredDataModel(typeof(TestModelType14))]
 	[RequiredDataModel(typeof(TestModelType15<int>))]
+	[RequiredDataModel(typeof(TestModelType16))]
 	public partial class TestContext
 	{
 
@@ -462,6 +463,28 @@ namespace TestNamespace2
 		}
 
 		public TestModelType15()
+		{
+
+		}
+	}
+
+	[DataContract]
+	[Table("Test16Datas")]
+	public class TestModelType16 : TestModelType3
+	{
+		[DataMember(Order = 2)]
+		public string StringValue { get; private set; }
+
+		[ForeignKey(nameof(Id))]
+		public virtual TestModelType3 ModelType3 { get; private set; }
+
+		public TestModelType16(string id)
+			: base(id, id)
+		{
+
+		}
+
+		public TestModelType16()
 		{
 
 		}
