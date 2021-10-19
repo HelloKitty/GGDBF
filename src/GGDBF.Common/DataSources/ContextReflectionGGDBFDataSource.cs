@@ -33,18 +33,25 @@ namespace GGDBF
 		{
 			TGGDBFContextType context = await GetContext(Source);
 
-			//Total hack but the best way to get the data I guess.
-			var modelDictionary = (IReadOnlyDictionary<TPrimaryKeyType, TModelType>)typeof(TGGDBFContextType)
-				.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty)
-				.First(p => p.PropertyType == typeof(IReadOnlyDictionary<TPrimaryKeyType, TModelType>))
-				.GetValue(context);
-
-			return new GGDBFTable<TPrimaryKeyType, TModelType>()
+			try
 			{
-				Version = GGDBFHelpers.GetContextVersion<TGGDBFContextType>(),
-				TableName = GGDBFHelpers.GetTableName<TModelType>(),
-				TableData = modelDictionary.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
-			};
+				//Total hack but the best way to get the data I guess.
+				var modelDictionary = (IReadOnlyDictionary<TPrimaryKeyType, TModelType>)typeof(TGGDBFContextType)
+					.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty)
+					.First(p => p.PropertyType == typeof(IReadOnlyDictionary<TPrimaryKeyType, TModelType>))
+					.GetValue(context);
+
+				return new GGDBFTable<TPrimaryKeyType, TModelType>()
+				{
+					Version = GGDBFHelpers.GetContextVersion<TGGDBFContextType>(),
+					TableName = GGDBFHelpers.GetTableName<TModelType>(),
+					TableData = modelDictionary.ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+				};
+			}
+			catch (Exception e)
+			{
+				throw new InvalidOperationException($"Failed to {nameof(RetrieveFullTableAsync)} for Key: {typeof(TPrimaryKeyType)} Model: {typeof(TModelType)}", e);
+			}
 		}
 
 		/// <inheritdoc />
