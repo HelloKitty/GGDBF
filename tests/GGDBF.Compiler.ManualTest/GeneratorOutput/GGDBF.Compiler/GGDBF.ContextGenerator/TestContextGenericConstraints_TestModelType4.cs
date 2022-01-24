@@ -8,7 +8,7 @@ using GGDBF;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.1.43.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.44.0")]
     [DataContractAttribute]
     public partial class TestContextGenericConstraints_TestModelType4<TKey, TAnotherType, TAnotherType2> : TestModelType4, IGGDBFSerializable where TKey : unmanaged, System.IConvertible
        where TAnotherType : class, System.Enum
