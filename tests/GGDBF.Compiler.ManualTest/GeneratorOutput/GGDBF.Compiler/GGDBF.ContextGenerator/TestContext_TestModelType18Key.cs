@@ -9,5 +9,5 @@ using GGDBF;
 namespace GGDBF
 {
     [GeneratedCodeAttribute("GGDBF", "0.1.43.0")]
-    public record TestModelType10Key<TKeyType1>(TKeyType1 Id1, System.Int16 Id2);
+    public record TestModelType18Key(System.Int32 Id1, System.String Id2);
 }
