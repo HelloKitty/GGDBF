@@ -252,7 +252,7 @@ namespace GGDBF
 
 				//TODO: Hack to get the key name
 				//TODO: Is it ok for open generics to use the type args??
-				string keyTypeName = new GenericTypeBuilder(collectionElementType.TypeParameters.ToArray()).Build($"{collectionElementType.Name}Key", collectionElementType.TypeArguments.ToArray());
+				string keyTypeName = CreateKeyTypeForCollectionType(collectionElementType);
 				string keyResolutionLambda = new TablePrimaryKeyParser().BuildKeyResolutionLambda(collectionElementType, keyTypeName);
 
 				builder.Append($"{fieldName} = {nameof(GGDBFHelpers)}.{nameof(GGDBFHelpers.CreateSerializableCollection)}({keyResolutionLambda}, {prop.Name});{Environment.NewLine}");
@@ -267,6 +267,16 @@ namespace GGDBF
 			}
 
 			builder.Append($"}}");
+		}
+
+		private static string CreateKeyTypeForCollectionType(INamedTypeSymbol collectionElementType)
+		{
+			string nonGenericKeyTypeName = $"{collectionElementType.Name}Key";
+
+			if (collectionElementType.IsGenericType || collectionElementType.IsUnboundGenericType)
+				return new GenericTypeBuilder(collectionElementType.TypeParameters.ToArray()).Build(nonGenericKeyTypeName, collectionElementType.TypeArguments.ToArray());
+
+			return nonGenericKeyTypeName;
 		}
 
 		private IPropertySymbol RetrieveNavigationKeyPropertySymbol(IPropertySymbol prop)

@@ -28,6 +28,8 @@ namespace GGDBF
 	[RequiredDataModel(typeof(TestModelType14))]
 	[RequiredDataModel(typeof(TestModelType15<int>))]
 	[RequiredDataModel(typeof(TestModelType16))]
+	[RequiredDataModel(typeof(TestModelType17))]
+	[RequiredDataModel(typeof(TestModelType18))]
 	public partial class TestContext
 	{
 
@@ -485,6 +487,60 @@ namespace TestNamespace2
 		}
 
 		public TestModelType16()
+		{
+
+		}
+	}
+
+	[DataContract]
+	[Table("Test17Datas")]
+	public class TestModelType17
+	{
+		[Key]
+		[DataMember(Order = 1)]
+		public int Id { get; private set; }
+
+		[InverseProperty(nameof(TestModelType18.Model17))]
+		public virtual ICollection<TestModelType18> SubClasses { get; private set; }
+
+		public TestModelType17()
+		{
+			
+		}
+	}
+
+	[DataContract]
+	[CompositeKeyHint(nameof(Id1), nameof(Id2))]
+	[Table("Test18Datas")]
+	public class TestModelType18
+	{
+		[DataMember(Order = 1)]
+		public int Id1 { get; private set; }
+
+		[DataMember(Order = 2)]
+		public string Id2 { get; private set; }
+
+		[DataMember(Order = 3)]
+		public string ModelId { get; private set; }
+
+		[ForeignKey(nameof(ModelId))]
+		public virtual TestModelType4 Model { get; private set; }
+
+		[DataMember(Order = 4)]
+		public int Model17Id { get; private set; }
+
+		[IgnoreDataMember]
+		[ForeignKey(nameof(Model17Id))]
+		public virtual TestModelType17 Model17 { get; private set; }
+
+		public TestModelType18(int id1, string id2, string modelId)
+		{
+			Id1 = id1;
+			Id2 = id2;
+			ModelId = modelId;
+		}
+
+		public TestModelType18()
 		{
 
 		}
