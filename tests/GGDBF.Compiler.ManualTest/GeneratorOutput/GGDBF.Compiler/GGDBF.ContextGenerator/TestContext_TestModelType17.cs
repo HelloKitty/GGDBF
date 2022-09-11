@@ -8,7 +8,7 @@ using GGDBF;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.1.44.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
     [DataContractAttribute]
     public partial class TestContext_TestModelType17 : TestModelType17, IGGDBFSerializable
     {
@@ -24,7 +24,7 @@ namespace GGDBF
 
         public void Initialize(IGGDBFDataConverter converter)
         {
-            _SerializedSubClasses = GGDBFHelpers.CreateSerializableCollection(m => new TestModelType18Key(m.Id1, m.Id2), SubClasses);
+            _SerializedSubClasses = GGDBFHelpers.CreateSerializableCollection(m => new TestModelType18Key<>(m.Id1, m.Id2), SubClasses);
         }
     }
 }

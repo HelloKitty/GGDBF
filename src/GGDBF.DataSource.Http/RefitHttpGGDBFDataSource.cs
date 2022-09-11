@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -47,15 +48,32 @@ namespace GGDBF
 		{
 			await ReloadIfRequiredAsync(token);
 
-			return await CreateServiceClient()
-				.RetrieveTableAsync<TPrimaryKeyType, TModelType>(typeof(TPrimaryKeyType).AssemblyQualifiedName, typeof(TModelType).AssemblyQualifiedName, token);
+			if (token == default)
+			{
+				using CancellationTokenSource tokenSource = new CancellationTokenSource();
+				tokenSource.CancelAfter(TimeSpan.FromMinutes(20)); // Default 20 minute timeout (for testing)
+				token = tokenSource.Token;
+
+				return await CreateServiceClient()
+					.RetrieveTableAsync<TPrimaryKeyType, TModelType>(typeof(TPrimaryKeyType).AssemblyQualifiedName, typeof(TModelType).AssemblyQualifiedName, token);
+			}
+			else
+				return await CreateServiceClient()
+					.RetrieveTableAsync<TPrimaryKeyType, TModelType>(typeof(TPrimaryKeyType).AssemblyQualifiedName, typeof(TModelType).AssemblyQualifiedName, token);
 		}
 
 		private IGGDBFHttpNetworkClient CreateServiceClient() 
 		{
+			// @HelloKitty: Total hack due to longrunning GGDBF table downloads (think Spell table)
+			var httpClient = new HttpClient
+			{
+				BaseAddress = new Uri(BaseUrl),
+				Timeout = TimeSpan.FromMinutes(20)
+			};
+
 			//Creates a Refit client that can understand complex dictionary key type serialization.
 			return RestService
-				.For<IGGDBFHttpNetworkClient>(BaseUrl, CreateRefitSettings());
+				.For<IGGDBFHttpNetworkClient>(httpClient, CreateRefitSettings());
 		}
 
 		private RefitSettings CreateRefitSettings()
@@ -90,8 +108,18 @@ namespace GGDBF
 		/// <inheritdoc />
 		public async Task ReloadAsync(CancellationToken token = default)
 		{
-			await CreateServiceClient()
-				.ReloadContextAsync<TGGDBFContextType>(typeof(TGGDBFContextType).AssemblyQualifiedName, token);
+			if (token == default)
+			{
+				using CancellationTokenSource tokenSource = new CancellationTokenSource();
+				tokenSource.CancelAfter(TimeSpan.FromMinutes(20)); // Default 20 minute timeout (for testing)
+				token = tokenSource.Token;
+
+				await CreateServiceClient()
+					.ReloadContextAsync<TGGDBFContextType>(typeof(TGGDBFContextType).AssemblyQualifiedName, token);
+			}
+			else
+				await CreateServiceClient()
+					.ReloadContextAsync<TGGDBFContextType>(typeof(TGGDBFContextType).AssemblyQualifiedName, token);
 		}
 
 		private async Task ReloadIfRequiredAsync(CancellationToken token = default) 
