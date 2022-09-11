@@ -41,6 +41,7 @@ namespace GGDBF
 		}
 
 		[ProducesJson]
+		[ResponseCache(Location = ResponseCacheLocation.Any, NoStore = false, Duration = 86400)]
 		[HttpGet("{key}_{type}/{derivedType}")]
 		public async Task<IActionResult> GetAsync([FromRoute(Name = "key")] string keyType, [FromRoute(Name = "type")] string modelType, [FromRoute(Name = "derivedType")] string derivedType, CancellationToken token = default)
 		{
