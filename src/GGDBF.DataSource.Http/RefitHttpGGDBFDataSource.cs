@@ -127,7 +127,7 @@ namespace GGDBF
 			if (Options.RefreshOnFirstQuery && FirstQuery)
 			{
 				await ReloadAsync(token);
-				FirstQuery = true;
+				FirstQuery = false;
 			}
 		}
 	}
