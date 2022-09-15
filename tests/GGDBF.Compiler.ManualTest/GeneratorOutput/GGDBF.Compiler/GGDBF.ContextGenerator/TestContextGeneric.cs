@@ -9,7 +9,7 @@ using TestNamespace2;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.56.0")]
     public interface ITestContextGeneric<TKey> : IGGDBFContext
     {
         public IReadOnlyDictionary<Int16, TestModelType> TestDatas { get; }
@@ -32,7 +32,7 @@ namespace GGDBF
 
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.56.0")]
     public partial class TestContextGeneric<TKey> : ITestContextGeneric<TKey>
     {
         public static TestContextGeneric<TKey> Instance { get; private set; }

@@ -23,7 +23,7 @@ namespace GGDBF.Generator.ManualTest
 				.UseInMemoryDatabase("Test")
 				.Options;
 
-			var writer = new DefaultFileGGDBFDataWriter(new DefaultGGDBFProtobufNetSerializer());
+			var writer = new FileGGDBFDataWriter(new DefaultGGDBFProtobufNetSerializer());
 
 			await using TestDBContext context = new(options);
 			await context.Database.EnsureCreatedAsync();

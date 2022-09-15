@@ -20,7 +20,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\GGDBF.DataSource.EntityFramework\GGDBF.DataSource.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\src\GGDBF.DataSource.File\GGDBF.DataSource.File.csproj" />
     <ProjectReference Include="..\..\src\GGDBF.Generator\GGDBF.Generator.csproj" />
+    <ProjectReference Include="..\..\src\GGDBF.DataSource.File.Generator\GGDBF.DataSource.File.Generator.csproj" />
     <ProjectReference Include="..\..\src\GGDBF.Serializer.ProtobufNet\GGDBF.Serializer.ProtobufNet.csproj" />
     <ProjectReference Include="..\GGDBF.Compiler.ManualTest\GGDBF.Compiler.ManualTest.csproj" />
   </ItemGroup>
