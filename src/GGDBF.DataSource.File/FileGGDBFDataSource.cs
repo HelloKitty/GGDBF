@@ -43,7 +43,16 @@ namespace GGDBF
 			var buffer = ArrayPool<byte>.Shared.Rent((int) fs.Length);
 			try
 			{
-				await fs.ReadAsync(buffer, 0, (int)fs.Length, token);
+				for (int read = 0; read < fs.Length;)
+				{
+					int bytesRead = await fs.ReadAsync(buffer, read, (int)fs.Length, token);
+
+					if (bytesRead == 0)
+						break;
+
+					read += bytesRead;
+				}
+
 				return Serializer.Deserialize<TPrimaryKeyType, TModelType>(buffer, 0, (int) fs.Length);
 			}
 			finally
