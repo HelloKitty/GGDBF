@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GGDBF
 {
@@ -65,7 +67,7 @@ namespace GGDBF
 
 				var table = Activator.CreateInstance(tableType);
 
-				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableName)).SetValue(table, candidate.GetType().GenericTypeArguments.Last().Name);
+				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableName)).SetValue(table, candidate.GetType().GenericTypeArguments.Last().GetCustomAttribute<TableAttribute>(true).Name);
 				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableData)).SetValue(table, candidate);
 
 				try
@@ -90,7 +92,7 @@ namespace GGDBF
 
 				var table = Activator.CreateInstance(tableType);
 
-				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableName)).SetValue(table, candidate.GetType().GenericTypeArguments.Last().Name);
+				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableName)).SetValue(table, candidate.GetType().GenericTypeArguments.Last().GetCustomAttribute<TableAttribute>(true).Name);
 				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableData)).SetValue(table, candidate);
 
 				return table;

@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.1.56.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
     [DataContractAttribute]
     public partial class TestContextGenericConstraints_TestModelType15<TKey, TAnotherType, TAnotherType2> : TestModelType15<TKey>, IGGDBFSerializable where TKey : unmanaged, System.IConvertible
        where TAnotherType : class, System.Enum
@@ -45,7 +45,7 @@ namespace GGDBF
         }
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.1.56.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
     [DataContractAttribute]
     public partial record TestContextGenericConstraints_TestModelType15_TestOwnedTypeModel2<TKey, TAnotherType, TAnotherType2> : TestOwnedTypeModel2<TKey>, IGGDBFSerializable where TKey : unmanaged, System.IConvertible
         where TAnotherType : class, System.Enum

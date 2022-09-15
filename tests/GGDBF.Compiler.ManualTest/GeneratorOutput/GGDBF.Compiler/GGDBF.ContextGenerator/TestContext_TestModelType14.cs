@@ -9,7 +9,7 @@ using GGDBF;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.1.56.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
     [DataContractAttribute]
     public partial class TestContext_TestModelType14 : TestModelType14, IGGDBFSerializable
     {
@@ -43,7 +43,7 @@ namespace GGDBF
         }
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.1.56.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
     [DataContractAttribute]
     public partial record TestContext_TestModelType14_TestOwnedTypeModel2 : TestOwnedTypeModel2<Int32>, IGGDBFSerializable
     {
