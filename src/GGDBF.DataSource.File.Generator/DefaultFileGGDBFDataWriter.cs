@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GGDBF
 {
-	public sealed class DefaultFileGGDBFDataWriter : IGGDBFDataWriter
+	public sealed class FileGGDBFDataWriter : IGGDBFDataWriter
 	{
 		private IGGDBFSerializer Serializer { get; }
 
@@ -15,7 +15,7 @@ namespace GGDBF
 
 		private bool WriteToCurrentDirectory => OutputPath == null;
 
-		public DefaultFileGGDBFDataWriter(IGGDBFSerializer serializer, string path = null)
+		public FileGGDBFDataWriter(IGGDBFSerializer serializer, string path = null)
 		{
 			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 			OutputPath = path;
