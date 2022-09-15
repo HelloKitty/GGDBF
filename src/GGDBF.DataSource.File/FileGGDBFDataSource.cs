@@ -1,56 +1,54 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Reflection;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace GGDBF
 {
-	/// <summary>
-	/// An HTTP <see cref="IGGDBFDataSource"/> implementation that uses File based loading and deserialization
-	/// to source the data.
-	/// </summary>
-	public sealed class FileGGDBFDataSource<TGGDBFContextType> : IGGDBFDataSource
-		where TGGDBFContextType : class, IGGDBFContext
+	public sealed class FileGGDBFDataSource : IGGDBFDataSource
 	{
-		/// <summary>
-		/// The base URL for the requests.
-		/// </summary>
-		private string BasePath { get; }
+		private IGGDBFSerializer Serializer { get; }
 
-		private IGGDBFSerializer SerializationStrategy { get; }
+		private string OutputPath { get; }
 
-		public FileGGDBFDataSource(string basPath, IGGDBFSerializer serializationStrategy)
+		private bool WriteToCurrentDirectory => OutputPath == null;
+
+		public FileGGDBFDataSource(IGGDBFSerializer serializer, string path = null)
 		{
-			if (string.IsNullOrWhiteSpace(basPath)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(basPath));
-			BasePath = basPath;
-			SerializationStrategy = serializationStrategy ?? throw new ArgumentNullException(nameof(serializationStrategy));
+			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+			OutputPath = path;
 		}
 
 		/// <inheritdoc />
 		public async Task<IEnumerable<TModelType>> RetrieveAllAsync<TModelType>(CancellationToken token = default) 
 			where TModelType : class
 		{
-			// I think it's not possible
-			throw new NotSupportedException($"TODO: Support unspecified key load from File");
+			throw new NotSupportedException();
 		}
 
 		/// <inheritdoc />
 		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
 			where TModelType : class
 		{
+			string path = WriteToCurrentDirectory
+				? Path.Combine(Directory.GetCurrentDirectory(), $"{config.TableNameOverride}.{GGDBFConstants.FILE_EXTENSION_SUFFIX}")
+				: Path.Combine(OutputPath, $"{config.TableNameOverride}.{GGDBFConstants.FILE_EXTENSION_SUFFIX}");
+
+			using FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+
+			var buffer = ArrayPool<byte>.Shared.Rent((int) fs.Length);
 			try
 			{
-				// netstandard2.0 doesn't have async read bytes from file sadly
-				byte[] bytes = await ReadAllBytesAsync(Path.Combine(BasePath, $"{typeof(TModelType).Name}.ggdbf"), token);
-				return SerializationStrategy.Deserialize<TPrimaryKeyType, TModelType>(bytes, 0, bytes.Length);
+				await fs.ReadAsync(buffer, 0, (int)fs.Length, token);
+				return Serializer.Deserialize<TPrimaryKeyType, TModelType>(buffer, 0, (int) fs.Length);
 			}
-			catch (Exception e)
+			finally
 			{
-				throw new InvalidOperationException($"Failed to load GGDBF Table Type: {typeof(TModelType).Name}. Reason: {e}", e);
+				ArrayPool<byte>.Shared.Return(buffer);
 			}
 		}
 
@@ -59,28 +57,25 @@ namespace GGDBF
 			where TModelType : class 
 			where TSerializableModelType : class, TModelType, IGGDBFSerializable
 		{
-			// I think it's not possible
-			throw new NotSupportedException($"TODO: Support alternative serializable type load from File");
+			var table = await RetrieveFullTableAsync<TPrimaryKeyType, TSerializableModelType>(CastConfig<TPrimaryKeyType, TModelType, TSerializableModelType>(config), token);
+			return table.ConvertFrom<TPrimaryKeyType, TModelType, TSerializableModelType>();
 		}
 
 		/// <inheritdoc />
-		public Task ReloadAsync(CancellationToken token = default)
+		public async Task ReloadAsync(CancellationToken token = default)
 		{
-			// Basically files don't need a reload, any loads will get latest from file directory.
-			return Task.CompletedTask;
+			//There is nothing logically that can be done here.
 		}
 
-		// netstandard2.0 doesn't have async read bytes from file sadly
-		private static async Task<byte[]> ReadAllBytesAsync(string path, CancellationToken token = default)
+		private TableRetrievalConfig<TPrimaryKeyType, TSerializableModelType> CastConfig<TPrimaryKeyType, TModelType, TSerializableModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config)
+			where TModelType : class
+			where TSerializableModelType : class, TModelType, IGGDBFSerializable
 		{
-			using FileStream sourceStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 0, true);
+			if (config == null)
+				return null;
 
-			byte[] buffer = new byte[sourceStream.Length];
-
-			using (MemoryStream ms = new MemoryStream(buffer, true))
-				await sourceStream.CopyToAsync(ms, buffer.Length, token);
-
-			return buffer;
+			Func<TSerializableModelType, TPrimaryKeyType> keyResolutionFuncCasted = (config.KeyResolutionFunction != null) ? m => config.KeyResolutionFunction(m) : null;
+			return new TableRetrievalConfig<TPrimaryKeyType, TSerializableModelType>(keyResolutionFuncCasted, config?.TableNameOverride);
 		}
 	}
 }
