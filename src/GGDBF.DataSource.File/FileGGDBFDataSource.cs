@@ -47,7 +47,7 @@ namespace GGDBF
 				{
 					int bytesRead = await fs.ReadAsync(buffer, read, (int)fs.Length, token);
 
-					if (bytesRead == 0)
+					if (bytesRead <= 0)
 						break;
 
 					read += bytesRead;
