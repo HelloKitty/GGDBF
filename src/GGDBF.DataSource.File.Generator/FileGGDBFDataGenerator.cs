@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace GGDBF
 {
 	public sealed class FileGGDBFDataGenerator<TGGDBFContextType>
-		where TGGDBFContextType : class, IGGDBFContext, new()
+		where TGGDBFContextType : class, IGGDBFContext
 	{
 		/// <summary>
 		/// The base URL for the requests.
@@ -42,12 +43,70 @@ namespace GGDBF
 				if (candidate == null)
 					continue;
 
-				if (candidate is not IGGDBFWriteable)
-					continue;
+				var table = CreateGGDBFTable(candidate);
 
-				IGGDBFWriteable writable = candidate as IGGDBFWriteable;
+				if (table == null)
+					throw new InvalidOperationException($"Failed to generate Table for Prop: {prop.PropertyType.Name}");
 
-				await writable.WriteAsync(new FileGGDBFDataWriter(SerializationStrategy, BasePath), token);
+				await (table as IGGDBFWriteable).WriteAsync(new FileGGDBFDataWriter(SerializationStrategy, BasePath), token);
+			}
+		}
+
+		object CreateGGDBFTable(object candidate)
+		{
+			IEnumerable values = (IEnumerable)candidate.GetType().GetProperty(nameof(Dictionary<int, int>.Values)).GetValue(candidate);
+
+			// We need to get the true type
+			Type modelType = RetrieveModelType(values, candidate);
+
+			if(modelType != candidate.GetType().GenericTypeArguments.Last())
+			{
+				var tableType = typeof(GGDBFTable<,>).MakeGenericType(candidate.GetType().GenericTypeArguments.First(), candidate.GetType().GenericTypeArguments.Last());
+
+				var table = Activator.CreateInstance(tableType);
+
+				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableName)).SetValue(table, candidate.GetType().GenericTypeArguments.Last().Name);
+				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableData)).SetValue(table, candidate);
+
+				try
+				{
+					// Convert Canidate collection to serializable table
+					// GGDBFTable<TPrimaryKeyType, TSerializableModelType> ConvertTo<TPrimaryKeyType, TModelType, TSerializableModelType>
+					return typeof(GGDBFTableExtensions).GetMethod(nameof(GGDBFTableExtensions.ConvertTo), BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod).MakeGenericMethod(new Type[]
+					{
+						candidate.GetType().GenericTypeArguments.First(),
+						candidate.GetType().GenericTypeArguments.Last(),
+						modelType
+					}).Invoke(null, new[] { table });
+				}
+				catch (Exception e)
+				{
+					throw new InvalidOperationException($"Failed to call {nameof(GGDBFTableExtensions.ConvertTo)}", e);
+				}
+			}
+			else
+			{
+				var tableType = typeof(GGDBFTable<,>).MakeGenericType(candidate.GetType().GenericTypeArguments.First(), modelType);
+
+				var table = Activator.CreateInstance(tableType);
+
+				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableName)).SetValue(table, candidate.GetType().GenericTypeArguments.Last().Name);
+				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableData)).SetValue(table, candidate);
+
+				return table;
+			}
+		}
+
+		private static Type RetrieveModelType(IEnumerable values, object candidate)
+		{
+			var enumerator = values.GetEnumerator();
+			if (enumerator.MoveNext())
+			{
+				return enumerator.Current.GetType();
+			}
+			else
+			{
+				return candidate.GetType().GenericTypeArguments.Last();
 			}
 		}
 	}
