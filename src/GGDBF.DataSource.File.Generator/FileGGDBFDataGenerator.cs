@@ -67,7 +67,7 @@ namespace GGDBF
 
 				var table = Activator.CreateInstance(tableType);
 
-				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableName)).SetValue(table, candidate.GetType().GenericTypeArguments.Last().GetCustomAttribute<TableAttribute>(true).Name);
+				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableName)).SetValue(table, GetGGDBFTableName(candidate));
 				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableData)).SetValue(table, candidate);
 
 				try
@@ -92,11 +92,18 @@ namespace GGDBF
 
 				var table = Activator.CreateInstance(tableType);
 
-				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableName)).SetValue(table, candidate.GetType().GenericTypeArguments.Last().GetCustomAttribute<TableAttribute>(true).Name);
+				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableName)).SetValue(table, GetGGDBFTableName(candidate));
 				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableData)).SetValue(table, candidate);
 
 				return table;
 			}
+		}
+
+		private object GetGGDBFTableName(object candidate)
+		{
+			var name = candidate.GetType().GenericTypeArguments.Last().GetCustomAttribute<TableAttribute>(true).Name;
+
+			return name.Replace("_", "");
 		}
 
 		private static Type RetrieveModelType(IEnumerable values, object candidate)
