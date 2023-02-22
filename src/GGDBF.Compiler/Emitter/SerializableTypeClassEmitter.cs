@@ -148,7 +148,8 @@ namespace GGDBF
 					string keyResolution = new TablePrimaryKeyParser().BuildCompositeKeyCreationExpression(prop, "base", keyTypeName);
 
 					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-					builder.Append($"public override {prop.Type.ToFullName()} {prop.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(prop.Type)}[{keyResolution}];{Environment.NewLine}");
+					string tableRef = $"{OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(prop.Type)}";
+					builder.Append($"public override {prop.Type.ToFullName()} {prop.Name} {Environment.NewLine}{{ get => {tableRef}.ContainsKey({keyResolution}) ? {tableRef}[{keyResolution}] : default;{Environment.NewLine}");
 
 					builder.Append($"}}{Environment.NewLine}");
 				}
@@ -158,7 +159,8 @@ namespace GGDBF
 					IPropertySymbol keyProperty = RetrieveNavigationKeyPropertySymbol(prop);
 
 					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
-					builder.Append($"public override {navProperty.Type.ToFullName()} {navProperty.Name} {Environment.NewLine}{{ get => {OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}[base.{keyProperty.Name}];{Environment.NewLine}");
+					string tableRef = $"{OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}";
+					builder.Append($"public override {navProperty.Type.ToFullName()} {navProperty.Name} {Environment.NewLine}{{ get => {tableRef}.ContainsKey(base.{keyProperty.Name}) ? {tableRef}[base.{keyProperty.Name}] : default;{Environment.NewLine}");
 
 					builder.Append($"}}{Environment.NewLine}");
 				}
