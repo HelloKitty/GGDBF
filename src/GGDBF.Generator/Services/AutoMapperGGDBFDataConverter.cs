@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using AutoMapper;
 
@@ -41,6 +43,12 @@ namespace GGDBF
 					//Generally empty collections are preferrable BUT we use the mapping here
 					//only to go from the DataSource model to the Serializable equivalent.
 					cfg.AllowNullCollections = true;
+
+					// Ignore all properties that have NotMapped
+					cfg.ForAllPropertyMaps(map =>
+					{
+						return map.SourceMember.CustomAttributes.Any(a => a.AttributeType.Name.Contains("NotMappedAttribute"));
+					}, (map, config) => config.Ignore());
 
 					cfg.CreateMap<TModelType, TSerializableModelType>();
 				})
