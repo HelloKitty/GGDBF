@@ -8,14 +8,14 @@ using GGDBF;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.64.0")]
     [DataContractAttribute]
     public partial class TestContextGeneric_TestModelType3<TKey> : TestModelType3, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
         public override TestNamespace2.TestModelType2 Model
         {
-            get => TestContextGeneric<TKey>.Instance.Test2Datas[base.ModelId];
+            get => TestContextGeneric<TKey>.Instance.Test2Datas.ContainsKey(base.ModelId) ? TestContextGeneric<TKey>.Instance.Test2Datas[base.ModelId] : default;
         }
         public TestContextGeneric_TestModelType3() { }
 

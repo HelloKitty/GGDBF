@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.64.0")]
     [DataContractAttribute]
     public partial class TestContextGenericConstraints_TestModelType15<TKey, TAnotherType, TAnotherType2> : TestModelType15<TKey>, IGGDBFSerializable where TKey : unmanaged, System.IConvertible
        where TAnotherType : class, System.Enum
@@ -18,7 +18,7 @@ namespace GGDBF
         [IgnoreDataMemberAttribute]
         public override TestNamespace.TestModelType Model
         {
-            get => TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2>.Instance.TestDatas[base.ModelId];
+            get => TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2>.Instance.TestDatas.ContainsKey(base.ModelId) ? TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2>.Instance.TestDatas[base.ModelId] : default;
         }
         [DataMemberAttribute(Order = 1)]
         public SerializableGGDBFCollection<Int16, TestModelType> _SerializedModels;
@@ -45,7 +45,7 @@ namespace GGDBF
         }
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.64.0")]
     [DataContractAttribute]
     public partial record TestContextGenericConstraints_TestModelType15_TestOwnedTypeModel2<TKey, TAnotherType, TAnotherType2> : TestOwnedTypeModel2<TKey>, IGGDBFSerializable where TKey : unmanaged, System.IConvertible
         where TAnotherType : class, System.Enum
@@ -54,7 +54,7 @@ namespace GGDBF
         [IgnoreDataMemberAttribute]
         public override TestNamespace.TestModelType Model
         {
-            get => TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2>.Instance.TestDatas[base.ModelId];
+            get => TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2>.Instance.TestDatas.ContainsKey(base.ModelId) ? TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2>.Instance.TestDatas[base.ModelId] : default;
         }
 
         public void Initialize(IGGDBFDataConverter converter)

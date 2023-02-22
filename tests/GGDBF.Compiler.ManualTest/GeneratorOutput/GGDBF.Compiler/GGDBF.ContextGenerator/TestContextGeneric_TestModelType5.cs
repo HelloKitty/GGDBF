@@ -9,14 +9,14 @@ using System.Runtime.Serialization;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.64.0")]
     [DataContractAttribute]
     public partial class TestContextGeneric_TestModelType5<TKey> : TestModelType5<TKey, TestModelType4, TestModelType, Int16>, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
         public override TestNamespace.TestModelType Model
         {
-            get => TestContextGeneric<TKey>.Instance.TestDatas[base.ModelId];
+            get => TestContextGeneric<TKey>.Instance.TestDatas.ContainsKey(base.ModelId) ? TestContextGeneric<TKey>.Instance.TestDatas[base.ModelId] : default;
         }
         [DataMemberAttribute(Order = 1)]
         public SerializableGGDBFCollection<String, TestModelType4> _SerializedModelCollection;

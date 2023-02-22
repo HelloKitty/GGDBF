@@ -9,14 +9,14 @@ using System.Runtime.Serialization;
 
 namespace GGDBF
 {
-    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.64.0")]
     [DataContractAttribute]
     public partial class TestContextGeneric_TestModelType15<TKey> : TestModelType15<TKey>, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
         public override TestNamespace.TestModelType Model
         {
-            get => TestContextGeneric<TKey>.Instance.TestDatas[base.ModelId];
+            get => TestContextGeneric<TKey>.Instance.TestDatas.ContainsKey(base.ModelId) ? TestContextGeneric<TKey>.Instance.TestDatas[base.ModelId] : default;
         }
         [DataMemberAttribute(Order = 1)]
         public SerializableGGDBFCollection<Int16, TestModelType> _SerializedModels;
@@ -43,14 +43,14 @@ namespace GGDBF
         }
     }
 
-    [GeneratedCodeAttribute("GGDBF", "0.1.42.0")]
+    [GeneratedCodeAttribute("GGDBF", "0.1.64.0")]
     [DataContractAttribute]
     public partial record TestContextGeneric_TestModelType15_TestOwnedTypeModel2<TKey> : TestOwnedTypeModel2<TKey>, IGGDBFSerializable
     {
         [IgnoreDataMemberAttribute]
         public override TestNamespace.TestModelType Model
         {
-            get => TestContextGeneric<TKey>.Instance.TestDatas[base.ModelId];
+            get => TestContextGeneric<TKey>.Instance.TestDatas.ContainsKey(base.ModelId) ? TestContextGeneric<TKey>.Instance.TestDatas[base.ModelId] : default;
         }
 
         public void Initialize(IGGDBFDataConverter converter)
