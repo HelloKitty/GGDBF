@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace GGDBF
 {
@@ -16,10 +17,13 @@ namespace GGDBF
 			NamespaceName = namespaceName ?? throw new ArgumentNullException(nameof(namespaceName));
 		}
 
-		public void Emit(StringBuilder builder)
+		public void Emit(StringBuilder builder, CancellationToken token)
 		{
+			if (token.IsCancellationRequested)
+				return;
+
 			builder.Append($"namespace {NamespaceName}{Environment.NewLine}{{");
-			Emitter.Emit(builder);
+			Emitter.Emit(builder, token);
 			builder.Append($"{Environment.NewLine}}}");
 		}
 	}

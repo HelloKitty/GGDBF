@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Glader.Essentials;
 using Microsoft.CodeAnalysis;
 
@@ -17,7 +18,7 @@ namespace GGDBF
 			ModelType = modelType;
 		}
 
-		public override void Emit(StringBuilder builder)
+		public override void Emit(StringBuilder builder, CancellationToken token)
 		{
 			AppendGeneratedCodeAttribute(builder);
 			builder.Append($"public record {ComputeContextTypeName()}(");
@@ -26,6 +27,9 @@ namespace GGDBF
 
 			for (var index = 0; index < propertyNames.Length; index++)
 			{
+				if (token.IsCancellationRequested)
+					return;
+
 				var entry = propertyNames[index];
 
 				if (index < propertyNames.Length - 1)

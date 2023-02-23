@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Glader.Essentials;
 using Microsoft.CodeAnalysis;
 
@@ -29,15 +30,27 @@ namespace GGDBF
 			Properties.Add(new PropertyDefinition(name, type, isRuntimeUnbounded));
 		}
 
-		public override void Emit(StringBuilder builder)
+		public override void Emit(StringBuilder builder, CancellationToken token)
 		{
+			if (token.IsCancellationRequested)
+				return;
+
 			//First we build the interface for the context type
 			AppendGeneratedCodeAttribute(builder);
+
+			if (token.IsCancellationRequested)
+				return;
+
 			EmitContextInterface(builder);
 			
 			//We emit even unbounded generic models on to the interface
-			foreach(var entry in Properties)
+			foreach (var entry in Properties)
+			{
+				if (token.IsCancellationRequested)
+					return;
+
 				EmitTableProperty(builder, entry, false);
+			}
 
 			builder.Append($"}}{Environment.NewLine}{Environment.NewLine}");
 
@@ -56,10 +69,15 @@ namespace GGDBF
 			builder.Append($"public static {ComputeContextTypeName()} Instance {{ get; private set; }}{Environment.NewLine}{Environment.NewLine}");
 
 			//Don't include any open generic property types. Any generic model fields must be included manually.
-			foreach(var entry in Properties.Where(p => !p.IsRuntimeUnbounded && !p.PropertyType.IsUnboundGenericType))
-				EmitTableProperty(builder, entry);
+			foreach (var entry in Properties.Where(p => !p.IsRuntimeUnbounded && !p.PropertyType.IsUnboundGenericType))
+			{
+				if(token.IsCancellationRequested)
+					return;
 
-			AddInitializeMethod(builder);
+				EmitTableProperty(builder, entry);
+			}
+
+			AddInitializeMethod(builder, token);
 
 			builder.Append($"{Environment.NewLine}}}");
 		}
@@ -117,7 +135,7 @@ namespace GGDBF
 				.Build($"I{ClassName}"));
 		}
 
-		private void AddInitializeMethod(StringBuilder builder)
+		private void AddInitializeMethod(StringBuilder builder, CancellationToken token)
 		{
 			builder.Append($"public static async Task Initialize({nameof(IGGDBFDataSource)} source){{");
 
@@ -126,6 +144,9 @@ namespace GGDBF
 
 			foreach (var prop in Properties)
 			{
+				if (token.IsCancellationRequested)
+					return;
+
 				//We must know the name of the table at compile time to emit the
 				//proper config so we don't need to use reflection at runtime
 				var tableName = new TableNameParser().Parse(prop.PropertyType);

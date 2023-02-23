@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace GGDBF
 {
@@ -10,15 +11,21 @@ namespace GGDBF
 
 		private const string USING_DIRECTIVE_FORMAT_TEXT = "using {0};";
 
-		public void Emit(StringBuilder builder)
+		public void Emit(StringBuilder builder, CancellationToken cancellationToken)
 		{
 			if (builder == null) throw new ArgumentNullException(nameof(builder));
 
 			foreach (var entry in RequestedNamespaces)
 			{
+				if (cancellationToken.IsCancellationRequested)
+					return;
+
 				builder.AppendFormat(USING_DIRECTIVE_FORMAT_TEXT, entry);
 				builder.Append(Environment.NewLine);
 			}
+
+			if (cancellationToken.IsCancellationRequested)
+				return;
 
 			builder.Append(Environment.NewLine);
 		}

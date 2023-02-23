@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using Glader.Essentials;
 using Microsoft.CodeAnalysis;
 
@@ -24,7 +25,7 @@ namespace GGDBF
 			OriginalContextSymbol = originalContextSymbol ?? throw new ArgumentNullException(nameof(originalContextSymbol));
 		}
 
-		public override void Emit(StringBuilder builder)
+		public override void Emit(StringBuilder builder, CancellationToken token)
 		{
 			//Class time! (or record lol)
 			AppendGeneratedCodeAttribute(builder);
@@ -42,14 +43,20 @@ namespace GGDBF
 			var typeToParse = SerializableType;
 			do
 			{
-				EmitOverridenNavigationProperties(builder, typeToParse);
+				if (token.IsCancellationRequested)
+					return;
+
+				EmitOverridenNavigationProperties(builder, typeToParse, token);
 				typeToParse = typeToParse.BaseType;
 			} while (typeToParse != null);
 			
 
 			int propCount = 1;
-			foreach (var prop in EnumerateForeignCollectionProperties())
+			foreach (var prop in EnumerateForeignCollectionProperties(token))
 			{
+				if (token.IsCancellationRequested)
+					return;
+
 				INamedTypeSymbol collectionElementType = (INamedTypeSymbol) ComputeCollectionElementType(prop);
 				string backingPropertyName = ComputeCollectionPropertyBackingFieldName(prop);
 
@@ -70,8 +77,11 @@ namespace GGDBF
 			}
 
 			//This is for collections of owned types
-			foreach(var prop in EnumerateOwnedTypeForeignCollectionProperties())
+			foreach(var prop in EnumerateOwnedTypeForeignCollectionProperties(token))
 			{
+				if(token.IsCancellationRequested)
+					return;
+
 				INamedTypeSymbol collectionElementType = (INamedTypeSymbol)ComputeCollectionElementType(prop);
 				string backingPropertyName = ComputeCollectionPropertyBackingFieldName(prop);
 
@@ -91,26 +101,29 @@ namespace GGDBF
 			if (!SerializableType.IsRecord)
 				builder.Append($"public {ClassName}() {{ }}{Environment.NewLine}");
 
-			EmitSerializableInitializeMethod(builder);
+			EmitSerializableInitializeMethod(builder, token);
 
 			builder.Append($"}}");
 
 			//For all owned types we should maybe generate keys
 			if (SerializableType.HasOwnedTypePropertyWithForeignKey())
 			{
-				foreach (var prop in EnumerateOwnedTypesWithForeignKeys())
+				foreach (var prop in EnumerateOwnedTypesWithForeignKeys(token))
 				{
+					if(token.IsCancellationRequested)
+						return;
+
 					//TODO: If multiple owned types with generic type parameters are used in the same table then this won't work.
 					INamedTypeSymbol ownedType = (INamedTypeSymbol) (prop.IsICollectionType() ? ((INamedTypeSymbol)prop.Type).TypeArguments.First() : prop.Type);
 					SerializableTypeClassEmitter emitter = new SerializableTypeClassEmitter(ComputeOwnedTypeName(ownedType, true), ownedType, OriginalContextSymbol, ClassAccessibility);
 
 					builder.Append($"{Environment.NewLine}{Environment.NewLine}");
-					emitter.Emit(builder);
+					emitter.Emit(builder, token);
 				}
 			}
 		}
 
-		private IEnumerable<IPropertySymbol> EnumerateOwnedTypesWithForeignKeys()
+		private IEnumerable<IPropertySymbol> EnumerateOwnedTypesWithForeignKeys(CancellationToken token)
 		{
 			//We do this Do While so we can support properties in BaseTypes
 			var type = SerializableType;
@@ -122,6 +135,9 @@ namespace GGDBF
 					.Cast<IPropertySymbol>()
 					.Where(p => p.HasAttributeLike<OwnedTypeHintAttribute>() && p.IsOwnedPropertyWithForeignKey()))
 				{
+					if (token.IsCancellationRequested)
+						yield break;
+
 					yield return member;
 				}
 
@@ -129,7 +145,7 @@ namespace GGDBF
 			} while(type != null);
 		}
 
-		private void EmitOverridenNavigationProperties(StringBuilder builder, INamedTypeSymbol type)
+		private void EmitOverridenNavigationProperties(StringBuilder builder, INamedTypeSymbol type, CancellationToken token)
 		{
 			//TODO: Support ALL foreign key scenarios. Right now only traditional attribute-based PropId and Prop pair scenarios are supported
 			//Find all foreign key references and generate
@@ -139,6 +155,9 @@ namespace GGDBF
 				.Where(m => m.HasAttributeLike<ForeignKeyAttribute>() || m.HasAttributeExact<CompositeKeyHintAttribute>())
 				.Cast<IPropertySymbol>())
 			{
+				if (token.IsCancellationRequested)
+					return;
+
 				//Special handling for composite key table references
 				if (prop.Type.HasAttributeExact<CompositeKeyHintAttribute>() && prop.HasAttributeLike<CompositeKeyHintAttribute>())
 				{
@@ -202,7 +221,7 @@ namespace GGDBF
 			return $"_Serialized{prop.Name}";
 		}
 
-		private IEnumerable<IPropertySymbol> EnumerateForeignCollectionProperties()
+		private IEnumerable<IPropertySymbol> EnumerateForeignCollectionProperties(CancellationToken token)
 		{
 			//We do this Do While so we can support properties in BaseTypes
 			var type = SerializableType;
@@ -215,6 +234,9 @@ namespace GGDBF
 					.Cast<IPropertySymbol>()
 					.Where(p => p.IsICollectionType() && ComputeCollectionElementType(p).HasAttributeLike<TableAttribute>()))
 				{
+					if (token.IsCancellationRequested)
+						yield break;
+
 					yield return member;
 				}
 
@@ -222,7 +244,7 @@ namespace GGDBF
 			} while (type != null);
 		}
 
-		private IEnumerable<IPropertySymbol> EnumerateOwnedTypeForeignCollectionProperties()
+		private IEnumerable<IPropertySymbol> EnumerateOwnedTypeForeignCollectionProperties(CancellationToken token)
 		{
 			//We do this Do While so we can support properties in BaseTypes
 			var type = SerializableType;
@@ -235,6 +257,9 @@ namespace GGDBF
 					.Cast<IPropertySymbol>()
 					.Where(p => p.IsICollectionType() && (p.HasAttributeExact<OwnedTypeHintAttribute>() || p.Type.HasAttributeExact<OwnedTypeHintAttribute>())))
 				{
+					if (token.IsCancellationRequested)
+						yield break;
+
 					yield return member;
 				}
 
@@ -242,13 +267,16 @@ namespace GGDBF
 			} while (type != null);
 		}
 
-		private void EmitSerializableInitializeMethod(StringBuilder builder)
+		private void EmitSerializableInitializeMethod(StringBuilder builder, CancellationToken token)
 		{
 			builder.Append($"{Environment.NewLine}");
 			builder.Append($"public void {nameof(IGGDBFSerializable.Initialize)}({nameof(IGGDBFDataConverter)} converter){Environment.NewLine}{{{Environment.NewLine}");
 
-			foreach (var prop in EnumerateForeignCollectionProperties())
+			foreach (var prop in EnumerateForeignCollectionProperties(token))
 			{
+				if (token.IsCancellationRequested)
+					return;
+
 				string fieldName = ComputeCollectionPropertyBackingFieldName(prop);
 				INamedTypeSymbol collectionElementType = (INamedTypeSymbol) ComputeCollectionElementType(prop);
 
@@ -260,8 +288,11 @@ namespace GGDBF
 				builder.Append($"{fieldName} = {nameof(GGDBFHelpers)}.{nameof(GGDBFHelpers.CreateSerializableCollection)}({keyResolutionLambda}, {prop.Name});{Environment.NewLine}");
 			}
 
-			foreach (var prop in EnumerateOwnedTypeForeignCollectionProperties())
+			foreach (var prop in EnumerateOwnedTypeForeignCollectionProperties(token))
 			{
+				if (token.IsCancellationRequested)
+					return;
+
 				string fieldName = ComputeCollectionPropertyBackingFieldName(prop);
 				INamedTypeSymbol collectionElementType = (INamedTypeSymbol)ComputeCollectionElementType(prop);
 

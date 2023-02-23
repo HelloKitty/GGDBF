@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using Glader.Essentials;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -55,16 +56,22 @@ namespace GGDBF
 		{
 			try
 			{
-				ExecuteGenerator(context);
+				ExecuteGenerator(context, context.CancellationToken);
 			}
 			catch(System.Reflection.ReflectionTypeLoadException e)
 			{
+				if (context.CancellationToken.IsCancellationRequested)
+					return;
+
 				context.AddSource("Error.txt", $"{e}\n\nLoader: {e.LoaderExceptions.Select(ex => ex.ToString()).Aggregate((s1, s2) => $"{s1}\n{s2}")}");
 				context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor("FCC001", "Compiler Failure", $"Error: {e.GetType().Name}. Failed: {e.Message} Stack: {{0}}", "Error", DiagnosticSeverity.Error, true), Location.None, BuildStackTrace(e)));
 				throw;
 			}
 			catch(Exception e)
 			{
+				if (context.CancellationToken.IsCancellationRequested)
+					return;
+
 				context.AddSource("Error.txt", e.ToString());
 
 				try
@@ -78,11 +85,14 @@ namespace GGDBF
 			}
 		}
 
-		private void ExecuteGenerator(GeneratorExecutionContext context)
+		private void ExecuteGenerator(GeneratorExecutionContext context, CancellationToken token)
 		{
 			INamedTypeSymbol[] symbols = context
 				.GetAllTypes()
 				.ToArray();
+
+			if (token.IsCancellationRequested)
+				return;
 
 			//This finds all the context symbols trying to be generated
 			var dataContextSymbols = symbols
@@ -92,42 +102,69 @@ namespace GGDBF
 			//.Where(s => !s.IsGenericType)
 			foreach(var contextSymbol in dataContextSymbols)
 			{
+				if (token.IsCancellationRequested)
+					return;
+
 				StringBuilder builder = new StringBuilder();
 				UsingsEmitter usingsEmitter = new();
-				NamespaceDecoratorEmitter namespaceDecorator = new NamespaceDecoratorEmitter(CreateContextClassEmitter(contextSymbol), contextSymbol.ContainingNamespace.FullNamespaceString());
+
+				// Can be null if token cancelled
+				var emitter = CreateContextClassEmitter(contextSymbol, token);
+				if (token.IsCancellationRequested)
+					return;
+
+				NamespaceDecoratorEmitter namespaceDecorator = new NamespaceDecoratorEmitter(emitter, contextSymbol.ContainingNamespace.FullNamespaceString());
 
 				usingsEmitter.AddNamespaces(GGDBFConstants.DEFAULT_NAMESPACES);
 
 				foreach(var type in RetrieveModelTypes(contextSymbol))
 				{
-					AddNamespacesForType(type, usingsEmitter);
+					if (token.IsCancellationRequested)
+						return;
+
+					AddNamespacesForType(type, usingsEmitter, token);
 				}
 
-				usingsEmitter.Emit(builder);
-				namespaceDecorator.Emit(builder);
+				if (token.IsCancellationRequested)
+					return;
+
+				usingsEmitter.Emit(builder, token);
+				namespaceDecorator.Emit(builder, token);
+
+				if (token.IsCancellationRequested)
+					return;
 
 				context.AddSource(contextSymbol.Name, ConvertFileToNode(context, builder).ToString());
 
-				EmitSerializableModelTypes(contextSymbol, context);
-				EmitModelKeyTypes(contextSymbol, context);
+				EmitSerializableModelTypes(contextSymbol, context, token);
+				EmitModelKeyTypes(contextSymbol, context, token);
 			}
 		}
 
-		private static void AddNamespacesForType(INamedTypeSymbol type, UsingsEmitter usingsEmitter)
+		private static void AddNamespacesForType(INamedTypeSymbol type, UsingsEmitter usingsEmitter, CancellationToken token)
 		{
 			if (type.ContainingNamespace != null)
 				usingsEmitter.AddNamespace(type.ContainingNamespace.FullNamespaceString());
 
 			if (type.IsGenericType)
-				foreach(var genericTypeArg in type.TypeArguments)
-					if (genericTypeArg.ContainingNamespace != null)
+				foreach (var genericTypeArg in type.TypeArguments)
+				{
+					if (token.IsCancellationRequested)
+						return;
+
+					if(genericTypeArg.ContainingNamespace != null)
 						usingsEmitter.AddNamespace(genericTypeArg.ContainingNamespace.FullNamespaceString());
+				}
 		}
 
-		private void EmitModelKeyTypes(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context)
+		private void EmitModelKeyTypes(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, 
+			CancellationToken token)
 		{
 			foreach(var type in RetrieveModelTypes(contextSymbol))
 			{
+				if (token.IsCancellationRequested)
+					return;
+
 				//TODO: This is a hack because for some reason parsing the unbound generic type doesn't work
 				if(type.IsUnboundGenericType)
 				{
@@ -136,32 +173,36 @@ namespace GGDBF
 					if (!typeToPass.HasAttributeExact<CompositeKeyHintAttribute>())
 						continue;
 
-					EmitModelKeyTypeSource(contextSymbol, context, typeToPass);
+					EmitModelKeyTypeSource(contextSymbol, context, typeToPass, token);
 				}
 				else
 				{
 					if(!type.HasAttributeExact<CompositeKeyHintAttribute>())
 						continue;
 
-					EmitModelKeyTypeSource(contextSymbol, context, type);
+					EmitModelKeyTypeSource(contextSymbol, context, type, token);
 				}
 			}
 		}
 
-		private static void EmitSerializableModelTypes(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context)
+		private static void EmitSerializableModelTypes(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, 
+			CancellationToken token)
 		{
 			//Now we handle any potential navproperties
 			foreach (var type in RetrieveModelTypes(contextSymbol))
 			{
+				if (token.IsCancellationRequested)
+					return;
+
 				//TODO: This is a hack because for some reason parsing the unbound generic type doesn't work
 				if (type.IsUnboundGenericType)
 				{
 					INamedTypeSymbol typeToPass = ConvertContextOpenGenericTypeToClosedGenericType(contextSymbol, type);
 
-					EmitSerializableTypeSource(contextSymbol, context, typeToPass);
+					EmitSerializableTypeSource(contextSymbol, context, typeToPass, token);
 				}
 				else
-					EmitSerializableTypeSource(contextSymbol, context, type);
+					EmitSerializableTypeSource(contextSymbol, context, type, token);
 			}
 		}
 
@@ -190,7 +231,8 @@ namespace GGDBF
 				.First(t => t.IsGenericType && t.ConstructUnboundGenericType().Equals(type, SymbolEqualityComparer.Default));
 		}
 
-		private void EmitModelKeyTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type)
+		private void EmitModelKeyTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type, 
+			CancellationToken token)
 		{
 			string keyName = new TablePrimaryKeyParser().ParseSimple(type);
 
@@ -200,12 +242,12 @@ namespace GGDBF
 
 			//If the type is another namespace we should import it
 			//so we don't have to use fullnames.
-			AddNamespacesForType(type, usingsEmitter);
+			AddNamespacesForType(type, usingsEmitter, token);
 
 			usingsEmitter.AddNamespaces(GGDBFConstants.DEFAULT_NAMESPACES);
 
-			usingsEmitter.Emit(builder);
-			namespaceDecorator.Emit(builder);
+			usingsEmitter.Emit(builder, token);
+			namespaceDecorator.Emit(builder, token);
 
 			string source = builder.ToString();
 			string hashMapKey = $"{keyName} {source.Substring(source.IndexOf('{'))}";
@@ -217,7 +259,8 @@ namespace GGDBF
 			context.AddSource($"{contextSymbol.Name}_{keyName}", ConvertFileToNode(context, builder).ToString());
 		}
 
-		private static void EmitSerializableTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type)
+		private static void EmitSerializableTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type, 
+			CancellationToken token)
 		{
 			if (!type.HasForeignKeyDefined() && !type.HasOwnedTypePropertyWithForeignKey())
 				return;
@@ -230,7 +273,7 @@ namespace GGDBF
 
 			//If the type is another namespace we should import it
 			//so we don't have to use fullnames.
-			AddNamespacesForType(type, usingsEmitter);
+			AddNamespacesForType(type, usingsEmitter, token);
 
 			//Add namespaces for each property
 			foreach (var t in type
@@ -241,13 +284,19 @@ namespace GGDBF
 				.Select(t => t as INamedTypeSymbol)
 				.Where(t => t != null))
 			{
-				AddNamespacesForType(t, usingsEmitter);
+				if (token.IsCancellationRequested)
+					return;
+
+				AddNamespacesForType(t, usingsEmitter, token);
 			}
 
 			usingsEmitter.AddNamespaces(GGDBFConstants.DEFAULT_NAMESPACES);
 
-			usingsEmitter.Emit(builder);
-			namespaceDecorator.Emit(builder);
+			usingsEmitter.Emit(builder, token);
+			namespaceDecorator.Emit(builder, token);
+
+			if (token.IsCancellationRequested)
+				return;
 
 			context.AddSource($"{serializableTypeName}", ConvertFileToNode(context, builder).ToString());
 		}
@@ -267,12 +316,21 @@ namespace GGDBF
 			}
 		}
 
-		private static BaseClassTypeEmitter CreateContextClassEmitter(INamedTypeSymbol contextSymbol)
+		/// <summary>
+		/// Returns null if token is cancelled.
+		/// </summary>
+		/// <param name="contextSymbol"></param>
+		/// <param name="token"></param>
+		/// <returns></returns>
+		private static BaseClassTypeEmitter CreateContextClassEmitter(INamedTypeSymbol contextSymbol, CancellationToken token)
 		{
 			var classEmitter = new ContextClassTypeEmitter(contextSymbol.Name, contextSymbol, contextSymbol.DeclaredAccessibility);
 
 			foreach (INamedTypeSymbol modelType in RetrieveModelTypes(contextSymbol))
 			{
+				if (token.IsCancellationRequested)
+					return null;
+
 				//TODO: Class emitter works for unbound generic types EXCEPT for determining if it is a foreign key type.
 				if (modelType.IsUnboundGenericType)
 				{

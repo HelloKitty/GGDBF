@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Glader.Essentials;
 using Microsoft.CodeAnalysis;
 
@@ -22,7 +23,7 @@ namespace GGDBF
 		}
 
 		/// <inheritdoc />
-		public abstract void Emit(StringBuilder builder);
+		public abstract void Emit(StringBuilder builder, CancellationToken token);
 
 		protected static string ComputeTypeName(PropertyDefinition prop)
 		{
