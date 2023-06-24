@@ -134,7 +134,7 @@ namespace GGDBF
 				if (token.IsCancellationRequested)
 					return;
 
-				context.AddSource(contextSymbol.Name, ConvertFileToNode(context, builder).ToString());
+				context.AddSource(contextSymbol.Name, ConvertFileToNode(context, contextSymbol, builder).ToString());
 
 				EmitSerializableModelTypes(contextSymbol, context, token);
 				EmitModelKeyTypes(contextSymbol, context, token);
@@ -256,7 +256,7 @@ namespace GGDBF
 				return;
 
 			EmittedKeyTypes.Add(hashMapKey);
-			context.AddSource($"{contextSymbol.Name}_{keyName}", ConvertFileToNode(context, builder).ToString());
+			context.AddSource($"{contextSymbol.Name}_{keyName}", ConvertFileToNode(context, contextSymbol, builder).ToString());
 		}
 
 		private static void EmitSerializableTypeSource(INamedTypeSymbol contextSymbol, GeneratorExecutionContext context, INamedTypeSymbol type, 
@@ -298,7 +298,7 @@ namespace GGDBF
 			if (token.IsCancellationRequested)
 				return;
 
-			context.AddSource($"{serializableTypeName}", ConvertFileToNode(context, builder).ToString());
+			context.AddSource($"{serializableTypeName}", ConvertFileToNode(context, contextSymbol, builder).ToString());
 		}
 
 		private static IEnumerable<INamedTypeSymbol> RetrieveModelTypes(INamedTypeSymbol contextSymbol)
@@ -357,10 +357,14 @@ namespace GGDBF
 			}
 		}
 
-		private static StringBuilder ConvertFileToNode(GeneratorExecutionContext context, StringBuilder builder)
+		private static StringBuilder ConvertFileToNode(GeneratorExecutionContext context, INamedTypeSymbol contextTypeSymbol, StringBuilder builder)
 		{
 			try
 			{
+				// @HelloKitty: This should be a slight optimization for GGDBF generation. Only when we WANT to see pretty formatted code will we generate it
+				if (!contextTypeSymbol.HasAttributeExact<EnableDebugFormattingAttribute>())
+					return builder;
+
 				using AdhocWorkspace ws = new AdhocWorkspace();
 				var emittableClassNode = Formatter.Format(CSharpSyntaxTree.ParseText(builder.ToString()).GetRoot(), ws);
 
