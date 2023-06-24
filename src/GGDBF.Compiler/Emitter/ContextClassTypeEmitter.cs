@@ -161,7 +161,7 @@ namespace GGDBF
 				else
 				{
 					// Runtime models/tables are just dictionaries.
-					builder.Append($"{prop.Name} = new Dictionary<{CreateRetrieveGenericParameters(prop)}>(),");
+					builder.Append($"{prop.Name} = new MutableGGDBFConcurrentDictionary<{CreateRetrieveGenericParameters(prop)}>(),");
 				}
 			}
 
@@ -239,7 +239,7 @@ namespace GGDBF
 			if (entry.PropertyType.IsUnboundGenericType)
 				return GetMatchingContextProperty(entry).Type.ToDisplayString();
 			else if (entry.IsMutableTableModel)
-				return $"IDictionary<{RetrievePropertyPrimaryKey(entry)}, {ComputeTypeName(entry)}>";
+				return $"IMutableGGDBFConcurrentDictionary<{RetrievePropertyPrimaryKey(entry)}, {ComputeTypeName(entry)}>";
 			else 
 				return $"IReadOnlyDictionary<{RetrievePropertyPrimaryKey(entry)}, {ComputeTypeName(entry)}>";
 		}
