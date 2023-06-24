@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis;
 
 namespace GGDBF
 {
-	public record PropertyDefinition(string Name, INamedTypeSymbol PropertyType, bool IsRuntimeUnbounded);
+	public record PropertyDefinition(string Name, INamedTypeSymbol PropertyType, bool IsRuntimeUnbounded, bool IsMutableTableModel);
 
 	public sealed class ContextClassTypeEmitter : BaseClassTypeEmitter, ISourceEmitter
 	{
@@ -25,9 +25,9 @@ namespace GGDBF
 			OriginalContextSymbol = originalContextSymbol ?? throw new ArgumentNullException(nameof(originalContextSymbol));
 		}
 
-		public void AddProperty(string name, INamedTypeSymbol type, bool isRuntimeUnbounded = false)
+		public void AddProperty(string name, INamedTypeSymbol type, bool isRuntimeUnbounded = false, bool isMutableTableModel = false)
 		{
-			Properties.Add(new PropertyDefinition(name, type, isRuntimeUnbounded));
+			Properties.Add(new PropertyDefinition(name, type, isRuntimeUnbounded, isMutableTableModel));
 		}
 
 		public override void Emit(StringBuilder builder, CancellationToken token)
@@ -230,8 +230,10 @@ namespace GGDBF
 			//Kinda hacky, but quick way to add support for generic types.
 			if (entry.PropertyType.IsUnboundGenericType)
 				return GetMatchingContextProperty(entry).Type.ToDisplayString();
-
-			return $"IReadOnlyDictionary<{RetrievePropertyPrimaryKey(entry)}, {ComputeTypeName(entry)}>";
+			else if (entry.IsMutableTableModel)
+				return $"IDictionary<{RetrievePropertyPrimaryKey(entry)}, {ComputeTypeName(entry)}>";
+			else 
+				return $"IReadOnlyDictionary<{RetrievePropertyPrimaryKey(entry)}, {ComputeTypeName(entry)}>";
 		}
 
 		private IPropertySymbol GetMatchingContextProperty(PropertyDefinition entry)

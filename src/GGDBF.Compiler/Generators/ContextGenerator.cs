@@ -336,10 +336,10 @@ namespace GGDBF
 				{
 					INamedTypeSymbol typeToPass = ConvertContextOpenGenericTypeToClosedGenericType(contextSymbol, modelType);
 
-					classEmitter.AddProperty(RetrieveTableModelName(modelType), typeToPass, true);
+					classEmitter.AddProperty(RetrieveTableModelName(modelType), typeToPass, true, modelType.HasAttributeExact<MutableModelTableAttribute>());
 				}
 				else
-					classEmitter.AddProperty(RetrieveTableModelName(modelType), modelType);
+					classEmitter.AddProperty(RetrieveTableModelName(modelType), modelType, false, modelType.HasAttributeExact<MutableModelTableAttribute>());
 			}
 
 			return classEmitter;
