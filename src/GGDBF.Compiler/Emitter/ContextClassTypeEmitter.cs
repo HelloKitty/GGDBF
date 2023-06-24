@@ -147,14 +147,15 @@ namespace GGDBF
 				if (token.IsCancellationRequested)
 					return;
 
+				builder.Append(Environment.NewLine);
+
 				if (!prop.IsRuntimeModel)
 				{
 					//We must know the name of the table at compile time to emit the
 					//proper config so we don't need to use reflection at runtime
 					var tableName = new TableNameParser().Parse(prop.PropertyType);
-					builder.Append(Environment.NewLine);
-
 					string typeName = GetModelTypeName(prop);
+
 					builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{CreateRetrieveGenericParameters(prop)}>({CreateTableConfig(tableName, RetrievePropertyPrimaryKey(prop), typeName, prop.PropertyType)}),");
 				}
 				else
