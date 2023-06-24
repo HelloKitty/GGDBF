@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis;
 
 namespace GGDBF
 {
-	public record PropertyDefinition(string Name, INamedTypeSymbol PropertyType, bool IsRuntimeUnbounded, bool IsMutableTableModel);
+	public record PropertyDefinition(string Name, INamedTypeSymbol PropertyType, bool IsRuntimeUnbounded, bool IsMutableTableModel, bool IsRuntimeModel);
 
 	public sealed class ContextClassTypeEmitter : BaseClassTypeEmitter, ISourceEmitter
 	{
@@ -25,9 +25,9 @@ namespace GGDBF
 			OriginalContextSymbol = originalContextSymbol ?? throw new ArgumentNullException(nameof(originalContextSymbol));
 		}
 
-		public void AddProperty(string name, INamedTypeSymbol type, bool isRuntimeUnbounded = false, bool isMutableTableModel = false)
+		public void AddProperty(string name, INamedTypeSymbol type, bool isRuntimeUnbounded, bool isMutableTableModel, bool isRuntimeModel)
 		{
-			Properties.Add(new PropertyDefinition(name, type, isRuntimeUnbounded, isMutableTableModel));
+			Properties.Add(new PropertyDefinition(name, type, isRuntimeUnbounded, isMutableTableModel, isRuntimeModel));
 		}
 
 		public override void Emit(StringBuilder builder, CancellationToken token)
@@ -147,14 +147,21 @@ namespace GGDBF
 				if (token.IsCancellationRequested)
 					return;
 
-				//We must know the name of the table at compile time to emit the
-				//proper config so we don't need to use reflection at runtime
-				var tableName = new TableNameParser().Parse(prop.PropertyType);
-				builder.Append(Environment.NewLine);
+				if (!prop.IsRuntimeModel)
+				{
+					//We must know the name of the table at compile time to emit the
+					//proper config so we don't need to use reflection at runtime
+					var tableName = new TableNameParser().Parse(prop.PropertyType);
+					builder.Append(Environment.NewLine);
 
-				string typeName = GetModelTypeName(prop);
-
-				builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{CreateRetrieveGenericParameters(prop)}>({CreateTableConfig(tableName, RetrievePropertyPrimaryKey(prop), typeName, prop.PropertyType)}),");
+					string typeName = GetModelTypeName(prop);
+					builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{CreateRetrieveGenericParameters(prop)}>({CreateTableConfig(tableName, RetrievePropertyPrimaryKey(prop), typeName, prop.PropertyType)}),");
+				}
+				else
+				{
+					// Runtime models/tables are just dictionaries.
+					builder.Append($"{prop.Name} = new Dictionary<{CreateRetrieveGenericParameters(prop)}>(),");
+				}
 			}
 
 			builder.Append($"{Environment.NewLine}}};");
