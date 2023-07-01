@@ -212,7 +212,8 @@ namespace GGDBF
 			string typeName = GetModelTypeName(prop);
 
 			//TODO: This doesn't work for unbound generic types. The rest of the class does.
-			if (prop.PropertyType.HasForeignKeyDefined())
+			//WARNING: For runtime mutable types we don't do anything fancy but use the custom type.
+			if (!prop.IsRuntimeModel && prop.PropertyType.HasForeignKeyDefined())
 				return $"{RetrievePropertyPrimaryKey(prop)}, {typeName}, {new ForeignKeyContainingPropertyNameParser().Parse(OriginalContextSymbol, prop.PropertyType)}";
 
 			return $"{RetrievePropertyPrimaryKey(prop)}, {typeName}";
