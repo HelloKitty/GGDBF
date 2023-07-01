@@ -339,12 +339,18 @@ namespace GGDBF
 				//We do this Do While so we can support properties in BaseTypes
 				//This is ugly but it's possible the foreign key is references base properties
 				var type = SerializableType;
+				var navPropKeyString = (string)prop.GetAttributeLike<ForeignKeyAttribute>().ConstructorArguments.First().Value;
+
+				// To support doing something like array[0] as the FK we remove the indexing to find the prop name.
+				if (navPropKeyString != null && navPropKeyString.Contains('['))
+					navPropKeyString = navPropKeyString.Split('[').First();
+
 				do
 				{
 					var propResult = type.GetMembers()
 						.Where(m => m.Kind == SymbolKind.Property)
 						.Cast<IPropertySymbol>()
-						.FirstOrDefault(m => m.Kind == SymbolKind.Property && m.Name == (string) prop.GetAttributeLike<ForeignKeyAttribute>().ConstructorArguments.First().Value);
+						.FirstOrDefault(m => m.Name == (string)navPropKeyString);
 
 					if (propResult != null)
 						return propResult;
@@ -353,11 +359,11 @@ namespace GGDBF
 
 				} while (type != null);
 
-				throw new InvalidOperationException($"Failed to retrieve foreign key property for Type: {SerializableType.Name} Prop: {prop.Name}");
+				throw new InvalidOperationException($"Failed to find PropName: {navPropKeyString}");
 			}
 			catch (Exception e)
 			{
-				throw new InvalidOperationException($"Failed to retrieve foreign key property for Type: {SerializableType.Name} Prop: {prop.Name}", e);
+				throw new InvalidOperationException($"Failed to retrieve foreign key property for Type: {SerializableType.Name} Prop: {prop.Name} Reason: {e}", e);
 			}
 		}
 
