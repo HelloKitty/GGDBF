@@ -175,11 +175,17 @@ namespace GGDBF
 				else
 				{
 					IPropertySymbol navProperty = RetrieveNavigationPropertySymbol(prop);
-					IPropertySymbol keyProperty = RetrieveNavigationKeyPropertySymbol(prop);
+
+					// WARNING: This is to support the case where the prop type/name referenced is different from the keyname. Such as Ids array and the prop text being Ids[0].
+					string keyPropName;
+					if (prop.HasAttributeLike<ForeignKeyAttribute>())
+						keyPropName = (string)prop.GetAttributeLike<ForeignKeyAttribute>().ConstructorArguments.First().Value;
+					else
+						keyPropName = RetrieveNavigationKeyPropertySymbol(prop).Name;
 
 					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
 					string tableRef = $"{OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}";
-					builder.Append($"public override {navProperty.Type.ToFullName()} {navProperty.Name} {Environment.NewLine}{{ get => {tableRef}.ContainsKey(base.{keyProperty.Name}) ? {tableRef}[base.{keyProperty.Name}] : default;{Environment.NewLine}");
+					builder.Append($"public override {navProperty.Type.ToFullName()} {navProperty.Name} {Environment.NewLine}{{ get => {tableRef}.ContainsKey(base.{keyPropName}) ? {tableRef}[base.{keyPropName}] : default;{Environment.NewLine}");
 
 					builder.Append($"}}{Environment.NewLine}");
 				}
