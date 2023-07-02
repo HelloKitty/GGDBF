@@ -77,6 +77,7 @@ namespace GGDBF
 
 		private IPropertySymbol GetPrimaryKeyProperty(ITypeSymbol type)
 		{
+			var originalType = type;
 			foreach(var prop in type.GetMembers())
 			{
 				try
@@ -88,7 +89,7 @@ namespace GGDBF
 				}
 				catch(Exception e)
 				{
-					throw new InvalidOperationException($"Failed to parse PK from Type: {type.Name} on Property: {prop.Name} Reason: {e.Message} Stack: {e.StackTrace.Split('\n').LastOrDefault()}", e);
+					throw new InvalidOperationException($"Failed to parse PK from Type: {originalType.Name} on Property: {prop.Name} Reason: {e.Message} Stack: {e.StackTrace.Split('\n').LastOrDefault()}", e);
 				}
 			}
 
@@ -97,7 +98,7 @@ namespace GGDBF
 			if (baseType != null)
 				return GetPrimaryKeyProperty(baseType);
 
-			throw new InvalidOperationException($"Failed to deduce PK from ModelType: {type.Name}:{type}");
+			throw new InvalidOperationException($"Failed to deduce PK from ModelType: {originalType.Name}:{originalType}");
 		}
 
 		public string BuildCompositeKeyCreationExpression(IPropertySymbol property, string modelReference, string keyTypeNameOverride = null)
