@@ -186,7 +186,7 @@ namespace GGDBF
 
 					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
 					string tableRef = $"{OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}";
-					builder.Append($"{SyntaxFacts.GetText(prop.DeclaredAccessibility)} override {navProperty.Type.ToFullName()} {navProperty.Name} {Environment.NewLine}{{ get => {tableRef}.TryGetValue(base.{keyPropName}, our var value) ? value : default;{Environment.NewLine}");
+					builder.Append($"{SyntaxFacts.GetText(prop.DeclaredAccessibility)} override {navProperty.Type.ToFullName()} {navProperty.Name} {Environment.NewLine}{{ get => {tableRef}.TryGetValue(base.{keyPropName}, out var value) ? value : default;{Environment.NewLine}");
 
 					builder.Append($"}}{Environment.NewLine}");
 				}
