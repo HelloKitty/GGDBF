@@ -14,7 +14,7 @@
     <IncludeSymbols>true</IncludeSymbols>
 
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <VersionPrefix>0.5.76</VersionPrefix>
+    <VersionPrefix>0.5.77</VersionPrefix>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
