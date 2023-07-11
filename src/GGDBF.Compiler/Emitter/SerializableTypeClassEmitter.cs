@@ -169,7 +169,7 @@ namespace GGDBF
 
 					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
 					string tableRef = $"{OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(prop.Type)}";
-					builder.Append($"{SyntaxFacts.GetText(prop.DeclaredAccessibility)} override {prop.Type.ToFullName()} {prop.Name} {Environment.NewLine}{{ get => {tableRef}.ContainsKey({keyResolution}) ? {tableRef}[{keyResolution}] : default;{Environment.NewLine}");
+					builder.Append($"{SyntaxFacts.GetText(prop.DeclaredAccessibility)} override {prop.Type.ToFullName()} {prop.Name} {Environment.NewLine}{{ get => if ({tableRef}.TryGetValue({keyResolution}, out var value)) return value; else return default;{Environment.NewLine}");
 
 					builder.Append($"}}{Environment.NewLine}");
 				}
@@ -186,7 +186,7 @@ namespace GGDBF
 
 					builder.Append($"[{nameof(IgnoreDataMemberAttribute)}]{Environment.NewLine}");
 					string tableRef = $"{OriginalContextSymbol.GetFriendlyName()}.Instance.{new TableNameParser().Parse(navProperty.Type)}";
-					builder.Append($"{SyntaxFacts.GetText(prop.DeclaredAccessibility)} override {navProperty.Type.ToFullName()} {navProperty.Name} {Environment.NewLine}{{ get => {tableRef}.ContainsKey(base.{keyPropName}) ? {tableRef}[base.{keyPropName}] : default;{Environment.NewLine}");
+					builder.Append($"{SyntaxFacts.GetText(prop.DeclaredAccessibility)} override {navProperty.Type.ToFullName()} {navProperty.Name} {Environment.NewLine}{{ get => if ({tableRef}.TryGetValue(base.{keyPropName}, our var value)) return value; else return default;{Environment.NewLine}");
 
 					builder.Append($"}}{Environment.NewLine}");
 				}
