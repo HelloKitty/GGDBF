@@ -45,6 +45,9 @@ namespace GGDBF
 				if (candidate == null)
 					continue;
 
+				if (candidate is IMutableGGDBFTable)
+					continue;
+
 				var table = CreateGGDBFTable(candidate);
 
 				if (table == null)
