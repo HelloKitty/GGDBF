@@ -56,7 +56,9 @@ namespace GGDBF
 
 		object CreateGGDBFTable(object candidate)
 		{
-			IEnumerable values = (IEnumerable)candidate.GetType().GetProperty(nameof(Dictionary<int, int>.Values)).GetValue(candidate);
+			if (candidate == null) throw new ArgumentNullException(nameof(candidate));
+
+			IEnumerable values = RetrieveTableModelTypeFromCanidateProp(candidate);
 
 			// We need to get the true type
 			Type modelType = RetrieveModelType(values, candidate);
@@ -66,6 +68,9 @@ namespace GGDBF
 				var tableType = typeof(GGDBFTable<,>).MakeGenericType(candidate.GetType().GenericTypeArguments.First(), candidate.GetType().GenericTypeArguments.Last());
 
 				var table = Activator.CreateInstance(tableType);
+
+				if (table == null)
+					throw new InvalidOperationException($"Failed to create Table Type: {tableType}");
 
 				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableName)).SetValue(table, GetGGDBFTableName(candidate));
 				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableData)).SetValue(table, candidate);
@@ -96,6 +101,18 @@ namespace GGDBF
 				table.GetType().GetProperty(nameof(GGDBFTable<int, int>.TableData)).SetValue(table, candidate);
 
 				return table;
+			}
+		}
+
+		private static IEnumerable RetrieveTableModelTypeFromCanidateProp(object candidate)
+		{
+			try
+			{
+				return (IEnumerable)candidate.GetType().GetProperty(nameof(Dictionary<int, int>.Values)).GetValue(candidate);
+			}
+			catch (Exception e)
+			{
+				throw new InvalidOperationException($"Failed to retrieve Values {nameof(IEnumerable)} from Prop: {candidate.GetType()}", e);
 			}
 		}
 
