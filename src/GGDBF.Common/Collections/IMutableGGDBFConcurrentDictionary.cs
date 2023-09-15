@@ -5,7 +5,15 @@ using System.Text;
 
 namespace GGDBF
 {
-	public interface IMutableGGDBFConcurrentDictionary<in TKey, TValue>
+	/// <summary>
+	/// Metadata marker for GGBDF to know if a dictionary is.
+	/// </summary>
+	public interface IMutableGGDBFTable
+	{
+
+	}
+
+	public interface IMutableGGDBFConcurrentDictionary<in TKey, TValue> : IMutableGGDBFTable
 	{
 		bool TryGetValue(TKey key, out TValue value);
 
