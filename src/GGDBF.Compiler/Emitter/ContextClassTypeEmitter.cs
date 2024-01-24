@@ -148,10 +148,10 @@ namespace GGDBF
 				if(token.IsCancellationRequested)
 					return;
 
-				builder.Append(Environment.NewLine);
-
 				if(!prop.IsRuntimeModel)
 				{
+					builder.Append(Environment.NewLine);
+
 					//We must know the name of the table at compile time to emit the
 					//proper config so we don't need to use reflection at runtime
 					var tableName = new TableNameParser().Parse(prop.PropertyType);
