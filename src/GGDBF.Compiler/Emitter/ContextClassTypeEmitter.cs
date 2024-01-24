@@ -138,25 +138,43 @@ namespace GGDBF
 		private void AddInitializeMethod(StringBuilder builder, CancellationToken token)
 		{
 			builder.Append($"public static async Task Initialize({nameof(IGGDBFDataSource)} source){{");
+			builder.Append(Environment.NewLine);
 
-			//Instance init
-			builder.Append($"Instance = new(){Environment.NewLine}{{");
-
-			foreach (var prop in Properties)
+			// Call all awaitable RetrieveTableAsync to get them running.
+			// We do this because we want many background tasks running before we await them all for their true initialization
+			// this should essentially make it multithreaded and faster.
+			foreach(var prop in Properties)
 			{
-				if (token.IsCancellationRequested)
+				if(token.IsCancellationRequested)
 					return;
 
 				builder.Append(Environment.NewLine);
 
-				if (!prop.IsRuntimeModel)
+				if(!prop.IsRuntimeModel)
 				{
 					//We must know the name of the table at compile time to emit the
 					//proper config so we don't need to use reflection at runtime
 					var tableName = new TableNameParser().Parse(prop.PropertyType);
 					string typeName = GetModelTypeName(prop);
 
-					builder.Append($"{prop.Name} = await source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{CreateRetrieveGenericParameters(prop)}>({CreateTableConfig(tableName, RetrievePropertyPrimaryKey(prop), typeName, prop.PropertyType)}),");
+					builder.Append($"var {prop.Name}Task = source.{nameof(IGGDBFDataSourceExtensions.RetrieveTableAsync)}<{CreateRetrieveGenericParameters(prop)}>({CreateTableConfig(tableName, RetrievePropertyPrimaryKey(prop), typeName, prop.PropertyType)});");
+				}
+			}
+
+			//Instance init
+			builder.Append(Environment.NewLine);
+			builder.Append($"Instance = new(){Environment.NewLine}{{");
+
+			foreach(var prop in Properties)
+			{
+				if(token.IsCancellationRequested)
+					return;
+
+				builder.Append(Environment.NewLine);
+
+				if (!prop.IsRuntimeModel)
+				{
+					builder.Append($"{prop.Name} = await {prop.Name}Task,");
 				}
 				else
 				{
