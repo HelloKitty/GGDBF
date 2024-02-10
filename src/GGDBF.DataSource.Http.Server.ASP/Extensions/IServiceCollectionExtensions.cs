@@ -27,7 +27,7 @@ namespace GGDBF
 			//GGDBF requires a datasource registered
 			services.AddTransient<IGGDBFDataSource>(provider =>
 			{
-				return new ContextReflectionGGDBFDataSource<TGGDBFContextType>(provider.GetService<TGGDBFDataSourceType>(), provider.GetService<TGGDBFConverterType>());
+				return new ContextReflectionGGDBFDataSource<TGGDBFContextType>(provider.GetRequiredService<TGGDBFDataSourceType>(), provider.GetRequiredService<TGGDBFConverterType>());
 			});
 
 			return services;
