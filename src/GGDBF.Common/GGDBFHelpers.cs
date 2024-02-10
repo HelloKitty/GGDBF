@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 
 namespace GGDBF
 {
@@ -30,19 +32,31 @@ namespace GGDBF
 			return new SerializableGGDBFCollection<TKeyType, TModelType>(keys);
 		}
 
+		private static AsyncLock InitializationLock { get; } = new AsyncLock();
+
 		/// <summary>
 		/// Calls the static Initialize function for the specified GGDBF Context type using the provided
 		/// data source.
 		/// </summary>
 		/// <typeparam name="TGGDBFContextType">Context type.</typeparam>
 		/// <param name="source">The data source.</param>
+		/// <param name="token"></param>
 		/// <returns>Awaitable for when the Initialize method finishes.</returns>
-		public static async Task CallInitialize<TGGDBFContextType>(IGGDBFDataSource source)
+		public static async Task CallInitialize<TGGDBFContextType>(IGGDBFDataSource source, CancellationToken token = default, bool skipInitCheck = false)
 			where TGGDBFContextType : IGGDBFContext
 		{
-			await (Task)typeof(TGGDBFContextType)
-				.GetMethod(GGDBFConstants.INITIALIZE_METHOD_NAME, BindingFlags.Static | BindingFlags.Public)
-				.Invoke(null, new object[1] { source });
+			// We had some thread safety issues here, init could happen multiple times.
+			using (await InitializationLock.LockAsync(token))
+			{
+				// Already init.
+				if (!skipInitCheck)
+					if (GetInstance<TGGDBFContextType>() != null)
+						return;
+
+				await (Task)typeof(TGGDBFContextType)
+					.GetMethod(GGDBFConstants.INITIALIZE_METHOD_NAME, BindingFlags.Static | BindingFlags.Public)
+					.Invoke(null, new object[1] { source });
+			}
 		}
 
 		/// <summary>

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Fasterflect;
 using Microsoft.EntityFrameworkCore;
+using Nito.AsyncEx;
 
 namespace GGDBF
 {
@@ -18,6 +19,10 @@ namespace GGDBF
 	public class EntityFrameworkGGDBFDataSource<TContextType> : IGGDBFDataSource
 		where TContextType : DbContext
 	{
+		// TODO: Unfortunately because we share this DB Context (and we know that some things will try to call this multi-threaded we need to lock
+		// One day, when we can inject a DBContext factory in EF Core 5 we won't ave to do this. But this is the only way, hurts perf but it's the only solution at the moment
+		private AsyncLock ContextLock { get; } = new();
+
 		/// <summary>
 		/// Internal data source.
 		/// </summary>
@@ -32,9 +37,10 @@ namespace GGDBF
 		public async Task<IEnumerable<TModelType>> RetrieveAllAsync<TModelType>(CancellationToken token = default)
 			where TModelType : class
 		{
-			return await Context
-				.Set<TModelType>()
-				.ToArrayAsync(token);
+			using(await ContextLock.LockAsync(token))
+				return await Context
+					.Set<TModelType>()
+					.ToArrayAsync(token);
 		}
 
 		/// <inheritdoc />
@@ -48,14 +54,17 @@ namespace GGDBF
 			else if(config.KeyResolutionFunction == null)
 			{
 				//TODO: This only supports simple primary keys
-				var keyName = Context.Model
-					.FindEntityType(typeof(TModelType))
-					.FindPrimaryKey()
-					.Properties
-					.Select(x => x.Name)
-					.Single();
+				using (await ContextLock.LockAsync(token))
+				{
+					var keyName = Context.Model
+						.FindEntityType(typeof(TModelType))
+						.FindPrimaryKey()
+						.Properties
+						.Select(x => x.Name)
+						.Single();
 
-				config = new TableRetrievalConfig<TPrimaryKeyType, TModelType>(m => (TPrimaryKeyType)m.GetPropertyValue(keyName), config.TableNameOverride);
+					config = new TableRetrievalConfig<TPrimaryKeyType, TModelType>(m => (TPrimaryKeyType)m.GetPropertyValue(keyName), config.TableNameOverride);
+				}
 			}
 
 			var map = new Dictionary<TPrimaryKeyType, TModelType>();
@@ -89,8 +98,9 @@ namespace GGDBF
 			//Not quite a good implementation but this is the closest logical
 			//thing to a Reload/Refresh for a DBContext
 			//See: https://stackoverflow.com/questions/20270599/entity-framework-refresh-context
-			foreach(var entity in Context.ChangeTracker.Entries())
-				await entity.ReloadAsync(token);
+			using(await ContextLock.LockAsync(token))
+				foreach(var entity in Context.ChangeTracker.Entries())
+					await entity.ReloadAsync(token);
 		}
 	}
 

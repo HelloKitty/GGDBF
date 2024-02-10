@@ -31,7 +31,7 @@ namespace GGDBF
 		/// <inheritdoc />
 		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) where TModelType : class
 		{
-			TGGDBFContextType context = await GetContext(Source);
+			TGGDBFContextType context = await GetContext(Source, token);
 
 			try
 			{
@@ -71,16 +71,15 @@ namespace GGDBF
 		public async Task ReloadAsync(CancellationToken token = default)
 		{
 			await Source.ReloadAsync(token);
-			await GGDBFHelpers.CallInitialize<TGGDBFContextType>(Source);
+			await GGDBFHelpers.CallInitialize<TGGDBFContextType>(Source, token, true);
 		}
 
-		private async Task<TGGDBFContextType> GetContext(IGGDBFDataSource source)
+		private async Task<TGGDBFContextType> GetContext(IGGDBFDataSource source, CancellationToken token = default)
 		{
 			if (source == null) throw new ArgumentNullException(nameof(source));
 
-			//TODO: This could load the context multiple times due to race conditions (but should be ok)
 			if(!GGDBFHelpers.IsContextInitialized<TGGDBFContextType>())
-				await GGDBFHelpers.CallInitialize<TGGDBFContextType>(source);
+				await GGDBFHelpers.CallInitialize<TGGDBFContextType>(source, token);
 
 			return GGDBFHelpers.GetInstance<TGGDBFContextType>();
 		}
