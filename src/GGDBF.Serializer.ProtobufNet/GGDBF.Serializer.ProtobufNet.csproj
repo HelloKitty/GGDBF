@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <VersionPrefix>0.5.82</VersionPrefix>
+    <VersionPrefix>0.5.83</VersionPrefix>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
     <RootNamespace>GGDBF</RootNamespace>
