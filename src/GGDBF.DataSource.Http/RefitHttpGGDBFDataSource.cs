@@ -28,6 +28,8 @@ namespace GGDBF
 
 		private bool FirstQuery { get; set; } = true;
 
+		private object SyncObj { get; } = new();
+
 		public RefitHttpGGDBFDataSource(string baseUrl, RefitHttpGGDBFDataSourceOptions options = null)
 		{
 			if (string.IsNullOrWhiteSpace(baseUrl)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(baseUrl));
@@ -122,13 +124,24 @@ namespace GGDBF
 					.ReloadContextAsync<TGGDBFContextType>(typeof(TGGDBFContextType).AssemblyQualifiedName, token);
 		}
 
-		private async Task ReloadIfRequiredAsync(CancellationToken token = default) 
+		private async Task ReloadIfRequiredAsync(CancellationToken token = default)
 		{
-			if (Options.RefreshOnFirstQuery && FirstQuery)
+			if (!Options.RefreshOnFirstQuery)
+				return;
+
+			if (!FirstQuery)
+				return;
+
+			lock (SyncObj)
 			{
-				await ReloadAsync(token);
+				// Double check locking
+				if (!FirstQuery)
+					return;
+
 				FirstQuery = false;
 			}
+
+			await ReloadAsync(token);
 		}
 	}
 }
