@@ -7,6 +7,6 @@ using System.Runtime.Serialization;
 using GGDBF;
 
 namespace GGDBF
-{[GeneratedCodeAttribute("GGDBF", "0.5.80.0")]
+{[GeneratedCodeAttribute("GGDBF", "0.5.83.0")]
 public record TestModelType11Key<TKeyType1, TKeyType2>(TKeyType1 Id1, TKeyType2 Id2);
 }

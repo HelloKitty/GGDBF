@@ -8,7 +8,7 @@ using System.CodeDom.Compiler;
 using System.Runtime.Serialization;
 
 namespace GGDBF
-{[GeneratedCodeAttribute("GGDBF", "0.5.80.0")]
+{[GeneratedCodeAttribute("GGDBF", "0.5.83.0")]
 [DataContractAttribute]
 public partial class TestContextGeneric_TestModelType15<TKey> : TestModelType15<TKey>, IGGDBFSerializable
 {[IgnoreDataMemberAttribute]
@@ -37,7 +37,7 @@ _SerializedModels = GGDBFHelpers.CreateSerializableCollection(m => m.Id, Models)
 _SerializedOwnedTypeModelCollection = converter.Convert<TestNamespace2.TestOwnedTypeModel2<TKey>, TestContextGeneric_TestModelType15_TestOwnedTypeModel2<TKey>>(OwnedTypeModelCollection);
 }}
 
-[GeneratedCodeAttribute("GGDBF", "0.5.80.0")]
+[GeneratedCodeAttribute("GGDBF", "0.5.83.0")]
 [DataContractAttribute]
 public partial record TestContextGeneric_TestModelType15_TestOwnedTypeModel2<TKey> : TestOwnedTypeModel2<TKey>, IGGDBFSerializable
 {[IgnoreDataMemberAttribute]

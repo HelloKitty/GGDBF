@@ -9,7 +9,7 @@ using TestNamespace2;
 using TestNameSpace.Extended.Multiple.Words;
 
 namespace GGDBF
-{[GeneratedCodeAttribute("GGDBF", "0.5.80.0")]
+{[GeneratedCodeAttribute("GGDBF", "0.5.83.0")]
 public interface ITestContext : IGGDBFContext
 {public IReadOnlyDictionary<Int16, TestModelType> TestDatas { get;}
 
@@ -49,7 +49,7 @@ public IReadOnlyDictionary<TestModelType18Key, TestModelType18> Test18Datas { ge
 
 }
 
-[GeneratedCodeAttribute("GGDBF", "0.5.80.0")]
+[GeneratedCodeAttribute("GGDBF", "0.5.83.0")]
 public partial class TestContext : ITestContext
 {public static TestContext Instance { get; private set; }
 

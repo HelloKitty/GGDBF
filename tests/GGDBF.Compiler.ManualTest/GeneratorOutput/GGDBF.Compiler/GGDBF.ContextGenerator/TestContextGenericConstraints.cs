@@ -8,7 +8,7 @@ using TestNamespace;
 using TestNamespace2;
 
 namespace GGDBF
-{[GeneratedCodeAttribute("GGDBF", "0.5.80.0")]
+{[GeneratedCodeAttribute("GGDBF", "0.5.83.0")]
 public interface ITestContextGenericConstraints<TKey, TAnotherType, TAnotherType2> : IGGDBFContext where TKey : unmanaged, System.IConvertible
 	where TAnotherType : class, System.Enum
 	where TAnotherType2 : unmanaged
@@ -26,7 +26,7 @@ public IReadOnlyDictionary<TKey, TestModelType15<TKey>> Test15Datas { get;}
 
 }
 
-[GeneratedCodeAttribute("GGDBF", "0.5.80.0")]
+[GeneratedCodeAttribute("GGDBF", "0.5.83.0")]
 public partial class TestContextGenericConstraints<TKey, TAnotherType, TAnotherType2> : ITestContextGenericConstraints<TKey, TAnotherType, TAnotherType2> where TKey : unmanaged, System.IConvertible
 	where TAnotherType : class, System.Enum
 	where TAnotherType2 : unmanaged
