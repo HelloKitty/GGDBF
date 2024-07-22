@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Glader.Essentials.ASP" Version="2.2.77" />
+    <PackageReference Include="Glader.Essentials.ASP" Version="2.7.198" />
   </ItemGroup>
 
   <ItemGroup>
