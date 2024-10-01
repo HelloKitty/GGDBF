@@ -30,6 +30,7 @@ namespace GGDBF
 		{
 			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 			BasePath = basePath ?? throw new ArgumentNullException(nameof(basePath));
+			ForceLowercasePath = forceLowercasePath;
 		}
 
 		/// <inheritdoc />
