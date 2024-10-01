@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -21,7 +21,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Glader.Essentials.Unity" Version="2.7.203" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GGDBF.Common\GGDBF.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Unity.Addressables">
+      <HintPath>..\..\lib\Unity\Unity.Addressables.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ResourceManager">
+      <HintPath>..\..\lib\Unity\Unity.ResourceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\lib\Unity\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
