@@ -39,7 +39,10 @@ namespace GGDBF
 			where TModelType : class
 		{
 			// Create the addressable GGDBF path
-			var path = Path.Combine(BasePath, $"{config.TableNameOverride}.{GGDBFConstants.FILE_EXTENSION_SUFFIX}");
+			// Unity requirement that the GGDBF file type is removed.
+			// "A special feature of the text asset is that it can be used to store binary data.
+			// By giving a file the extension .bytes it can be loaded as a text asset and the data can be accessed through the bytes property."
+			var path = Path.Combine(BasePath, $"{config.TableNameOverride}.bytes");
 
 			// TODO: Do we need to do this?
 			// Then begin loading it
