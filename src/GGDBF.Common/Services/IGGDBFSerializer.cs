@@ -18,6 +18,7 @@ namespace GGDBF
 		/// <returns>Byte representation of the table.</returns>
 		byte[] Serialize<TPrimaryKeyType, TModelType>(GGDBFTable<TPrimaryKeyType, TModelType> table);
 
+		// TODO: Make Extension method
 		/// <summary>
 		/// TODO: Doc
 		/// </summary>
@@ -28,5 +29,14 @@ namespace GGDBF
 		/// <param name="length"></param>
 		/// <returns></returns>
 		GGDBFTable<TPrimaryKeyType, TModelType> Deserialize<TPrimaryKeyType, TModelType>(byte[] bytes, int offset, int length);
+
+		/// <summary>
+		/// TODO: Doc
+		/// </summary>
+		/// <typeparam name="TPrimaryKeyType"></typeparam>
+		/// <typeparam name="TModelType"></typeparam>
+		/// <param name="bytes"></param>
+		/// <returns></returns>
+		GGDBFTable<TPrimaryKeyType, TModelType> Deserialize<TPrimaryKeyType, TModelType>(ReadOnlySpan<byte> bytes);
 	}
 }
