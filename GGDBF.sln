@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGDBF.DataSource.File", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGDBF.DataSource.File.Generator", "src\GGDBF.DataSource.File.Generator\GGDBF.DataSource.File.Generator.csproj", "{4B2471E1-B05E-4C8F-BFA0-C8C83101799B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGDBF.DataSource.Unity.Addressables", "src\GGDBF.DataSource.Unity.Addressables\GGDBF.DataSource.Unity.Addressables.csproj", "{6F575EA6-26A8-4B05-A3CD-E03F96BA53CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,10 @@ Global
 		{4B2471E1-B05E-4C8F-BFA0-C8C83101799B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B2471E1-B05E-4C8F-BFA0-C8C83101799B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B2471E1-B05E-4C8F-BFA0-C8C83101799B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F575EA6-26A8-4B05-A3CD-E03F96BA53CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F575EA6-26A8-4B05-A3CD-E03F96BA53CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F575EA6-26A8-4B05-A3CD-E03F96BA53CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F575EA6-26A8-4B05-A3CD-E03F96BA53CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -102,6 +108,7 @@ Global
 		{1C59850A-BCF2-4FD9-A6D7-B6AD10787919} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
 		{7CE341C0-5B08-491B-A39C-2295F2B2A0EB} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
 		{4B2471E1-B05E-4C8F-BFA0-C8C83101799B} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
+		{6F575EA6-26A8-4B05-A3CD-E03F96BA53CA} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {98438B05-72FA-4385-BEF0-9A6B45DC9251}

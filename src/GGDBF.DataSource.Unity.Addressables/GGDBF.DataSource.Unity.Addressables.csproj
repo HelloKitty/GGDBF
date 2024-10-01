@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <VersionPrefix>0.5.84</VersionPrefix>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <RootNamespace>GGDBF</RootNamespace>
+    <Authors>Andrew Blakely, Glader</Authors>
+    <Product>GGDBF</Product>
+    <Description></Description>
+    <Copyright>Andrew Blakely</Copyright>
+    <PackageProjectUrl>http://github.com/helloKitty/GGDBF</PackageProjectUrl>
+    <RepositoryUrl>http://github.com/helloKitty/GGDBF</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>GGDBF Glader Database</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GGDBF.Common\GGDBF.Common.csproj" />
+  </ItemGroup>
+
+</Project>
