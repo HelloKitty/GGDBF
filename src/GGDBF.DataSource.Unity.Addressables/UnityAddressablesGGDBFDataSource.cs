@@ -21,7 +21,12 @@ namespace GGDBF
 
 		private string BasePath { get; }
 
-		public UnityAddressablesGGDBFDataSource(IGGDBFSerializer serializer, string basePath)
+		/// <summary>
+		/// Indicates if the asset path for loading the GGDBF file should be lowercase.
+		/// </summary>
+		public bool ForceLowercasePath { get; }
+
+		public UnityAddressablesGGDBFDataSource(IGGDBFSerializer serializer, string basePath, bool forceLowercasePath = false)
 		{
 			Serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
 			BasePath = basePath ?? throw new ArgumentNullException(nameof(basePath));
@@ -43,6 +48,8 @@ namespace GGDBF
 			// "A special feature of the text asset is that it can be used to store binary data.
 			// By giving a file the extension .bytes it can be loaded as a text asset and the data can be accessed through the bytes property."
 			var path = Path.Combine(BasePath, $"{config.TableNameOverride}.bytes");
+			if (ForceLowercasePath)
+				path = path.ToLowerInvariant();
 
 			// TODO: Do we need to do this?
 			// Then begin loading it
