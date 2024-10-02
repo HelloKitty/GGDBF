@@ -64,13 +64,24 @@ namespace GGDBF
 			{
 				var ggdbfData = await loadHandle.Task;
 
-				// Unity in their infinite wisdom decided that calling bytes will cause a COPY
-				// so let's directly access the underlying native bytes like it recommends
-				// See: https://docs.unity3d.com/ScriptReference/TextAsset.GetData.html
-				return Serializer.Deserialize<TPrimaryKeyType, TModelType>(ggdbfData.GetData<byte>());
+				// Must be called on main thread still
+				var underlyingDataBytes = ggdbfData.GetData<byte>();
+
+				// This is so we don't block main game thread with deserializing.
+				return await Task.Factory.StartNew(() =>
+					{
+						// Unity in their infinite wisdom decided that calling bytes will cause a COPY
+						// so let's directly access the underlying native bytes like it recommends
+						// See: https://docs.unity3d.com/ScriptReference/TextAsset.GetData.html
+						return Serializer.Deserialize<TPrimaryKeyType, TModelType>(underlyingDataBytes);
+					}, token)
+					.ConfigureAwait(false);
 			}
 			finally
 			{
+				if (UnityAsyncHelper.UnityMainThreadContext != SynchronizationContext.Current)
+					await new UnityYieldAwaitable();
+
 				Addressables.Release(loadHandle);
 			}
 		}
