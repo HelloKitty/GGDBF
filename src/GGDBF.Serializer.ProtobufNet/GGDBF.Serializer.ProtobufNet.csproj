@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release;WebGL_Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -20,8 +21,16 @@
     <PackageTags>GGDBF Glader Database</PackageTags>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'WebGL_Release'">
+    <DefineConstants>NUGET_OLD</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="protobuf-net" Version="3.0.101" />
+    <!-- Include protobuf-net version 2.4.6 if NUGET_OLD is defined -->
+    <PackageReference Include="protobuf-net" Version="2.4.6" Condition=" '$(DefineConstants)' == 'NUGET_OLD' " />
+
+    <!-- Include protobuf-net version 3.0.101 if NUGET_OLD is not defined -->
+    <PackageReference Include="protobuf-net" Version="3.0.101" Condition=" '$(DefineConstants)' != 'NUGET_OLD' " />
   </ItemGroup>
 
   <ItemGroup>

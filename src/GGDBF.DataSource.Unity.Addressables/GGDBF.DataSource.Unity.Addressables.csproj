@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release;WebGL_Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -18,6 +19,10 @@
     <RepositoryUrl>http://github.com/helloKitty/GGDBF</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>GGDBF Glader Database</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'WebGL_Release'">
+    <DefineConstants>NUGET_OLD</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
