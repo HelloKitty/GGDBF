@@ -72,7 +72,7 @@ namespace GGDBF
 				{
 					try
 					{
-#if !NUGET_OLD
+#if !PROTOBUF_OLD
 						// Unity in their infinite wisdom decided that calling bytes will cause a COPY
 						// so let's directly access the underlying native bytes like it recommends
 						// See: https://docs.unity3d.com/ScriptReference/TextAsset.GetData.html

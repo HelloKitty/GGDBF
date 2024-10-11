@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'WebGL_Release'">
-    <DefineConstants>NUGET_OLD</DefineConstants>
+    <DefineConstants>PROTOBUF_OLD</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

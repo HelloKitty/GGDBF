@@ -60,7 +60,7 @@ namespace GGDBF
 			RegisterTypeIfNotRegistered<TPrimaryKeyType, TModelType>();
 
 			// Latest nuget has first-class span support
-#if !NUGET_OLD
+#if !PROTOBUF_OLD
 			return Serializer.Deserialize<GGDBFTable<TPrimaryKeyType, TModelType>>(bytes);
 #else
 			// TODO: Hella memory allocs here

@@ -22,15 +22,15 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'WebGL_Release'">
-    <DefineConstants>NUGET_OLD</DefineConstants>
+    <DefineConstants>PROTOBUF_OLD</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Include protobuf-net version 2.4.6 if NUGET_OLD is defined -->
-    <PackageReference Include="protobuf-net" Version="2.4.6" Condition=" '$(DefineConstants)' == 'NUGET_OLD' " />
+    <!-- Include protobuf-net version 2.4.6 if PROTOBUF_OLD is defined -->
+    <PackageReference Include="protobuf-net" Version="2.4.6" Condition=" '$(DefineConstants)' == 'PROTOBUF_OLD' " />
 
-    <!-- Include protobuf-net version 3.0.101 if NUGET_OLD is not defined -->
-    <PackageReference Include="protobuf-net" Version="3.0.101" Condition=" '$(DefineConstants)' != 'NUGET_OLD' " />
+    <!-- Include protobuf-net version 3.0.101 if PROTOBUF_OLD is not defined -->
+    <PackageReference Include="protobuf-net" Version="3.0.101" Condition=" '$(DefineConstants)' != 'PROTOBUF_OLD' " />
   </ItemGroup>
 
   <ItemGroup>
