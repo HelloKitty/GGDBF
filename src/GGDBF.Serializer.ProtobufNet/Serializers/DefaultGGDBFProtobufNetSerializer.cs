@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Buffers;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using ProtoBuf;
 using ProtoBuf.Meta;
@@ -33,14 +36,14 @@ namespace GGDBF
 		{
 			if (!RegisteredTypes.Contains(typeof(TModelType)))
 			{
-				RuntimeTypeModel.Default.Add(typeof(TModelType));
+				RuntimeTypeModel.Default.Add(typeof(TModelType), true);
 				RegisteredTypes.Add(typeof(TModelType));
 
 				if(typeof(TModelType).GetCustomAttribute<GeneratedCodeAttribute>() != null)
 				{
 					//TODO: This breaks if anyone has more than 100 props.
 					RuntimeTypeModel.Default
-						.Add(typeof(TModelType).BaseType)
+						.Add(typeof(TModelType).BaseType, true)
 						.AddSubType(short.MaxValue, typeof(TModelType));
 				}
 			}
@@ -56,7 +59,14 @@ namespace GGDBF
 		{
 			RegisterTypeIfNotRegistered<TPrimaryKeyType, TModelType>();
 
+			// Latest nuget has first-class span support
+#if !NUGET_OLD
 			return Serializer.Deserialize<GGDBFTable<TPrimaryKeyType, TModelType>>(bytes);
+#else
+			// TODO: Hella memory allocs here
+			using var ms = new MemoryStream(bytes.ToArray());
+			return Serializer.Deserialize<GGDBFTable<TPrimaryKeyType, TModelType>>(ms);
+#endif
 		}
 	}
 }
