@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release;WebGL_Release</Configurations>
   </PropertyGroup>
 
   <!-- See: https://github.com/dotnet/roslyn-sdk/blob/master/samples/CSharp/SourceGenerators/SourceGeneratorSamples/SourceGeneratorSamples.csproj -->
@@ -73,6 +74,68 @@
 
     <!-- Package the generator in the analyzer directory of the nuget package -->
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='WebGL_Release'">
+    <PackageReference Include="Microsoft.CodeAnalysis.Compilers">
+      <Version>3.9.0-2.final</Version>
+      <PrivateAssets>all</PrivateAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp">
+      <Version>3.9.0-2.final</Version>
+      <PrivateAssets>all</PrivateAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <Version>3.9.0-2.final</Version>
+      <PrivateAssets>all</PrivateAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common">
+      <Version>3.9.0-2.final</Version>
+      <PrivateAssets>all</PrivateAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
+      <Version>3.3.2</Version>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="System.Composition">
+      <Version>1.0.31</Version>
+      <PrivateAssets>all</PrivateAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
+    <PackageReference Include="System.Composition.Hosting">
+      <Version>1.0.31</Version>
+      <PrivateAssets>all</PrivateAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
+    <PackageReference Include="System.Composition.Runtime">
+      <Version>1.0.31</Version>
+      <PrivateAssets>all</PrivateAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
+    <PackageReference Include="System.Composition.TypedParts">
+      <Version>1.0.31</Version>
+      <PrivateAssets>all</PrivateAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
+    <PackageReference Include="System.Composition.AttributedModel">
+      <Version>1.0.31</Version>
+      <PrivateAssets>all</PrivateAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces">
+      <Version>1.1.1</Version>
+      <PrivateAssets>all</PrivateAssets>
+      <GeneratePathProperty>true</GeneratePathProperty>
+    </PackageReference>
+    <None Include="$(OutputPath)\$(AssemblyName).dll">
+      <Pack>true</Pack>
+      <PackagePath>analyzers/dotnet/cs</PackagePath>
+      <Visible>false</Visible>
+    </None>
   </ItemGroup>
 
 </Project>

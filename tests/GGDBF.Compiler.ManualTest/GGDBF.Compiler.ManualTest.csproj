@@ -5,6 +5,7 @@
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>GeneratorOutput</CompilerGeneratedFilesOutputPath>
     <LangVersion>preview</LangVersion>
+    <Configurations>Debug;Release;WebGL_Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -39,6 +40,14 @@
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <PackageReference Include="GGDBF.Compiler" Version="0.5.83" ReferenceOutputAssembly="false" OutputItemType="Analyzer"></PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='WebGL_Release'">
+    <PackageReference Include="GGDBF.Compiler">
+      <Version>0.5.83</Version>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Analyzer</OutputItemType>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
