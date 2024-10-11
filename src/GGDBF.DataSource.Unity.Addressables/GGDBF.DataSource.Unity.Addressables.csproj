@@ -21,10 +21,6 @@
     <PackageTags>GGDBF Glader Database</PackageTags>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'WebGL_Release'">
-    <DefineConstants>PROTOBUF_OLD</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Glader.Essentials.Unity" Version="2.7.203" />
   </ItemGroup>

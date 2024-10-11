@@ -72,15 +72,10 @@ namespace GGDBF
 				{
 					try
 					{
-#if !PROTOBUF_OLD
 						// Unity in their infinite wisdom decided that calling bytes will cause a COPY
 						// so let's directly access the underlying native bytes like it recommends
 						// See: https://docs.unity3d.com/ScriptReference/TextAsset.GetData.html
 						return Serializer.Deserialize<TPrimaryKeyType, TModelType>(underlyingDataBytes);
-#else
-						// TODO: this is very much allocating a lot but no other way to deal with old protobuf stream requirement.
-						return Serializer.Deserialize<TPrimaryKeyType, TModelType>(underlyingDataBytes.ToArray());
-#endif
 					}
 					catch (Exception e)
 					{
