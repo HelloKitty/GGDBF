@@ -27,10 +27,10 @@
 
   <ItemGroup>
     <!-- Include protobuf-net version 2.4.6 if PROTOBUF_OLD is defined -->
-    <PackageReference Include="protobuf-net" Version="2.4.6" Condition=" '$(DefineConstants)' == 'PROTOBUF_OLD' " />
+    <PackageReference Include="protobuf-net" Version="2.4.6" Condition=" '$(Configuration)' == 'WebGL_Release' " />
 
     <!-- Include protobuf-net version 3.0.101 if PROTOBUF_OLD is not defined -->
-    <PackageReference Include="protobuf-net" Version="3.0.101" Condition=" '$(DefineConstants)' != 'PROTOBUF_OLD' " />
+    <PackageReference Include="protobuf-net" Version="3.0.101" Condition=" '$(Configuration)' != 'WebGL_Release' " />
   </ItemGroup>
 
   <ItemGroup>
