@@ -10,6 +10,7 @@ using Glader.Essentials;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace GGDBF
 {
@@ -61,7 +62,24 @@ namespace GGDBF
 				await new UnityYieldAwaitable();
 
 			// See: https://thegamedev.guru/unity-addressables/textasset-loading/
-			var loadHandle = Addressables.LoadAssetAsync<TextAsset>(path);
+			AsyncOperationHandle<TextAsset> loadHandle = Addressables.LoadAssetAsync<TextAsset>(path);
+
+			if (Application.platform != RuntimePlatform.WebGLPlayer)
+				return await CreateNonDeferredTable<TPrimaryKeyType, TModelType>(token, loadHandle);
+			else
+				return await CreateDeferredTable<TPrimaryKeyType, TModelType>(loadHandle, config.TableNameOverride, token);
+		}
+
+		private async Task<GGDBFTable<TPrimaryKeyType, TModelType>> CreateDeferredTable<TPrimaryKeyType, TModelType>(AsyncOperationHandle<TextAsset> loadHandle, string tableName, CancellationToken token) where TModelType : class
+		{
+			// Still must wait till download/load, but can skip deserialization.
+			await loadHandle.Task;
+
+			return new GGDBFTable<TPrimaryKeyType, TModelType>(tableName, new DeferredDeserializedGGDBFTableDictionary<TPrimaryKeyType, TModelType>(loadHandle, Serializer));
+		}
+
+		private async Task<GGDBFTable<TPrimaryKeyType, TModelType>> CreateNonDeferredTable<TPrimaryKeyType, TModelType>(CancellationToken token, AsyncOperationHandle<TextAsset> loadHandle) where TModelType : class
+		{
 			try
 			{
 				var ggdbfData = await loadHandle.Task;
@@ -86,7 +104,7 @@ namespace GGDBF
 			}
 			finally
 			{
-				if (Application.platform != RuntimePlatform.WebGLPlayer 
+				if (Application.platform != RuntimePlatform.WebGLPlayer
 				    && UnityAsyncHelper.UnityMainThreadContext != SynchronizationContext.Current)
 					await new UnityYieldAwaitable();
 
