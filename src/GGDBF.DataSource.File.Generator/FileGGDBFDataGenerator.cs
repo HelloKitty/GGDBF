@@ -34,27 +34,39 @@ namespace GGDBF
 		public async Task GenerateFilesAsync(TGGDBFContextType context, CancellationToken token = default)
 		{
 			// Walk and find all IGGDBFWriteable props and write
-			foreach (var prop in typeof(TGGDBFContextType).GetProperties(BindingFlags.Instance | BindingFlags.Public))
+			foreach(var prop in typeof(TGGDBFContextType).GetProperties(BindingFlags.Instance | BindingFlags.Public))
 			{
-				// Now, we must check each actual prop value if it matches writable table
-				if (prop.GetMethod == null)
-					continue;
-
-				var candidate = prop.GetValue(context);
-
-				if (candidate == null)
-					continue;
-
-				if (candidate is IMutableGGDBFTable)
-					continue;
-
-				var table = CreateGGDBFTable(candidate);
-
-				if (table == null)
-					throw new InvalidOperationException($"Failed to generate Table for Prop: {prop.PropertyType.Name}");
-
-				await (table as IGGDBFWriteable).WriteAsync(new FileGGDBFDataWriter(SerializationStrategy, BasePath), token);
+				try
+				{
+					await GenerateFileAsync(context, token, prop);
+				}
+				catch(Exception e)
+				{
+					throw new InvalidOperationException($"Failed to generate GGDBF file for Prop: {prop.Name} Type: {prop.PropertyType.Name}. Reason: {e}", e);
+				}
 			}
+		}
+
+		private async Task GenerateFileAsync(TGGDBFContextType context, CancellationToken token, PropertyInfo prop)
+		{
+			// Now, we must check each actual prop value if it matches writable table
+			if (prop.GetMethod == null)
+				return;
+
+			var candidate = prop.GetValue(context);
+
+			if (candidate == null)
+				return;
+
+			if (candidate is IMutableGGDBFTable)
+				return;
+
+			var table = CreateGGDBFTable(candidate);
+
+			if (table == null)
+				throw new InvalidOperationException($"Failed to generate Table for Prop: {prop.PropertyType.Name}");
+
+			await (table as IGGDBFWriteable).WriteAsync(new FileGGDBFDataWriter(SerializationStrategy, BasePath), token);
 		}
 
 		object CreateGGDBFTable(object candidate)
