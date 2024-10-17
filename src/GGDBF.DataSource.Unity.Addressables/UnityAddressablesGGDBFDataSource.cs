@@ -56,7 +56,8 @@ namespace GGDBF
 
 			// TODO: Do we need to do this?
 			// Then begin loading it
-			if (UnityAsyncHelper.UnityMainThreadContext != SynchronizationContext.Current)
+			if (Application.platform != RuntimePlatform.WebGLPlayer
+				&& UnityAsyncHelper.UnityMainThreadContext != SynchronizationContext.Current)
 				await new UnityYieldAwaitable();
 
 			// See: https://thegamedev.guru/unity-addressables/textasset-loading/
@@ -68,29 +69,43 @@ namespace GGDBF
 				// Must be called on main thread still
 				NativeArray<byte> underlyingDataBytes = ggdbfData.GetData<byte>();
 
-				// This is so we don't block main game thread with deserializing.
-				return await Task.Factory.StartNew(() =>
+				// There is no main thread, just 1 thread in WebGL so just deserialize.
+				if (Application.platform == RuntimePlatform.WebGLPlayer)
 				{
-					try
-					{
-						// Unity in their infinite wisdom decided that calling bytes will cause a COPY
-						// so let's directly access the underlying native bytes like it recommends
-						// See: https://docs.unity3d.com/ScriptReference/TextAsset.GetData.html
-						return Serializer.Deserialize<TPrimaryKeyType, TModelType>(underlyingDataBytes);
-					}
-					catch (Exception e)
-					{
-						throw new InvalidOperationException($"Failed to deserializer Type: {typeof(TModelType).FullName}. Reason: {e}", e);
-					}
-				}, token)
-				.ConfigureAwait(false);
+					// Unity in their infinite wisdom decided that calling bytes will cause a COPY
+					// so let's directly access the underlying native bytes like it recommends
+					// See: https://docs.unity3d.com/ScriptReference/TextAsset.GetData.html
+					return Serializer.Deserialize<TPrimaryKeyType, TModelType>(underlyingDataBytes);
+				}
+				else
+				{
+					// This is so we don't block main game thread with deserializing.
+					return await Task.Factory.StartNew(() => Deserialize<TPrimaryKeyType, TModelType>(underlyingDataBytes), token)
+						.ConfigureAwait(false);
+				}
 			}
 			finally
 			{
-				if (UnityAsyncHelper.UnityMainThreadContext != SynchronizationContext.Current)
+				if (Application.platform != RuntimePlatform.WebGLPlayer 
+				    && UnityAsyncHelper.UnityMainThreadContext != SynchronizationContext.Current)
 					await new UnityYieldAwaitable();
 
 				Addressables.Release(loadHandle);
+			}
+		}
+
+		private GGDBFTable<TPrimaryKeyType, TModelType> Deserialize<TPrimaryKeyType, TModelType>(NativeArray<byte> underlyingDataBytes) where TModelType : class
+		{
+			try
+			{
+				// Unity in their infinite wisdom decided that calling bytes will cause a COPY
+				// so let's directly access the underlying native bytes like it recommends
+				// See: https://docs.unity3d.com/ScriptReference/TextAsset.GetData.html
+				return Serializer.Deserialize<TPrimaryKeyType, TModelType>(underlyingDataBytes);
+			}
+			catch (Exception e)
+			{
+				throw new InvalidOperationException($"Failed to deserializer Type: {typeof(TModelType).FullName}. Reason: {e}", e);
 			}
 		}
 
