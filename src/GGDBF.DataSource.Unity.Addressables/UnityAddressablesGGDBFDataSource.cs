@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Glader.Essentials;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -65,7 +66,7 @@ namespace GGDBF
 				var ggdbfData = await loadHandle.Task;
 
 				// Must be called on main thread still
-				var underlyingDataBytes = ggdbfData.GetData<byte>();
+				NativeArray<byte> underlyingDataBytes = ggdbfData.GetData<byte>();
 
 				// This is so we don't block main game thread with deserializing.
 				return await Task.Factory.StartNew(() =>
