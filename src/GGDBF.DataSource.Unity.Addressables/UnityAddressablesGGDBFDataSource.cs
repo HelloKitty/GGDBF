@@ -133,7 +133,11 @@ namespace GGDBF
 			where TSerializableModelType : class, TModelType, IGGDBFSerializable
 		{
 			var table = await RetrieveFullTableAsync<TPrimaryKeyType, TSerializableModelType>(CastConfig<TPrimaryKeyType, TModelType, TSerializableModelType>(config), token);
-			return table.ConvertFrom<TPrimaryKeyType, TModelType, TSerializableModelType>();
+
+			if (Application.platform != RuntimePlatform.WebGLPlayer)
+				return table.ConvertFrom<TPrimaryKeyType, TModelType, TSerializableModelType>();
+			else
+				return new GGDBFTable<TPrimaryKeyType, TModelType>(table.TableName, new DeferredConvertableGGDBFTableDictionary<TPrimaryKeyType, TModelType, TSerializableModelType>(table.TableData));
 		}
 
 		/// <inheritdoc />
