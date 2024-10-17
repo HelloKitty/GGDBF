@@ -38,7 +38,12 @@ namespace GGDBF
 			if (!RegisteredTypes.Contains(typeof(TModelType)))
 			{
 				RuntimeTypeModel.Default.Add(typeof(TModelType), true);
+				//RuntimeTypeModel.Default.Add(typeof(GGDBFTable<TPrimaryKeyType, TModelType>), true);
+				//RuntimeTypeModel.Default.Add(typeof(Dictionary<TPrimaryKeyType, TModelType>), true);
+
 				RegisteredTypes.Add(typeof(TModelType));
+				//RegisteredTypes.Add(typeof(GGDBFTable<TPrimaryKeyType, TModelType>));
+				//RegisteredTypes.Add(typeof(Dictionary<TPrimaryKeyType, TModelType>));
 
 				if(typeof(TModelType).GetCustomAttribute<GeneratedCodeAttribute>() != null)
 				{
