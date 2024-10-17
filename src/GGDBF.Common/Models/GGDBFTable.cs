@@ -38,6 +38,18 @@ namespace GGDBF
 		[DataMember(Order = 3)]
 		public IReadOnlyDictionary<TPrimaryKeyType, TModelType> TableData { get; init; }
 
+		public GGDBFTable(string tableName, IReadOnlyDictionary<TPrimaryKeyType, TModelType> tableData)
+		{
+			TableName = tableName ?? throw new ArgumentNullException(nameof(tableName));
+			TableData = tableData ?? throw new ArgumentNullException(nameof(tableData));
+		}
+
+		public GGDBFTable()
+		{
+			//protobuf might serialize this as null for empty tables.
+			TableData = new Dictionary<TPrimaryKeyType, TModelType>();
+		}
+
 		/// <summary>
 		/// Converts the <see cref="TableData"/> to a <see cref="IReadOnlyDictionary{TKey,TValue}"/>.
 		/// </summary>
