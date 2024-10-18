@@ -137,7 +137,7 @@ namespace GGDBF
 			if (Application.platform != RuntimePlatform.WebGLPlayer)
 				return table.ConvertFrom<TPrimaryKeyType, TModelType, TSerializableModelType>();
 			else
-				return new GGDBFTable<TPrimaryKeyType, TModelType>(table.TableName, new DeferredConvertableGGDBFTableDictionary<TPrimaryKeyType, TModelType, TSerializableModelType>(table.TableData));
+				return new GGDBFTable<TPrimaryKeyType, TModelType>(table.TableName, new DeferredConvertableGGDBFTableDictionary<TPrimaryKeyType, TModelType, TSerializableModelType>(table));
 		}
 
 		/// <inheritdoc />
