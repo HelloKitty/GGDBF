@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.CodeDom.Compiler;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -15,7 +16,7 @@ namespace GGDBF
 {
 	public sealed class DefaultGGDBFProtobufNetSerializer : IGGDBFSerializer
 	{
-		public static HashSet<Type> RegisteredTypes { get; } = new HashSet<Type>();
+		public static ConcurrentDictionary<Type, object> RegisteredTypes { get; } = new();
 
 		public static object SyncObj { get; } = new();
 
@@ -37,28 +38,29 @@ namespace GGDBF
 
 		private static void RegisterTypeIfNotRegistered<TPrimaryKeyType, TModelType>()
 		{
+			if (RegisteredTypes.ContainsKey(typeof(TModelType)))
+				return;
+
 			// Failed to load game data. Error: System.InvalidOperationException: Failed to deserializer Type: FreecraftCore.AreaPOIEntry. Reason: System.TimeoutException: Timeout while inspecting metadata; this may indicate a deadlock. This can often be avoided by preparing necessary serializers during application initialization, rather than allowing multiple threads to perform the initial metadata inspection; please also see the LockContended event
 			// For whatever reason afew times deserialization failed, maybe this lock will help?
-			lock(SyncObj)
+			lock (SyncObj)
+				RuntimeTypeModel.Default.Add(typeof(TModelType), true);
+			//RuntimeTypeModel.Default.Add(typeof(GGDBFTable<TPrimaryKeyType, TModelType>), true);
+			//RuntimeTypeModel.Default.Add(typeof(Dictionary<TPrimaryKeyType, TModelType>), true);
+
+			RegisteredTypes.TryAdd(typeof(TModelType), null);
+			//RegisteredTypes.Add(typeof(GGDBFTable<TPrimaryKeyType, TModelType>));
+			//RegisteredTypes.Add(typeof(Dictionary<TPrimaryKeyType, TModelType>));
+
+			if (typeof(TModelType).GetCustomAttribute<GeneratedCodeAttribute>() != null)
 			{
-				if(!RegisteredTypes.Contains(typeof(TModelType)))
-				{
-					RuntimeTypeModel.Default.Add(typeof(TModelType), true);
-					//RuntimeTypeModel.Default.Add(typeof(GGDBFTable<TPrimaryKeyType, TModelType>), true);
-					//RuntimeTypeModel.Default.Add(typeof(Dictionary<TPrimaryKeyType, TModelType>), true);
+				//TODO: This breaks if anyone has more than 100 props.
+				lock(SyncObj)
+					RuntimeTypeModel.Default
+						.Add(typeof(TModelType).BaseType, true)
+						.AddSubType(short.MaxValue, typeof(TModelType));
 
-					RegisteredTypes.Add(typeof(TModelType));
-					//RegisteredTypes.Add(typeof(GGDBFTable<TPrimaryKeyType, TModelType>));
-					//RegisteredTypes.Add(typeof(Dictionary<TPrimaryKeyType, TModelType>));
-
-					if(typeof(TModelType).GetCustomAttribute<GeneratedCodeAttribute>() != null)
-					{
-						//TODO: This breaks if anyone has more than 100 props.
-						RuntimeTypeModel.Default
-							.Add(typeof(TModelType).BaseType, true)
-							.AddSubType(short.MaxValue, typeof(TModelType));
-					}
-				}
+				RegisteredTypes.TryAdd(typeof(TModelType).BaseType, null);
 			}
 		}
 
