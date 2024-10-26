@@ -94,7 +94,7 @@ namespace GGDBF
 			}
 			finally
 			{
-				pool.Return(pooledArray);
+				pool?.Return(pooledArray);
 			}
 #endif
 		}
@@ -107,7 +107,13 @@ namespace GGDBF
 			}
 			else
 			{
-				pool = LargeArrayPool<byte>.Shared;
+				// Don't use the LarayArrayPool because we'll end up
+				// allocating a bunch of data which may not get reused since it's a custom
+				// buffer and this is mostly being used in WebGL so that means we have
+				// a bunch of large allocations that never go away.
+				//pool = LargeArrayPool<byte>.Shared;
+				pool = null;
+				return new byte[size];
 			}
 
 			return pool.Rent(size);
