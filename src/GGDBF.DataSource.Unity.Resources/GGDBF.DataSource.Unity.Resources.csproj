@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release;WebGL_Release</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <VersionPrefix>0.5.94</VersionPrefix>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <RootNamespace>GGDBF</RootNamespace>
+    <Authors>Andrew Blakely, Glader</Authors>
+    <Product>GGDBF</Product>
+    <Description></Description>
+    <Copyright>Andrew Blakely</Copyright>
+    <PackageProjectUrl>http://github.com/helloKitty/GGDBF</PackageProjectUrl>
+    <RepositoryUrl>http://github.com/helloKitty/GGDBF</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>GGDBF Glader Database</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Glader.Essentials.Unity" Version="2.7.203" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GGDBF.Common\GGDBF.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\lib\Unity\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

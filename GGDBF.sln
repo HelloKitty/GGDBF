@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGDBF.DataSource.File.Gener
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGDBF.DataSource.Unity.Addressables", "src\GGDBF.DataSource.Unity.Addressables\GGDBF.DataSource.Unity.Addressables.csproj", "{6F575EA6-26A8-4B05-A3CD-E03F96BA53CA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGDBF.DataSource.Unity.Resources", "src\GGDBF.DataSource.Unity.Resources\GGDBF.DataSource.Unity.Resources.csproj", "{CA154864-418E-49CC-9A51-7533F38858AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +120,12 @@ Global
 		{6F575EA6-26A8-4B05-A3CD-E03F96BA53CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6F575EA6-26A8-4B05-A3CD-E03F96BA53CA}.WebGL_Release|Any CPU.ActiveCfg = WebGL_Release|Any CPU
 		{6F575EA6-26A8-4B05-A3CD-E03F96BA53CA}.WebGL_Release|Any CPU.Build.0 = WebGL_Release|Any CPU
+		{CA154864-418E-49CC-9A51-7533F38858AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA154864-418E-49CC-9A51-7533F38858AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA154864-418E-49CC-9A51-7533F38858AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA154864-418E-49CC-9A51-7533F38858AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA154864-418E-49CC-9A51-7533F38858AA}.WebGL_Release|Any CPU.ActiveCfg = WebGL_Release|Any CPU
+		{CA154864-418E-49CC-9A51-7533F38858AA}.WebGL_Release|Any CPU.Build.0 = WebGL_Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -136,6 +144,7 @@ Global
 		{7CE341C0-5B08-491B-A39C-2295F2B2A0EB} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
 		{4B2471E1-B05E-4C8F-BFA0-C8C83101799B} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
 		{6F575EA6-26A8-4B05-A3CD-E03F96BA53CA} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
+		{CA154864-418E-49CC-9A51-7533F38858AA} = {97C93F83-37D0-41FA-AA43-86FE3A373927}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {98438B05-72FA-4385-BEF0-9A6B45DC9251}
