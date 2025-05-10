@@ -41,7 +41,7 @@ namespace GGDBF
 		}
 
 		/// <inheritdoc />
-		public async Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
+		public Task<GGDBFTable<TPrimaryKeyType, TModelType>> RetrieveFullTableAsync<TPrimaryKeyType, TModelType>(TableRetrievalConfig<TPrimaryKeyType, TModelType> config = null, CancellationToken token = default) 
 			where TModelType : class
 		{
 			// Create the addressable GGDBF path
@@ -54,15 +54,15 @@ namespace GGDBF
 				path = path.ToLowerInvariant();
 
 			if (Application.platform != RuntimePlatform.WebGLPlayer)
-				return await CreateNonDeferredTable<TPrimaryKeyType, TModelType>(token, path);
+				return CreateNonDeferredTable<TPrimaryKeyType, TModelType>(token, path);
 			else
-				return await CreateDeferredTable<TPrimaryKeyType, TModelType>(path, config.TableNameOverride, token);
+				return CreateDeferredTable<TPrimaryKeyType, TModelType>(path, config.TableNameOverride, token);
 		}
 
-		private async Task<GGDBFTable<TPrimaryKeyType, TModelType>> CreateDeferredTable<TPrimaryKeyType, TModelType>(string path, string tableName, CancellationToken token) 
+		private Task<GGDBFTable<TPrimaryKeyType, TModelType>> CreateDeferredTable<TPrimaryKeyType, TModelType>(string path, string tableName, CancellationToken token) 
 			where TModelType : class
 		{
-			return new GGDBFTable<TPrimaryKeyType, TModelType>(tableName, new UnityResourcesDeferredDeserializedGGDBFTableDictionary<TPrimaryKeyType, TModelType>(path, Serializer));
+			return Task.FromResult(new GGDBFTable<TPrimaryKeyType, TModelType>(tableName, new UnityResourcesDeferredDeserializedGGDBFTableDictionary<TPrimaryKeyType, TModelType>(path, Serializer)));
 		}
 
 		private async Task<GGDBFTable<TPrimaryKeyType, TModelType>> CreateNonDeferredTable<TPrimaryKeyType, TModelType>(CancellationToken token, string path) 
