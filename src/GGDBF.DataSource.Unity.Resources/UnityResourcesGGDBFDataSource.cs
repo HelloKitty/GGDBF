@@ -48,7 +48,7 @@ namespace GGDBF
 			// Unity requirement that the GGDBF file type is removed.
 			// "A special feature of the text asset is that it can be used to store binary data.
 			// By giving a file the extension .bytes it can be loaded as a text asset and the data can be accessed through the bytes property."
-			var path = $"{BasePath}/{config.TableNameOverride}.bytes";
+			var path = $"{BasePath}/{config.TableNameOverride}";
 
 			if (ForceLowercasePath)
 				path = path.ToLowerInvariant();
