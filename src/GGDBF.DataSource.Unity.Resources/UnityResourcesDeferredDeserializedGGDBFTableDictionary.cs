@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Threading;
 using JetBrains.Annotations;
 using UnityEngine;
+using Debug = System.Diagnostics.Debug;
 
 namespace GGDBF
 {
@@ -31,9 +34,14 @@ namespace GGDBF
 			{
 				try
 				{
+					Stopwatch watch = new();
+					watch.Start();
 					// We're on WebGL for this so don't bother locking
 					var asset = Resources.Load<TextAsset>(path);
 					var table = Serializer.Deserialize<TKeyType, TModelType>(asset.bytes);
+
+					watch.Stop();
+					UnityEngine.Debug.LogError($"GGDBF Load Time: {watch.Elapsed.TotalSeconds} seconds. Table: {Path.GetFileName(path)}");
 
 					return table.TableData;
 				}
