@@ -89,6 +89,10 @@ namespace GGDBF
 						.ConfigureAwait(false);
 				}
 			}
+			catch (Exception e)
+			{
+				throw new InvalidOperationException($"Failed to create non-deferred table for Type: {typeof(TModelType).Name}.\nReason: {e}", e);
+			}
 			finally
 			{
 				if (Application.platform != RuntimePlatform.WebGLPlayer
